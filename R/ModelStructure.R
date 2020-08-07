@@ -16,17 +16,18 @@ library(data.tree)
 #' 
 #' @include 
 #' @export
-#' @rdname model
-
+#' @rdname modelstructure
 
 #' @export
-setGeneric(name = "Model",
+## Das Problem hier ist, dass man dann nicht mehr auf die Methoden von "Node"
+## zugreifen kann, weil die offenbar private sind.
+setGeneric(name = "ModelStructure",
            def = function(...){
-             standardGeneric("Model")
+             standardGeneric("ModelStructure")
            })
 
 #' @export
-setMethod(f = "Model",signature = c("character"),
+setMethod(f = "ModelStructure", signature = c("character"),
           definition = function(name){
             object <- Node$new(name)
             object$AddChild("Active")
@@ -56,10 +57,18 @@ addOperations <- function(account, model)
   model$Operations$AddChild(account)
 }
 
-addContracts <- function(contracts, leaf)
-{
-  stopifnot(leaf$isLeaf)
-  if (is.null(leaf$contracts))
-    leaf$contracts = list()
-  leaf$contracts = c(leaf$contracts,contracts)
-}
+#' @export
+setGeneric(name = "addContracts",
+           def = function(contracts, leaf, ...){
+             standardGeneric("addContracts")
+           })
+
+#' @export
+setMethod(f = "addContracts", signature = c("list", "Node"),
+          definition = function(contracts, leaf){
+            stopifnot(leaf$isLeaf)
+            if (is.null(leaf$contracts))
+              leaf$contracts = list()
+            leaf$contracts = c(leaf$contracts,contracts)
+          })
+

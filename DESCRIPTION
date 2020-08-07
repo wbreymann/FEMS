@@ -63,7 +63,7 @@ Collate:
     'Income.R'
     'LinearAmortizer.R'
     'Liquidity.R'
-    'Model.R'
+    'ModelStructure.R'
     'MultiCurrencyDiscountingEngine.R'
     'NegativeAmortizer.R'
     'Operations.R'
