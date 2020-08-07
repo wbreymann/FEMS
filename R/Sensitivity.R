@@ -274,13 +274,13 @@ setMethod(f = "sensitivity",
               
               # Calculate value for base scenario
               set(method, scenarios[[1]])
-              V.0 = rActus::value(object, by[1], type="markToModel", method=method)
+              V.0 = FEMS::value(object, by[1], type="markToModel", method=method)
               
               # Calculating the discounted value for all other scenarios
               scenarios[1] = NULL
               V = unlist(lapply(scenarios, FUN=function(x) {
                 temp = set(method, x)
-                rActus::value(object, by[1], type="markToModel", method=temp)
+                FEMS::value(object, by[1], type="markToModel", method=temp)
               }))
               
               # compute sensitivity
@@ -450,14 +450,14 @@ setMethod(f = "sensitivity",
               cfs <- get(object, "evs")$Value
               ad0 <- by[1]
               yc.nme = get(method, "RiskFactorObjectLink")
-              yc <- rActus:::get(scenarios[[1]], yc.nme)
+              yc <- FEMS:::get(scenarios[[1]], yc.nme)
               dfs <- discountFactors(yc, dates, ad0, isDateEnd=TRUE)
               V.0 = as.numeric(cfs%*%dfs)
               
               # Calculating the discounted value for all other scenarios
               scenarios[1] = NULL
               V = unlist(lapply(scenarios, FUN=function(x) {
-                yc = rActus:::get(x, yc.nme)
+                yc = FEMS:::get(x, yc.nme)
                 dfs <- discountFactors(yc, dates, ad0, isDateEnd=TRUE)
                 cfs%*%dfs
               }))

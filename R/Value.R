@@ -98,7 +98,7 @@ setGeneric(name = "value", def = function(object, by, type, method, ...){
 setMethod(f = "value", signature = c("ContractType", "character", "character", "missing"),
           definition = function(object, by, type, method, ...){
             if (type == "nominal") {
-              val <- rActus::value(events(object, by[1]), by , "nominal", ...) 
+              val <- FEMS::value(events(object, by[1]), by , "nominal", ...) 
             } else if (type %in% c("markToModel","markToMarket")) {
               stop("Please specify argument 'method' when computing 'markToModel' for an EventSeries!")
             } else {
@@ -114,7 +114,7 @@ setMethod(f = "value", signature = c("ContractType", "AD0", "character", "missin
           definition = function(object, by, type, method, ...){
             if (type == "nominal") {
               # AD0 has only a single element
-              val <- rActus::value(rActus::events(object, by), as.character(by), type, ...)
+              val <- FEMS::value(FEMS::events(object, by), as.character(by), type, ...)
             } else if (type %in% c("markToModel", "markToMarket")) {  
               stop("Please specify argument 'method' when computing 'markToModel' for an EventSeries!")
             } else {
@@ -128,7 +128,7 @@ setMethod(f = "value", signature = c("ContractType", "AD0", "character", "missin
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "timeDate", "character", "missing"),
           definition = function(object, by, type, ...){
-            return(rActus::value(object, as.character(by), type, ...))
+            return(FEMS::value(object, as.character(by), type, ...))
           })
 
 #' @include ContractType.R
@@ -137,7 +137,7 @@ setMethod(f = "value", signature = c("ContractType", "timeDate", "character", "m
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character", "missing"),
           definition = function(object, by, type, ...){
-            val <- rActus::value(object, as.character(by), type, ...)
+            val <- FEMS::value(object, as.character(by), type, ...)
             names(val) <- by@breakLabs
             return(val)
           })
@@ -149,9 +149,9 @@ setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character",
 setMethod(f = "value", signature = c("ContractType", "character", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
             if (type == "nominal") {
-              val <- rActus::value(rActus::events(object, by[1]), by, "nominal", method, ...)
+              val <- FEMS::value(FEMS::events(object, by[1]), by, "nominal", method, ...)
           } else if (type %in% c("markToModel", "markToMarket") ) {
-              val <- rActus::value(rActus::events(object, by[1]), by, "markToModel", method, ...)
+              val <- FEMS::value(FEMS::events(object, by[1]), by, "markToModel", method, ...)
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
             }
@@ -163,7 +163,7 @@ setMethod(f = "value", signature = c("ContractType", "character", "character", "
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "timeDate", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
-            return(rActus::value(object, as.character(by), type, method, ...))
+            return(FEMS::value(object, as.character(by), type, method, ...))
           })
 
 #' @include ContractType.R
@@ -172,7 +172,7 @@ setMethod(f = "value", signature = c("ContractType", "timeDate", "character", "V
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
-            val <- rActus::value(object, as.character(by), type, method, ...)
+            val <- FEMS::value(object, as.character(by), type, method, ...)
             names(val) <- by@breakLabs
             return(val)
           })
@@ -184,9 +184,9 @@ setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character",
 setMethod(f = "value", signature = c("ContractType", "AD0", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
             if (type == "nominal") {
-              val <- rActus::value(rActus::events(object,ad), as.character(by), type, ...)
+              val <- FEMS::value(FEMS::events(object,ad), as.character(by), type, ...)
             } else if (type %in% c("markToModel","markToMarket")) {
-              val <- rActus::value(rActus::events(object, by), as.character(by), type, method, ...)
+              val <- FEMS::value(FEMS::events(object, by), as.character(by), type, method, ...)
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep = ""))
             } 
@@ -197,7 +197,7 @@ setMethod(f = "value", signature = c("ContractType", "AD0", "character", "Valuat
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "AD0", "character", "missing"),
           definition = function(object, by, type, method, ...) {
-            return(rActus::value(object, as.character(by), type, ...))        
+            return(FEMS::value(object, as.character(by), type, ...))        
           })
 
 
@@ -208,7 +208,7 @@ setMethod(f = "value", signature = c("EventSeries", "AD0", "character", "missing
 #' and discounting is carried out by explicitly calling the discouting engine.
 setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "missing"),
           definition = function(object, by, type, ...){
-            return(rActus::value(object, as.character(by), type, ...) )
+            return(FEMS::value(object, as.character(by), type, ...) )
           })
 
 #' @include ContractType.R
@@ -217,7 +217,7 @@ setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "mi
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "timeBuckets", "character", "missing"),
           definition = function(object, by, type, ...){
-            val <- rActus::value(object, as.character(by), type, ...)
+            val <- FEMS::value(object, as.character(by), type, ...)
             names(val) <- by@breakLabs
             return(val)
           })
@@ -228,9 +228,9 @@ setMethod(f = "value", signature = c("EventSeries", "timeBuckets", "character", 
 setMethod(f = "value", signature = c("Portfolio", "character", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
             if (type == "nominal") {
-              val <- rActus::value(rActus::events(object, by[1]), by, "nominal", method, ...)
+              val <- FEMS::value(FEMS::events(object, by[1]), by, "nominal", method, ...)
             } else if (type %in% c("markToModel", "markToMarket") ) {
-              val <- rActus::value(rActus::events(object, by[1]), by, "markToModel", method, ...)
+              val <- FEMS::value(FEMS::events(object, by[1]), by, "markToModel", method, ...)
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
             }
@@ -239,33 +239,33 @@ setMethod(f = "value", signature = c("Portfolio", "character", "character", "Val
 
 setMethod(f = "value", signature = c("Portfolio", "character", "character", "missing"),
           definition = function(object, by, type, method, ...){
-            val <- rActus::value(rActus::events(object, by[1]), by, type, ...)
+            val <- FEMS::value(FEMS::events(object, by[1]), by, type, ...)
             return(val)
           })
 
 setMethod(f = "value", signature = c("Portfolio", "timeBuckets", "character", "missing"),
           definition = function(object, by, type, ...){
-            val <- rActus::value(object, as.character(by), type, ...)
+            val <- FEMS::value(object, as.character(by), type, ...)
             names(val) <- by@breakLabs
             return(val)
           })
 
 setMethod(f = "value", signature = c("Portfolio", "timeBuckets", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
-            val <- rActus::value(object, as.character(by), type, method, ...)
+            val <- FEMS::value(object, as.character(by), type, method, ...)
             names(val) <- by@breakLabs
             return(val)
           })
 
 setMethod(f = "value", signature = c("Portfolio", "timeDate", "character", "missing"),
           definition = function(object, by, type, ...){
-            val <- rActus::value(object, as.character(by), type, ...)
+            val <- FEMS::value(object, as.character(by), type, ...)
             return(val)
           })
 
 setMethod(f = "value", signature = c("Portfolio", "timeDate", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
-            val <- rActus::value(object, as.character(by), type, method, ...)
+            val <- FEMS::value(object, as.character(by), type, method, ...)
             return(val)
           })
 
@@ -276,7 +276,7 @@ setMethod(f = "value", signature = c("Portfolio", "timeDate", "character", "Valu
 #' and discounting is carried out by explicitly calling the discouting engine.
 setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "DiscountingEngine"),
           definition = function(object, by, type, method, ...){
-            return(rActus::value(object, as.character(by), type, method, ...) )
+            return(FEMS::value(object, as.character(by), type, method, ...) )
           })
 
 #' @include ContractType.R
@@ -285,7 +285,7 @@ setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "Di
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "timeBuckets", "character", "DiscountingEngine"),
           definition = function(object, by, type, method, ...){
-            val <- rActus::value(object, as.character(by), type, method, ...)
+            val <- FEMS::value(object, as.character(by), type, method, ...)
             names(val) <- by@breakLabs
             return(val)
           })
@@ -310,13 +310,13 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "D
             ev.df$Date <- timeDate(substring(ev.df$Date, 1, 10))
             
             if (type == "nominal") {
-              val <- rActus::value(object, by, "nominal", digits = digits, ...)
+              val <- FEMS::value(object, by, "nominal", digits = digits, ...)
               
             } else if ( type %in% c("markToModel", "markToMarket") ) {
               # add spread to interest rate
-              spread <- rActus::get(method, "DiscountingSpread")
+              spread <- FEMS::get(method, "DiscountingSpread")
               dc <- get(method, "RiskFactorObject")
-              rActus::set(dc, list(Rates = rActus::get(dc, "Rates") + spread))
+              FEMS::set(dc, list(Rates = FEMS::get(dc, "Rates") + spread))
               
               ids <- unique(ev.df$ContractID)
               val <- matrix(, nrow = length(ids), ncol = length(date))

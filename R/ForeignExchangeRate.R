@@ -93,7 +93,7 @@ setMethod(f = "set", signature = c("ForeignExchangeRate", "list"),
           definition = function(object, what, ...){
             par.names <- names(what)
             for (i in par.names) {
-              if (rActus:::is.valid.fxrate.set.field(i)) {
+              if (FEMS:::is.valid.fxrate.set.field(i)) {
                 value <- what[[i]]
                 switch(i,
                        MarketObjectCode = {
@@ -124,7 +124,7 @@ setMethod(f = "get", signature = c("ForeignExchangeRate", "character"),
           definition = function(object, what, ...){
             out <- list()
             if (length(what) == 1 && tolower(what) == "all") {
-              what <- rActus:::validFxRateGetFields()
+              what <- FEMS:::validFxRateGetFields()
             }
             for (i in what) {
               if (is.valid.fxrate.get.field(i)) {

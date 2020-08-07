@@ -85,20 +85,20 @@ setGeneric(name = "export",
 setMethod("export",
           signature = c("Portfolio"),
           definition = function(object, file="./events.txt", sep=","){
-            out = rActus::as.data.frame(rActus::EventSeries(object$contracts[[1]]))
-            out = cbind(rActus::get(object$contracts[[1]], 
+            out = FEMS::as.data.frame(FEMS::EventSeries(object$contracts[[1]]))
+            out = cbind(FEMS::get(object$contracts[[1]], 
                                     c("ContractID", "ContractType", 
                                       "LegalEntityIDRecordCreator", 
                                       "LegalEntityIDCounterparty")
             ), out)
             for(i in 1:length(object$contracts)) 
               out = rbind(out,
-                          cbind(rActus::get(object$contracts[[i]],
+                          cbind(FEMS::get(object$contracts[[i]],
                                             c("ContractID", "ContractType", 
                                               "LegalEntityIDRecordCreator", 
                                               "LegalEntityIDCounterparty")
                           ),
-                          rActus::as.data.frame(rActus::EventSeries(object$contracts[[i]]))
+                          FEMS::as.data.frame(FEMS::EventSeries(object$contracts[[i]]))
                           )
               )
             write.table(out, file=file, sep=sep, col.names=TRUE, row.names=FALSE)

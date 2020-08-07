@@ -157,7 +157,7 @@ setMethod(f = "initialize", signature="MultiCurrencyDiscountingEngine",
 #' #' @aliases set,ValuationEngineModel,list-method
 #' setMethod(f = "set", signature = c("MultiCurrencyDiscountingEngine","list"),
 #'           definition = function(object, what){
-#'             set(rActus:::get(object, "Model"), what)
+#'             set(FEMS:::get(object, "Model"), what)
 #'           })
 
 

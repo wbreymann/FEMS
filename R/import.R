@@ -123,7 +123,7 @@ setMethod(f = "import", signature = c("Portfolio", "data.frame"),
                         quote=FALSE)
             silent <- import(object, temp.file, sep=temp.sep, ...)
             ## out message
-            ex <- paste(rActus:::get(object, "size"), " CTs imported from data.frame based on ", temp.file, sep = "")
+            ex <- paste(FEMS:::get(object, "size"), " CTs imported from data.frame based on ", temp.file, sep = "")
             return(ex)
           })
 

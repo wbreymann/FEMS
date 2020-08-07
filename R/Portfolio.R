@@ -90,8 +90,8 @@ setGeneric(name = "generateEvents",
 ## @export
 setMethod("generateEvents", signature = c("Portfolio", "character"),
           definition = function(object, ad0){
-            ad0_zdt <- rActus::AD0(ad0)
-            rActus:::generateEvents(object, ad0_zdt)
+            ad0_zdt <- FEMS::AD0(ad0)
+            FEMS:::generateEvents(object, ad0_zdt)
           })
 
 #' @include AnalysisDate.R
@@ -223,13 +223,13 @@ setMethod(f = "get", signature = c("Portfolio", "character"),
             } else if(tolower(what[1]) == "size") {
               out <- length(object$contracts)
             } else if(tolower(what[1]) == "ids") {
-              out <- unlist(lapply(object$contracts, rActus::get,
+              out <- unlist(lapply(object$contracts, FEMS::get,
                                    what="ContractID"))
             } else {
               out <- list()
               for (i in 1:length(what) ) {
                 idx <- which(
-                  unlist(lapply(object$contracts, rActus::get,
+                  unlist(lapply(object$contracts, FEMS::get,
                                 what="ContractID"))==what[i], arr.ind=TRUE
                 )
                 if ( length(idx)==1 ) {
@@ -421,7 +421,7 @@ setMethod(f = "add", signature = c("Portfolio", "list"),
             # TODO: append slow!
             
             test <- length(object$contracts)
-            object$contracts <- append(x = rActus::get(object = object,
+            object$contracts <- append(x = FEMS::get(object = object,
                                                        what = "contracts"),
                                        values = what)
             len <- length(object$contracts)
@@ -430,7 +430,7 @@ setMethod(f = "add", signature = c("Portfolio", "list"),
             }
             # ids = character()
             # for (obj in what) {
-            #   ids = c(ids, rActus:::get(obj, "ContractID"))
+            #   ids = c(ids, FEMS:::get(obj, "ContractID"))
             # }
             # names(object$contracts)[(test+1):len] = ids
           })
@@ -489,8 +489,8 @@ setMethod(f = "remove", signature = c("Portfolio", "character"),
 # @aliases 
 setMethod(f = "summary", signature = c("Portfolio"),
           definition = function(object){
-            nContr <- length(rActus::get(object=object,what="contracts"))
-            cts <- rActus::get(object=object, what="contracts")
+            nContr <- length(FEMS::get(object=object,what="contracts"))
+            cts <- FEMS::get(object=object, what="contracts")
             if(nContr==1) {
               cts <- list(cts)
             }
@@ -509,8 +509,8 @@ setMethod(f = "summary", signature = c("Portfolio"),
 # @aliases 
 setMethod(f = "show", signature = c("Portfolio"),
           definition = function(object){
-            # nContr <- length(rActus::get(object=object,what="contracts"))
-            # cts <- rActus::get(object=object, what="contracts")
+            # nContr <- length(FEMS::get(object=object,what="contracts"))
+            # cts <- FEMS::get(object=object, what="contracts")
             # if(nContr==1) {
             #   cts <- list(cts)
             # }
@@ -571,9 +571,9 @@ setMethod("CTvars", signature = c("Portfolio", "numeric", "character"),
               if ( !is.null(ct) ) {
                 # print(class(ct))
                 # print(paste0("vars = ", vars))
-                cVars = rActus:::get(ct, vars)
+                cVars = FEMS:::get(ct, vars)
                 # print(cVars)
-                # out = rbind(out, as.data.frame(rActus:::get(ct, vars)))
+                # out = rbind(out, as.data.frame(FEMS:::get(ct, vars)))
                 out = rbind(out, as.data.frame(cVars))
               }
             }
@@ -620,7 +620,7 @@ extractVariablesFromPortfolio = function(cts, vars) {
   vl = length(vars)
   if (length(vars)==1 ) {
     for (ct in cts) {
-      v = rActus:::get(ct, vars)
+      v = FEMS:::get(ct, vars)
       if (is.null(v)) {
         v = NA
       }
@@ -632,7 +632,7 @@ extractVariablesFromPortfolio = function(cts, vars) {
     }
   } else {
     for (ct in cts) {
-      v = rActus:::get(ct, vars)
+      v = FEMS:::get(ct, vars)
       missingNames = vars[!is.element(vars, names(v))]
       for (mN in missingNames) {
         v[[mN]] = NA
@@ -722,7 +722,7 @@ setMethod(f = "ids", signature = c("Portfolio"),
             ll = x$contracts
             for (i in 1:length(x)) {
               ids = c(ids,
-                      rActus:::get(ll[[i]], "ContractID")
+                      FEMS:::get(ll[[i]], "ContractID")
               )
             }
             ids

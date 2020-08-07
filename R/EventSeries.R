@@ -222,7 +222,7 @@ setMethod("print", signature = "EventSeries",
             if (type == "raw") {
               x
             } else {
-              y = rActus::get(object=x, what="evs")
+              y = FEMS::get(object=x, what="evs")
               if (!missing(indices)){ 
                 y = y[,indices] 
               }
@@ -435,7 +435,7 @@ setMethod( f = "get" , signature = c( "EventSeries" , "character" ) ,
            definition = function( object , what ) {
              out <- list()
              if (length(what) == 1 && tolower(what) == "all") {
-               what <- rActus:::validEVSGetFields()
+               what <- FEMS:::validEVSGetFields()
              }
              for (i in what) {
                name = i
@@ -471,7 +471,7 @@ setMethod( f = "set" , signature = c( "EventSeries" , "list" ) ,
            definition = function( object , what ) {
              par.names <- names(what)
              for(i in par.names) {
-               if(rActus:::is.valid.evs.set.field(i)) {
+               if(FEMS:::is.valid.evs.set.field(i)) {
                  value=what[[i]]
                  name=i
                  if(name == "id") {
