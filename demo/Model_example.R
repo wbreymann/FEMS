@@ -2,12 +2,23 @@
 
 rm(list=ls())
 devtools::load_all()
-library(data.tree)
+# library(data.tree)
 
-myModel = Node$new("Simple Model")
-myModel$AddChild("Active")
-myModel$AddChild("Passive")
-myModel$AddChild("Operations")
-myModel$Active$AddChild("CurrentAccount")
-
+myModel = Model("Minimal Model")
 myModel
+myModel$Active$Treasury$contracts
+
+addActive("Mortgages", myModel)
+myModel
+
+addContracts(CurrentAccount(), myModel$Active) # error because account is not a leaf
+addContracts(CurrentAccount(), myModel$Active$Mortgages)
+
+myModel$Active$Mortgages$contracts
+
+
+myModel$Active$isLeaf
+myModel$Active$Mortgages$contracts
+is.null(myModel$Active$Mortgages[["contracts"]])
+
+CurrentAccount()
