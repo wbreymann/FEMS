@@ -76,7 +76,6 @@ Collate:
     'SimulationManager.R'
     'Stock.R'
     'Swap.R'
-    'TEST.R'
     'defaults.R'
     'yearFraction.R'
     'discountFactorsv2.R'
