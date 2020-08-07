@@ -1,11 +1,13 @@
-Package: rActus
+Package: FEMS
 License: TBD
-Version: 0.6.1
-Date: 2018-11-16
-Author: Nils Andri Bundi <nils.bundi@zhaw.ch>
-Maintainer: Wolfgang Breymann <wolfgang.breymann@zhaw.ch>
-Title: R-Interface to the ACTUS Algorithmic Library
-Description: Project ACTUS (Algorithmic Contract Types Unified Standards) is an
+Version: 0.1.0
+Date: 2020-08-08
+Author: Wolfgang Breymann <wolfgang.breymann@zhaw.ch>,
+    Christoph Auth <christoph.auth@zhaw.ch>
+Maintainer: Christoph Auth <christoph.auth@zhaw.ch>
+Title: R Package for Financial Enterprise Modelling and Simulation
+Description: To be adapted
+    Project ACTUS (Algorithmic Contract Types Unified Standards) is an
     open source project that develops a standardized language for the representation
     of financial instruments for the analytical use case. In a nutshell, the ACTUS
     data and algorithmic standards provide the means necessary to model and compute
@@ -18,7 +20,6 @@ Description: Project ACTUS (Algorithmic Contract Types Unified Standards) is an
     having to care about the fact that AcTUS runs in Java.
 URL: http://www.actusfrf.org
 Depends:
-    rJava (>= 0.9-7),
     timeSeries (>= 3012.99),
     zoo (>= 1.8-0),
     httr,
@@ -27,9 +28,8 @@ Depends:
     jsonlite,
     readxl
 Imports:
-    rJava (>= 0.9-7),
     timeSeries (>= 3012.99),
-SystemRequirements: R (>= 3.4.4), Java (>= 1.8)
+SystemRequirements: R (>= 3.4.4) 
 Encoding: UTF-8
 Collate: 
     'ContractModel.R'
