@@ -117,7 +117,7 @@ currentaccount.evs <- function(object, model, end_date, method, period){
   }
   out <- data.frame(CurrentAccount = current_account, CashFlows = cashflow_df[,], Outflows = outflow)
   rownames(out) <- all_dates
-  return(out)
+  return(reformat.evs(object, out))
 }
 
 get.dates.from.cycle <- function(anchor_date, cycle, end_date){
@@ -128,6 +128,19 @@ get.dates.from.cycle <- function(anchor_date, cycle, end_date){
   tSeq <- timeSequence(anchor_date, end_date, by = by)
   return(as.character(tSeq))
 }
+
+reformat.evs <- function(object, df) {
+  df_out <- data.frame(Date = rownames(df),
+                       Value = df$CurrentAccount,
+                       Type = "CA",
+                       Currency = object$Currency,
+                       Time = 0,
+                       NominalValue = 0,
+                       NominalRate = 0,
+                       NominalAccrued = 0)
+  return(df_out)
+}
+  
 
 
 
