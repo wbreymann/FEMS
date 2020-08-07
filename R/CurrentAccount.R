@@ -32,9 +32,9 @@ setMethod(f = "CurrentAccount",signature = c(),
                          PercentageOutflows=data.frame())
             if(length(pars)==0){
             }  else if (is.list(pars[[1]])) {
-              rFEMS:::set(object=object, what=pars[[1]])
+              FEMS:::set(object=object, what=pars[[1]])
             } else {
-              rFEMS:::set(object=object, what=pars)
+              FEMS:::set(object=object, what=pars)
             }
             return(object)
           })
@@ -48,7 +48,7 @@ setMethod(f = "set", signature = c("CurrentAccount","list"),
 #' @export
 setMethod(f = "get", signature = "CurrentAccount",
           function(object, what, ...){
-            if(what=="all") what=rFEMS:::terms(object)
+            if(what=="all") what=FEMS:::terms(object)
             fields = sapply(what,function(x) object$field(x))
             return(fields)
           })
@@ -57,7 +57,7 @@ setMethod(f = "get", signature = "CurrentAccount",
 #' @export
 setMethod(f = "events", signature = c("CurrentAccount", "character", "missing"),
           definition = function(object, ad, model){
-            return(rFEMS:::EventSeries(object,ad))
+            return(FEMS:::EventSeries(object,ad))
           })
 
 #' @export
@@ -66,8 +66,8 @@ setMethod(f = "EventSeries", signature = c("CurrentAccount", "character"),
             
             # create event series object
             out <- new("EventSeries")
-            out$id <- rFEMS:::get(object,"ContractID")
-            out$ct <- rFEMS:::get(object,"ContractType")
+            out$id <- FEMS:::get(object,"ContractID")
+            out$ct <- FEMS:::get(object,"ContractType")
             
             # evaluate reserving pattern
             out$evs <- currentaccount.evs2(object, method="compound", period="Y")
