@@ -1,0 +1,113 @@
+#' R-Interface to the ACTUS Algorithmic Library
+#' 
+#' Project ACTUS (Algorithmic Contract Types Unified Standards) is an 
+#' open source project that develops a standardized language for the 
+#' representation of financial instruments for the analytical use case. 
+#' In a nutshell, the ACTUS data and algorithmic standards provide the 
+#' means necessary to model and compute the payoff patterns of all kinds 
+#' of financial instruments in the most accurate manner possible. For 
+#' more information visit \url{www.projectactus.org}. 
+#' The ACTUS algorithmic library is implemented in Java. This package 
+#' provides and R-interface to the ACTUS java library. Using the rJava 
+#' interface that supports 'communication' of R-objects with a Java Runtime 
+#' Environment, the classes and methods of the ACTUS java library may be 
+#' accessed through this package without having to care about the fact that 
+#' AcTUS runs in Java.
+#' 
+#' \pkg{rActus} provides a set of R-reference classes representing 
+#' the various components of the ACTUS simulation model and methods
+#' \code{\link{set}} and \code{\link{get}} that allow to alter and 
+#' retrieve parameters of these components. Note that in general,
+#' all R-classes only serve as a wrapper to the respective java-classes
+#' that 'live' in a Java Virtual Machine which is started upon call
+#' of method \code{onLoad} of the package. Hence, the classes 
+#' usually only contain a single field 'jref' that carries the 
+#' reference to the respective java-object.
+#' 
+#' Four main ACTUS-system components are:
+#' \itemize{
+#'  \item{}{Contract Types}
+#'  \item{}{Risk Factors}
+#'  \item{}{Valuation Engines}
+#'  \item{}{Contract Events}
+#' }
+#' Constructur \code{CT(x)} allows you to create an object of
+#' a Contract Type (CT) of class \code{x}. E.g. \code{CT('PrincipalAtMaturity')}
+#' creates a new instance of a PrincipalAtMaturity CT that contains the 
+#' algorithmic parts mapping a set of input Contract Attributes and 
+#' Risk Factor states onto a CT-specific payoff-pattern (or in other 
+#' terms cash flow stream). Another possibility to create the same
+#' object is to use shortcut-constructurs like \code{Pam()} for 
+#' PrincipalAtMaturity. For each CT, method \code{terms} returns 
+#' a vector of available Contract Attributes which determine the
+#' resulting payoff.
+#' The list of available CTs may change over time
+#' as ACTUS and this package are still under development. 
+#' 
+#' Constructors \code{FXRate(),Index(),YieldCurve()} enable to create
+#' objects representing certain Risk Factor classes. These objects
+#' carry the current state and/or future trajectory of a Risk Factor
+#' on which CT's payoffs may rely (think of a floating rate PAM).
+#' 
+#' Use an object of class \code{\link{RiskFactorConnector}} through 
+#' constructor \code{RFConn()} in order to act as a collection of
+#' all Risk Factor objects and a means to attach these to a CT. Method
+#' \code{add(x,y)} with \code{x} being an 
+#' \code{\link{RiskFactorConnector}}-object and y a 
+#' \code{\link{RiskFactor}}-object in order to add \code{y} to the 
+#' collection of Risk Factors in \code{y}. Further, use \code{set(z,x)}
+#' to attach the Risk Factor collection \code{x} to a 
+#' \code{\link{ContractType}}-object and allow the latter to retrieve
+#' future states of the Risk Factors in \code{x} when deriving the 
+#' CT's payoff.
+#' 
+#' Constructor \code{\link{VE(u)}} allows you to create an object of
+#' a Valuation Engine implementation \code{u} such as class 
+#' \code{DiscountingEngine}. Valuation Engines are needed in 
+#' two situations:
+#' \itemize{
+#'  \item{1.}{Determine Payoff of a Derivative Instrument}
+#'  \item{2.}{Determine Value of any Instrument}
+#' }
+#' In the case of Derivative Instruments such as an Option, the payoff
+#' of the Option itself obviously relies on the 'Value' or 'Price' of 
+#' an underlying instrument. Hence, in order to determine an Option's 
+#' payoff, the Option CT requires knowledge of a 'Child-CT' and a 
+#' valuation method for the same at any future point in time. The latter
+#' is being provided with the use of a Valuation Engine. Any engine 
+#' in this package may be instantiated and assigned to the child-CT 
+#' prior to its attachment to the Derivative-CT through method
+#' \code{set(ChildCT,ValuationEngine)}. Custom engines may be implemented
+#' by the user himself in java but have to implement a certain ACTUS
+#' interface (cf. ACTUS documentation). 
+#' 
+#' Contract Events are the deterministic output of an ACTUS-CT and
+#' carry all information on which financial analysis is based (cf. 
+#' ACTUS documentation). \pkg{rActus} provides methods 
+#' \code{generateEvents} and \code{processEvents} which
+#' compute the Contract Events of a CT. Once computed, the various
+#' events may be retrieved from the CT as an R-\code{EventSeries} 
+#' object using \code{EventSeries(x)} with \code{x} a 
+#' \code{ContractType}-object. Further, the events in an
+#' \code{EventSeries}-object \code{y} may be converted to an
+#' R-data.frame using \code{as.data.frame(y)}.
+#' 
+#' In addition, a number of analytical methods allows to compute standard
+#' financial analytics based on the Contract Events of a CT. Amongst 
+#' others, these are \code{markToModel}, \code{nominal},
+#' \code{macaulay}, etc.
+#' 
+#' Lastly, a graphical representation of the payoff of a CT may
+#' be generated through function \code{plot}.
+#' 
+#' A final note shall address the performance of some methods. In general,
+#' date being exchanged between the R and Java environments has to go
+#' through the JNI-interface in package \pkg{rJava}. Yet, this is very 
+#' slow making the exchange of data between R and Java the bottleneck of 
+#' any simulation. Hence, it is highly recommended to use methods 
+#' \code{set} and \code{get} only if necessary. It is planned
+#' to provide with a future release of this package a method that
+#' allows to e.g. import a CT's Attributes from a file and write its
+#' Contract Events to a file rather than using the \pkg{rJava}-interface.
+"_PACKAGE"
+#> [1] "_PACKAGE"

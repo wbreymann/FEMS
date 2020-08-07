@@ -1,0 +1,90 @@
+Package: rActus
+License: TBD
+Version: 0.6.1
+Date: 2018-11-16
+Author: Nils Andri Bundi <nils.bundi@zhaw.ch>
+Maintainer: Wolfgang Breymann <wolfgang.breymann@zhaw.ch>
+Title: R-Interface to the ACTUS Algorithmic Library
+Description: Project ACTUS (Algorithmic Contract Types Unified Standards) is an
+    open source project that develops a standardized language for the representation
+    of financial instruments for the analytical use case. In a nutshell, the ACTUS
+    data and algorithmic standards provide the means necessary to model and compute
+    the payoff patterns of all kinds of financial instruments in the most accurate
+    manner possible. For more information visit \url{www.actusfrf.org}. The
+    ACTUS algorithmic library is implemented in Java. This package provides and R-
+    interface to the ACTUS java library. Using the rJava interface that supports
+    'communication' of R-objects with a Java Runtime Environment, the classes and
+    methods of the ACTUS java library may be accessed through this package without
+    having to care about the fact that AcTUS runs in Java.
+URL: http://www.actusfrf.org
+Depends:
+    rJava (>= 0.9-7),
+    timeSeries (>= 3012.99),
+    zoo (>= 1.8-0),
+    httr,
+    lubridate,
+    fmdates,
+    jsonlite,
+    readxl
+Imports:
+    rJava (>= 0.9-7),
+    timeSeries (>= 3012.99),
+SystemRequirements: R (>= 3.4.4), Java (>= 1.8)
+Encoding: UTF-8
+Collate: 
+    'ContractModel.R'
+    'RiskFactor.R'
+    'RiskFactorConnector.R'
+    'AnalysisDate.R'
+    'ValuationEngine.R'
+    'ContractType.R'
+    'Accrued.R'
+    'MaturityContract.R'
+    'Annuity.R'
+    'TimeBuckets.R'
+    'YieldCurve.R'
+    'DiscountingEngine.R'
+    'util.R'
+    'Portfolio.R'
+    'EventSeries.R'
+    'Value.R'
+    'YieldCurve2.R'
+    'BaseContract.R'
+    'CapmEngine.R'
+    'CompoundContract.R'
+    'ContractPlot.R'
+    'Events.R'
+    'CurrentAccount.R'
+    'DataTreeFunctions.R'
+    'ExoticLinearAmortizer.R'
+    'ForeignExchangeOutright.R'
+    'ForeignExchangeRate.R'
+    'Future.R'
+    'Income.R'
+    'LinearAmortizer.R'
+    'Liquidity.R'
+    'Model.R'
+    'MultiCurrencyDiscountingEngine.R'
+    'NegativeAmortizer.R'
+    'Operations.R'
+    'Option.R'
+    'PortfolioTree.R'
+    'PrincipalAtMaturity.R'
+    'ReferenceIndex.R'
+    'RiskFactorPlots.R'
+    'Sensitivity.R'
+    'SimulationManager.R'
+    'Stock.R'
+    'Swap.R'
+    'TEST.R'
+    'defaults.R'
+    'yearFraction.R'
+    'discountFactorsv2.R'
+    'export.R'
+    'import.R'
+    'onAttach.R'
+    'onLoad.R'
+    'rActus.R'
+    'solve.R'
+    'testClosure.R'
+RoxygenNote: 7.1.0
