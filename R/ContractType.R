@@ -117,7 +117,7 @@ setMethod(f = "CT", signature = c("character"),
 # setMethod(f = "CT", signature = c("list"),
 #           definition = function(object) {
 #             out <- new(longName(object$ContractType))
-#             rActus::set(out,what=object)
+#             FEMS::set(out,what=object)
 #             return(out)
 #           })
 

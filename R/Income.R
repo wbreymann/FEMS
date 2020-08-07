@@ -224,7 +224,7 @@ setMethod(f = "income",
 setMethod(f = "income", 
           signature = c("ContractType", "timeBuckets", "missing", "logical", "ValuationEngine"),
           definition = function(object, by, revaluation.gains, method, ...){
-            inc = rActus::income(object, by=as.timeDate(by), type="marginal", 
+            inc = FEMS::income(object, by=as.timeDate(by), type="marginal", 
                           revaluation.gains=revaluation.gains, method=method, ...)
             names(inc) = by@bucketLabs
             return(inc)
@@ -363,11 +363,11 @@ setMethod(f = "income", signature = c("Portfolio", "timeDate", "character",
                            revaluation.gains = FALSE, ...)
             } else {
               ct.selected <- object$contracts
-              names(ct.selected) <- rActus:::get(object,"ids")
+              names(ct.selected) <- FEMS:::get(object,"ids")
               if ("select" %in% names(pars)) {
                 select.par <- unlist(lapply(
                   object$contracts, 
-                  function(x) rActus:::get(x, what=names(pars[["select"]]))
+                  function(x) FEMS:::get(x, what=names(pars[["select"]]))
                 ))
                 ct.selected <- ct.selected[select.par %in% pars[["select"]][[1]]]
               }
@@ -412,11 +412,11 @@ setMethod(f = "income", signature = c("Portfolio", "timeDate", "character",
               inc=income(events(object, paste0(by[1], "T00")), by, type, NULL, ...)
             } else {
               ct.selected = object$contracts
-              names(ct.selected) = rActus:::get(object, "ids")
+              names(ct.selected) = FEMS:::get(object, "ids")
               if("select" %in% names(pars)) {
                 select.par = unlist(lapply(
                   object$contracts, 
-                  function(x) rActus:::get(x, what=names(pars[["select"]]))
+                  function(x) FEMS:::get(x, what=names(pars[["select"]]))
                 ))
                 ct.selected = ct.selected[select.par %in% pars[["select"]][[1]]]
               }
@@ -584,7 +584,7 @@ setMethod(f = "income",
 setMethod(f = "income", 
           signature = c("EventSeries", "timeDate", "missing", "logical", "ValuationEngine"),
           definition = function(object, by, revaluation.gains, method, ...){
-            inc = rActus::income(object, by, "marginal", revaluation.gains, method, ...)
+            inc = FEMS::income(object, by, "marginal", revaluation.gains, method, ...)
             return(inc)
           })
 
@@ -678,9 +678,9 @@ income.from.revaluation = function(object, by, method, digits=2, ...) {
   # compute aggregate principal cash flows which are added/deducted
   # from delta-market-values between by-times
   evs <- events(object, as.character(by[1]))
-  dates <- rActus:::get(evs,"evs")$Date
-  types <- rActus:::get(evs,"evs")$Type
-  values <- rActus:::get(evs,"evs")$Payoff
+  dates <- FEMS:::get(evs,"evs")$Date
+  types <- FEMS:::get(evs,"evs")$Type
+  values <- FEMS:::get(evs,"evs")$Payoff
   pr.cf <- aggregate(
     timeSeries(
       c(rep(0, length(by)), values[types %in% c("IED","PR","MD")]),
@@ -689,9 +689,9 @@ income.from.revaluation = function(object, by, method, digits=2, ...) {
   
   # compute mark-to-model values
   if (is.null(method)) {
-    vals <- rActus::value(object, as.character(by), type = "markToModel", digits = digits)
+    vals <- FEMS::value(object, as.character(by), type = "markToModel", digits = digits)
   } else {
-    vals <- rActus::value(object, as.character(by), type = "markToModel", 
+    vals <- FEMS::value(object, as.character(by), type = "markToModel", 
                          method = method, digits = digits)
   }
   # return first differences
@@ -704,9 +704,9 @@ income.from.revaluation = function(object, by, method, digits=2, ...) {
 income.from.revaluation.from.es = function(evs, by, method, digits=2, ...) {
   # compute aggregate principal cash flows which are added/deducted
   # from delta-market-values between by-times
-  dates <- rActus:::get(evs,"evs")$Date
-  types <- rActus:::get(evs,"evs")$Type
-  values <- rActus:::get(evs,"evs")$Payoff
+  dates <- FEMS:::get(evs,"evs")$Date
+  types <- FEMS:::get(evs,"evs")$Type
+  values <- FEMS:::get(evs,"evs")$Payoff
   pr.cf <- aggregate(
     timeSeries(
       c(rep(0, length(by)), values[types %in% c("IED","PR","MD")]),
@@ -715,9 +715,9 @@ income.from.revaluation.from.es = function(evs, by, method, digits=2, ...) {
   
   # compute mark-to-model values
   if (is.null(method)) {
-    vals <- rActus::value(evs, as.character(by), type = "markToModel", digits = digits)
+    vals <- FEMS::value(evs, as.character(by), type = "markToModel", digits = digits)
   } else {
-    vals <- rActus::value(evs, as.character(by), type = "markToModel", 
+    vals <- FEMS::value(evs, as.character(by), type = "markToModel", 
                          method = method, digits = digits)
   }
   

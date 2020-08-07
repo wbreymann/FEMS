@@ -97,7 +97,7 @@ setMethod(f = "set", signature = c("ReferenceIndex", "list"),
           definition = function(object, what, ...){
             par.names <- names(what)
             for (i in par.names) {
-              if (rActus:::is.valid.index.set.field(i)) {
+              if (FEMS:::is.valid.index.set.field(i)) {
                 value <- what[[i]]
                 switch(i,
                        MarketObjectCode = {
@@ -125,7 +125,7 @@ setMethod(f = "get", signature = c("ReferenceIndex", "character"),
           definition = function(object, what, ...){
             out <- list()
             if (length(what) == 1 && tolower(what) == "all") {
-              what <- rActus:::validIndexGetFields()
+              what <- FEMS:::validIndexGetFields()
             }
             for (i in what) {
               if (is.valid.index.get.field(i)) {

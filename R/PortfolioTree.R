@@ -83,7 +83,7 @@ setMethod(f = "Tree",
             out = new("PortfolioTree")
             pars=list(...)
             if(length(pars)>0) {
-              rActus:::set(out,what=pars[[1]])
+              FEMS:::set(out,what=pars[[1]])
             }
             return(out)
           })

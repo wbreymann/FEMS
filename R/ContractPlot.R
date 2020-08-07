@@ -77,19 +77,19 @@ setMethod("plot", signature("ContractType", "character"),
             ct <- get(evs,"ct")
             id <- get(evs,"id")
             if (tolower(ct) %in% c("future", "futur", "option", "optns")) {
-              rActus:::contractPlot(df,contractType = ct,
+              FEMS:::contractPlot(df,contractType = ct,
                                     childType =
                                       get(get(x,what="ChildContracts")[[1]], what="ContractType"),
                                     contractId = id)
               
             } else if (tolower(ct) %in% c("swap", "swaps")){
-              rActus:::contractPlot(df,contractType = ct,
+              FEMS:::contractPlot(df,contractType = ct,
                                     childType =
                                       c(get(get(x,what="ChildContracts")[[1]], what="ContractType"),
                                         get(get(x,what="ChildContracts")[[2]], what="ContractType")),
                                     contractId = id)
             } else {
-              rActus:::contractPlot(df,contractType = ct, contractId = id)
+              FEMS:::contractPlot(df,contractType = ct, contractId = id)
               
             }
           })

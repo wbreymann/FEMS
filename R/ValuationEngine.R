@@ -312,7 +312,7 @@ setMethod(f = "terms", signature = c("ValuationEngine"),
 #' @aliases set,ValuationEngineModel,ValuationEngineModel-method
 # setMethod(f = "set", signature = c("ValuationEngine","list"),
 #           definition = function(object, what){
-#               set(rActus:::get(object, "Model")$jref, what)
+#               set(FEMS:::get(object, "Model")$jref, what)
 #           })
 
 ## @include
@@ -329,7 +329,7 @@ setMethod(f = "terms", signature = c("ValuationEngine"),
 # setMethod(f = "set", signature = c("ValuationEngine", "RiskFactorConnector"),
 #           definition = function(object, what){
 #             .jcall(object$jref, "V", "setRiskFactors", what$jref, 
-#                    rActus:::get(object, "Model")$jref)
+#                    FEMS:::get(object, "Model")$jref)
 #           })
 
 ## @include

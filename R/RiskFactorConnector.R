@@ -147,7 +147,7 @@ setGeneric(name = "add", useAsDefault = TRUE,
 setMethod("add", signature = c("RiskFactorConnector", "list"),
           definition = function(object, what, ...){
             for (i in what) {
-              rActus:::add(object, i, ...)
+              FEMS:::add(object, i, ...)
             }
           })
 
@@ -188,7 +188,7 @@ setMethod("add", signature = c("RiskFactorConnector", "list"),
 #' @aliases add,RiskFactorConnector,list-method
 setMethod("add", signature = c("RiskFactorConnector", "RiskFactor"),
           definition = function(object, what, ...){
-            id <- rActus:::get(what, "MarketObjectCode")
+            id <- FEMS:::get(what, "MarketObjectCode")
             rf_list <- list(New = what)
             if (length(id) == 0) {
               names(rf_list) <- paste("RiskFactor_",as.character(length(object$riskfactors) + 1), sep = "")

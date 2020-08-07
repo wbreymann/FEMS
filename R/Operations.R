@@ -82,9 +82,9 @@ setMethod(f = "Ops",signature = c(),
               pars = list(...)
               if(length(pars)==0){
               }  else if (is.list(pars[[1]])) {
-                  rActus:::set(object=object, what=pars[[1]])
+                  FEMS:::set(object=object, what=pars[[1]])
               } else {
-                rActus:::set(object=object, what=pars)
+                FEMS:::set(object=object, what=pars)
               }
               return(object)
           })
@@ -113,7 +113,7 @@ setMethod(f = "initialize", signature="Operations",
 setMethod(f = "summary", signature = "Operations",
           function(object){
             # print all terms of the Operations contract
-            terms = rActus:::get(object = object, what = "all")
+            terms = FEMS:::get(object = object, what = "all")
             print(terms)
           })
 
@@ -134,7 +134,7 @@ setMethod(f = "terms", signature = "Operations",
 ## @rdname
 setMethod(f = "get", signature = "Operations",
           function(object, what, ...){
-            if(what=="all") what=rActus:::terms(object)
+            if(what=="all") what=FEMS:::terms(object)
             fields = sapply(what,function(x) object$field(x))
             return(fields)
           })
@@ -172,35 +172,35 @@ setMethod(f = "add", signature = c("Portfolio","Operations"),
 #' @rdname ev-methods
 setMethod(f = "events", signature = c("Operations", "character", "missing"),
           definition = function(object, ad, model){
-            return(rActus:::events(object,timeDate(substring(ad,1,10))))
+            return(FEMS:::events(object,timeDate(substring(ad,1,10))))
           })
 
 #' @export
 #' @rdname ev-methods
 setMethod(f = "events", signature = c("Operations", "AD0", "missing"),
           definition = function(object, ad, model){
-            return(rActus:::events(object, as.character(ad)))
+            return(FEMS:::events(object, as.character(ad)))
           })
 
 #' @export
 #' @rdname ev-methods
 setMethod(f = "events", signature = c("Operations", "timeDate", "missing"),
           definition = function(object, ad, model){
-            return(rActus:::EventSeries(object,ad))
+            return(FEMS:::EventSeries(object,ad))
           })
 
 #' @export
 #' @rdname ev-methods
 setMethod(f = "events", signature = c("Operations", "character", "RiskFactorConnector"),
           definition = function(object, ad, model){
-            return(rActus:::events(object,timeDate(substring(ad,1,10)),model))
+            return(FEMS:::events(object,timeDate(substring(ad,1,10)),model))
           })
 
 #' @export
 #' @rdname ev-methods
 setMethod(f = "events", signature = c("Operations", "AD0", "RiskFactorConnector"),
           definition = function(object, ad, model){
-            return(rActus:::events(object,as.character(ad),model))
+            return(FEMS:::events(object,as.character(ad),model))
           })
 
 #' @export
@@ -230,8 +230,8 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             
             # create event series object
             out <- new("EventSeries")
-            out$id <- rActus:::get(object,"ContractID")
-            out$ct <- rActus:::get(object,"ContractType")
+            out$id <- FEMS:::get(object,"ContractID")
+            out$ct <- FEMS:::get(object,"ContractType")
             
             # AD0 event
             events <- data.frame(Date=as.character(ad),
@@ -365,7 +365,7 @@ setMethod(f = "liquidity", signature = c("Operations", "timeBuckets", "character
 # @param type the type argument to a liquidity method
 ops.liquidity = function(object, by, type, digits=2){
             if (type=="marginal") {
-              evs = rActus:::get(object, "evs")
+              evs = FEMS:::get(object, "evs")
               # filter by liquidity-category events
               evs = subset(evs, Type %in% c("AD0","OPS","PR"))
               # compute aggregate cash flows for remaining events
@@ -435,7 +435,7 @@ ops.liquidity = function(object, by, type, digits=2){
 #'   events <- events(object, by[1])
 #'   
 #'   # compute marginal income
-#'   evs <- rActus:::get(events, "evs")
+#'   evs <- FEMS:::get(events, "evs")
 #'   # filter by income-category events
 #'   evs <- subset(evs, Type %in% c("AD0", "OPS", "DPR", "RES"))
 #'   # compute aggregate cash flows for remaining events
@@ -555,7 +555,7 @@ setMethod(f = "value", signature = c("Operations", "timeBuckets", "character",
 ops.nominal = function(object, by, digits=2) {
   # message("entered ops.nominal")
   # extract events and times
-  evs <- rActus:::get(object, "evs")[,c("Date", "NominalValue", "Type")]
+  evs <- FEMS:::get(object, "evs")[,c("Date", "NominalValue", "Type")]
   colnames(evs) <- c("times","values","types")
   evs$times <- timeDate(evs$times)
   
@@ -573,12 +573,12 @@ ops.nominal = function(object, by, digits=2) {
 ops.market = function(object, by, method, digits=2) {
   
   # extract discounting parameters
-  spread <- rActus:::get(method,"DiscountingSpread")
-  dc <- rActus:::YieldCurve(rActus:::get(method,"InterestRatesModel"))
-  rActus:::set(dc, list(Rates=rActus:::get(dc,"Rates") + spread))
+  spread <- FEMS:::get(method,"DiscountingSpread")
+  dc <- FEMS:::YieldCurve(FEMS:::get(method,"InterestRatesModel"))
+  FEMS:::set(dc, list(Rates=FEMS:::get(dc,"Rates") + spread))
   
   # extract cashflow events
-  evs <- rActus:::get(object,"evs")[, c("Date", "Value","Type")]
+  evs <- FEMS:::get(object,"evs")[, c("Date", "Value","Type")]
   colnames(evs) <- c("times", "values", "types")
   evs$times <- timeDate(evs$times)
   evs <- subset(evs, types %in% c("OPS", "PR"))
@@ -597,7 +597,7 @@ ops.market = function(object, by, method, digits=2) {
     } else {
       cfs <- evs.sub$values
       dts <- paste0(as.character(evs.sub$times),"T00")
-      dfs <- rActus::discountFactors(dc, termStart=ad, termEnd=dts, 
+      dfs <- FEMS::discountFactors(dc, termStart=ad, termEnd=dts, 
                                      isDateEnd=TRUE)
       return(as.numeric(cfs%*%dfs))
     }
@@ -605,7 +605,7 @@ ops.market = function(object, by, method, digits=2) {
   
   # rebase yield curve
   set(dc, 
-      list(Rates=rActus:::get(dc,"Rates") - spread)) # TODO: implement discounting more consistently
+      list(Rates=FEMS:::get(dc,"Rates") - spread)) # TODO: implement discounting more consistently
   
   # return values
   return(round(val, digits=digits))
