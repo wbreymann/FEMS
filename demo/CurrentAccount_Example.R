@@ -1,3 +1,8 @@
+
+rm(list=ls())
+devtools::load_all()
+
+
 # t0 <- "2013-12-31"
 # (yc_flat <- FlatCurve2(0.03, t0))
 # ca_tst <- CurrentAccount(ContractID = "Test",

@@ -1,18 +1,25 @@
 #' YieldCurve2.R
 #' @export
+## Klasse bitte gemäss Kommentaren anpassen
+## Das Wichtigste ist die Behandlung der YieldCurve (nur Ref, nicht Objekt!)
+## aus Konsistenzgründen
 setRefClass("CurrentAccount",
             fields = list(
               ContractID = "character",
               ContractType = "character",
               ContractDealDate = "character",
+              # Der Kontrakt hat kein EndDate. Brauchen wir es aus technischen Gründen?
               EndDate = "character",
               Currency = "character",
+              # Wie besprochen bitte nur die Variable "CashFlows"
               Inflows = "data.frame",
               Outflows = "data.frame",
               PercentageOutflows = "data.frame",
               CycleAnchorDateOfInterestPayment = "character",
               CycleOfInterestPayment = "character",
-              YieldCurve = "YieldCurve2"
+              # YieldCurve ist nie Teil des Kontrakt sondern ein Risikofaktor.
+              # Es wird nur der "MarketObjectCodeRateReset" übeergeben
+              YieldCurve = "YieldCurve2"  
             ))
 
 #' @export
