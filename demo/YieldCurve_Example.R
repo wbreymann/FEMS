@@ -1,7 +1,6 @@
 #####################################################
 # YieldCurve - Object
 
-setwd("rActus")
 library("devtools")
 devtools::load_all()
 
