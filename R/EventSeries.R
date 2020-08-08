@@ -242,6 +242,31 @@ setMethod("print", signature = "EventSeries",
           }
 )
 
+#' @export
+#' @docType methods
+#' @rdname print-methods
+setMethod("print", signature = "eventList", 
+          definition = function(x, type = "pretty", indices, ...) {
+            if (type == "raw") {
+              x
+            } else {
+              y = as.data.frame(x)
+              if (!missing(indices)){ 
+                y = y[,indices] 
+              }
+              if (type == "pretty") { 
+                colnames(y) = .defaults$shortNames[colnames(y)]
+                for (nam  in colnames(y))
+                {
+                  if (is.numeric(y[,nam])) y[,nam] = round(y[,nam],4)
+                }
+              }
+              y
+            }
+          }
+)
+
+
 ##############################################################
 #' \code{EventSeries}-show method
 #'
