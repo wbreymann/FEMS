@@ -6,13 +6,29 @@ setRefClass("CurrentAccount",
               ContractDealDate = "character",
               Currency = "character",
               CashFlows = "data.frame",
-              PercentageOutflows = "data.frame",
+              PercentageOutflows = "data.frame", # besser timeSeries?
               CycleAnchorDateOfInterestPayment = "character",
               CycleOfInterestPayment = "character",
               MarketObjectCodeRateReset = "character",
               Compound = "character",
-              Period = "character"
+              Period = "character",
+              # Zusätzliche Variablen (sind Statusvariablen des Contracts)
+              # Sie werden benötigt, um den Kontostand und die aufgelaufenen
+              # Zinsen nachzuführen. 
+              # Die Werte von NominalPrincipal und AccruedInterest sind immer
+              # per StatusDate
+              # Sie sollten auch bei der Kontraktinitialisierung auf einen
+              # vom Benutzer zu setzenden Startwert gesetzt werden.
+              StatusDate = "timeDate",
+              NominalPrincipal = "numeric",
+              AccruedInterest = "numeric"
             ))
+# Grundsätzliche Bemerkung:
+# Du benutzt für Zeitreihen einen "data.frame". Das ist ungünstig.
+# Es gibt eine Reihe von Zeitreihenklassen in R.
+# Nils hat "zoo" und "timeSeries" benutzt.
+# Ich schlage vor, dass wir als Zeitklasse "timeDate" und als Zeitreihenklassen
+# "timeSeries" benutzen. "zoo" kenne ich nicht wirklich.
 
 #' @export
 setGeneric(name = "CurrentAccount",
@@ -53,6 +69,7 @@ setMethod(f = "get", signature = "CurrentAccount",
             return(fields)
           })
 
+#' @include Events.R
 #' @export
 setMethod(f = "events", signature = c("CurrentAccount", "character", "RiskFactorConnector"),
           definition = function(object, ad, model, end_date){
@@ -89,15 +106,20 @@ currentaccount.evs <- function(object, model, end_date, method, period){
   
   # expand all data.frames to reflect same dates...
   # Not necessary to do this with data.frames. Possibly switch to array later...
-  cashflow_df <- rbind(object$CashFlows, 
-                     setNames(data.frame(rep(0,length(all_dates[!is.element(all_dates,rownames(object$CashFlows))])), 
-                   row.names=all_dates[!is.element(all_dates,rownames(object$CashFlows))]),
-                   names(object$CashFlows)))
+  cashflow_df <- rbind(
+    object$CashFlows, 
+    setNames(data.frame(
+      rep(0,length(all_dates[!is.element(all_dates,rownames(object$CashFlows))])), 
+      row.names=all_dates[!is.element(all_dates,rownames(object$CashFlows))]),
+      names(object$CashFlows))
+    )
   cashflow_df <- cashflow_df[order(row.names(cashflow_df)),,drop=FALSE]
-  perc_outflow_df <- rbind(object$PercentageOutflows, 
-                           setNames(data.frame(rep(0,length(all_dates[!is.element(all_dates,rownames(object$PercentageOutflows))])), 
-                                 row.names=all_dates[!is.element(all_dates,rownames(object$PercentageOutflows))]),
-                                 names(object$PercentageOutflows)))
+  perc_outflow_df <- rbind(
+    object$PercentageOutflows, 
+    setNames(data.frame(
+      rep(0,length(all_dates[!is.element(all_dates,rownames(object$PercentageOutflows))])), 
+      row.names=all_dates[!is.element(all_dates,rownames(object$PercentageOutflows))]),
+      names(object$PercentageOutflows)))
   perc_outflow_df <- perc_outflow_df[order(row.names(perc_outflow_df)),,drop=FALSE]
   
   current_account_bef <- 0
