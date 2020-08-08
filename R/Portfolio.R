@@ -341,9 +341,10 @@ setMethod(f = "set",
               object$rf_connector <- what
             } else {
               for (i in object$contracts){
-                set(i, what)
-                .jcall(.jcall(i$jref, "Lorg/actus/valuation/ValuationProvider;", "getValuationEngine"), 
-                       "V", "setRiskFactors", what$jref)
+                stop("Method 'set' for class Portfolio must be adapted.")
+                # set(i, what)
+                # .jcall(.jcall(i$jref, "Lorg/actus/valuation/ValuationProvider;", "getValuationEngine"), 
+                #        "V", "setRiskFactors", what$jref)
               }
             }
           })
@@ -489,7 +490,7 @@ setMethod(f = "remove", signature = c("Portfolio", "character"),
 # @aliases 
 setMethod(f = "summary", signature = c("Portfolio"),
           definition = function(object){
-            nContr <- length(FEMS::get(object=object,what="contracts"))
+            nContr <- length(FEMS::get(object=object, what="contracts"))
             cts <- FEMS::get(object=object, what="contracts")
             if(nContr==1) {
               cts <- list(cts)

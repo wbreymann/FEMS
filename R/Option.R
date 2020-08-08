@@ -69,10 +69,10 @@ setMethod(f = "initialize", signature = "Option",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "Option",
-          function(object){
-            print(get(object = object, what = get.summary.fields("Optns")))
-          })
+# setMethod(f = "summary", signature = "Option",
+#           function(object){
+#             print(get(object = object, what = get.summary.fields("Optns")))
+#           })
 
 
 # option_example=Optns()

@@ -233,8 +233,83 @@ setMethod(f = "set", signature = c("ContractType", "RiskFactorConnector"),
 #' @export
 setMethod("show", signature = "ContractType",
           definition = function(object){
-            print(object$attributes)
+            print(as.data.frame(object$attributes))
           })
+
+
+## @include
+#' @export
+setMethod("summary", signature=c(object = "ContractType"),
+  definition = function(object){
+    x = as.data.frame(object$attributes)
+    cat(paste("ContractType: ", as.character(x["ContractType"]), "\n", sep=""))
+    cat(paste("ContractID: ", as.character(x["ContractID"]), "\n", sep=""))
+  })
+
+##############################################################
+#' \code{ContractType}-subscript methods
+#'
+#' accesses elements of an \code{ContractType}
+#'
+#' This method accesses elements of an object of class \code{ContractType} 
+#'
+## @include
+#' @export
+#' @docType methods
+#' @rdname subscript-methods
+setMethod("[", signature = c("ContractType", "character", "missing"),
+          definition = function(x, i) {
+            z = as.data.frame(x$attributes)
+            # id <- is.element(x$evs[,1], i)
+            z[i]
+          }
+)
+
+## @include 
+#' @export
+#' @docType methods
+#' @rdname subscript-methods
+setMethod("[", signature = c("ContractType", "numeric", "missing"),
+          definition = function(x, i) {
+            z = as.data.frame(x$attributes)
+            z[i]  
+          }
+)
+
+## @include 
+#' @export
+#' @docType methods
+#' @rdname subscript-methods
+setMethod("[", signature = c("ContractType", "logical", "missing"),
+          definition = function(x,i) {
+            z = as.data.frame(x$attributes)
+            z[i]  
+          }
+)
+
+
+## @include
+#' @export
+#' @docType methods
+#' @rdname subscript-methods
+setMethod("[<-", signature = c("ContractType", "character", "missing", "ANY"),
+          definition = function(x, i, value) {
+            x$attributes[[i]] = value
+            return(x)
+          }
+)
+
+## @include
+#' @export
+#' @docType methods
+#' @rdname subscript-methods
+setMethod("[<-", signature = c("ContractType", "numeric", "missing", "ANY"),
+          definition = function(x, i, value) {
+            x$attributes[[i]] = value
+            return(x)
+          }
+)
+
 
 setGeneric(name = "getContractModel",
            def = function(object,...){

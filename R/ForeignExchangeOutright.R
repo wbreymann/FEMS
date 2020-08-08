@@ -71,10 +71,10 @@ setMethod(f = "initialize", signature="ForeignExchangeOutright",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "ForeignExchangeOutright",
-          function(object){
-            print(get(object = object, what = get.summary.fields("Fxout")))
-          })
+# setMethod(f = "summary", signature = "ForeignExchangeOutright",
+#           function(object){
+#             print(get(object = object, what = get.summary.fields("Fxout")))
+#           })
 
 # fxout_example=Fxout()
 # getModelDetails(fxout_example)

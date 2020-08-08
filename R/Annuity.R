@@ -114,10 +114,10 @@ setMethod(f = "initialize", signature = "Annuity",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "Annuity",
-          function(object){
-              print(get(object = object, what = get.summary.fields("Ann")))
-          })
+# setMethod(f = "summary", signature = "Annuity",
+#           function(object){
+#               print(get(object = object, what = get.summary.fields("Ann")))
+#           })
 
 # a=ActusDictionary$rflActus_attributes[["Annuity"]]
 # ann

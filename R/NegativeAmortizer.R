@@ -69,10 +69,10 @@ setMethod(f = "initialize", signature = "NegativeAmortizer",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "NegativeAmortizer",
-          function(object){
-            print(get(object = object, what = get.summary.fields("Nam")))
-          })
+# setMethod(f = "summary", signature = "NegativeAmortizer",
+#           function(object){
+#             print(get(object = object, what = get.summary.fields("Nam")))
+#           })
 
 # nam_example=Nam()
 # getModelDetails(nam_example)

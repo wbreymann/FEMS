@@ -77,7 +77,7 @@ setMethod(f = "initialize", signature = "PrincipalAtMaturity",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "PrincipalAtMaturity",
-          function(object){
-            print(get(object = object, what = get.summary.fields()))
-          })
+# setMethod(f = "summary", signature = "PrincipalAtMaturity",
+#           function(object){
+#             print(get(object = object, what = get.summary.fields()))
+#           })

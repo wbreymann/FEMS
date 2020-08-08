@@ -64,7 +64,7 @@ setRefClass("ValuationEngine",
 setRefClass("ValuationEngineModel",
             contains = c(),
             fields = list(
-            jref = "jobjRef"
+##            jref = "jobjRef" # This field must be replaced
             ))
 
 ##############################################################

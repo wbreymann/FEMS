@@ -91,6 +91,7 @@ setMethod(f = "CapmEngine",signature = c(),
 ## @rdname
 setMethod(f = "initialize", signature="CAPMModel",
           function(.Object, ...) {
+            stop("This method must be adapted.")
               .Object <- callNextMethod()
               jobj <- try(.jnew("org/actus/misc/valuationmodels/CAPMModel"))
               if(inherits(jobj, "try-error")) {
@@ -107,6 +108,7 @@ setMethod(f = "initialize", signature="CAPMModel",
 ## @rdname
 setMethod(f = "initialize", signature="CAPMEngine",
           function(.Object, ...) {
+            stop("This method must be adapted.")
               .Object <- callNextMethod()
               jobjCT <- try(.jnew("org/actus/misc/valuationmodels/CAPMEngine"))
               jobjMod <- try(.jnew("org/actus/misc/valuationmodels/CAPMModel"))
@@ -136,6 +138,8 @@ setMethod(f = "initialize", signature="CAPMEngine",
 #' @aliases get,jobjRef,character-method
 setMethod(f = "get", signature = c("CAPMEngine","character"),
           definition = function(object, what){
+            stop("This method must be adapted.")
+            
             model <- .jcall(object$jref, "Lorg/actus/misc/valuationmodels/CAPMModel;",
                             "getModel")
             if(what=="Model") {

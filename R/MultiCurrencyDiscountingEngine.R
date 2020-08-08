@@ -101,7 +101,8 @@ setMethod(f = "XfxDcEngine",signature = c(),
 setMethod(f = "initialize", signature="MultiCurrencyDiscountingModel",
           function(.Object, ...) {
               .Object <- callNextMethod()
-              .Object$jref <- jobj
+              #.Object$jref <- jobj
+              stop ("Method 'initialize' for class 'MultiCurrencyDiscountingModel' must be adapted.")
               return(.Object)
           })
 

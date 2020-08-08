@@ -3,7 +3,8 @@
 # Please see accompanying distribution file for license.
 #*************************************************************
 
-library(data.tree)
+#' @import data.tree
+setOldClass("Node")
 
 ##############################################################
 #' 

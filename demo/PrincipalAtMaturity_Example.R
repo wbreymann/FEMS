@@ -29,6 +29,11 @@ set(pam, what = list(
     RateMultiplier = 1,
     MarketObjectCodeRateReset = "YC.USA.TREASURY"))
 
+# show method:
+pam
+length(as.data.frame(pam$attributes))
+summary(pam)
+
 # create yield curve
 yc <- YieldCurve(MarketObjectCode = "YC.USA.TREASURY",
                  ReferenceDate = "2015-01-01",

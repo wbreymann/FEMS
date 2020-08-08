@@ -241,6 +241,7 @@ is.valid.fxrate.set.field <- function(x) {
   return(x %in% valid)
 }
 validFxRateGetFields <- function() {
+  stop("jref must be adapted")
   return(c(
     "MarketObjectCode", "CurrencyPair", "Dates", 
     "Values", "TimeSeries", "jref"

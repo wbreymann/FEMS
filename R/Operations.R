@@ -110,12 +110,12 @@ setMethod(f = "initialize", signature="Operations",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "Operations",
-          function(object){
-            # print all terms of the Operations contract
-            terms = FEMS:::get(object = object, what = "all")
-            print(terms)
-          })
+# setMethod(f = "summary", signature = "Operations",
+#           function(object){
+#             # print all terms of the Operations contract
+#             terms = FEMS:::get(object = object, what = "all")
+#             print(terms)
+#           })
 
 ## -----------------------------------------------------------------
 ## get list of all available terms

@@ -72,10 +72,10 @@ setMethod(f = "initialize", signature = "ExoticLinearAmortizer",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "ExoticLinearAmortizer",
-          function(object){
-            print(get(object = object, what = get.summary.fields("Lax")))
-          })
+# setMethod(f = "summary", signature = "ExoticLinearAmortizer",
+#           function(object){
+#             print(get(object = object, what = get.summary.fields("Lax")))
+#           })
 
 # names(ActusDictionary$rflActus_attributes$ExoticLinearAmortizer$ContractType)
 # names(ActusDictionary$rflActus_attributes$LinearAmortizer$ContractType)

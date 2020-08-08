@@ -52,10 +52,10 @@ setMethod(f = "initialize", signature = "Swap",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "Swap",
-          function(object){
-            print(get(object = object, what = get.summary.fields("Swap")))
-          })
+# setMethod(f = "summary", signature = "Swap",
+#           function(object){
+#             print(get(object = object, what = get.summary.fields("Swap")))
+#           })
 
 #' #' @include ContractType.R
 #' #' @export

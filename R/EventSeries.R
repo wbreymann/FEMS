@@ -4,6 +4,14 @@
 #*************************************************************
 
 ##############################################################
+#
+# An auxiliary class mimicking a simple list but for use
+# with EventSeries-elements. The class and constructor are
+# not exported since only used internally and in particular
+# in order to override standard functions such as "as.data.frame"
+eventList=setClass("eventList", slots=list(), contains="list")
+
+##############################################################
 #' A Reference Class representing a (Time-) Series of 
 #' Contract Events
 #' 
@@ -329,7 +337,7 @@ setMethod("show", signature = "EventSeries",
 ## @include
 #' @export
 #' @docType methods
-#' @rdname print-methods
+#' @rdname subscript-methods
 setMethod("[", signature = c("EventSeries", "character", "missing"),
           definition = function(x, i) {
             id <- is.element(x$evs[,1], i)
@@ -340,7 +348,7 @@ setMethod("[", signature = c("EventSeries", "character", "missing"),
 ## @include 
 #' @export
 #' @docType methods
-#' @rdname print-methods
+#' @rdname subscript-methods
 setMethod("[", signature = c("EventSeries", "numeric", "missing"),
           definition = function(x, i) {
             x[i, 1:length(x$evs)]  
@@ -350,7 +358,7 @@ setMethod("[", signature = c("EventSeries", "numeric", "missing"),
 ## @include 
 #' @export
 #' @docType methods
-#' @rdname print-methods
+#' @rdname subscript-methods
 setMethod("[", signature = c("EventSeries", "numeric", "numeric"),
           definition = function(x, i, j) {
             y <- x$evs[i,j]
@@ -370,7 +378,7 @@ setMethod("[", signature = c("EventSeries", "numeric", "numeric"),
 ## @include 
 #' @export
 #' @docType methods
-#' @rdname print-methods
+#' @rdname subscript-methods
 setMethod("[", signature = c("EventSeries", "numeric", "logical"),
           definition = function(x, i, j) {
             id <- (1:length(x$evs))[j]
@@ -382,7 +390,7 @@ setMethod("[", signature = c("EventSeries", "numeric", "logical"),
 ## @include 
 #' @export
 #' @docType methods
-#' @rdname print-methods
+#' @rdname subscript-methods
 setMethod("[", signature = c("EventSeries", "numeric", "character"),
           definition = function(x, i, j) {
             id <- is.element(colnames(x$evs), j)
@@ -393,7 +401,7 @@ setMethod("[", signature = c("EventSeries", "numeric", "character"),
 #' ## @include 
 #' #' @export
 #' #' @docType methods
-#' #' @rdname print-methods
+#' #' @rdname subscript-methods
 #' setMethod("[<-", signature = c("EventSeries", "numeric", "numeric", "ANY"),
 #'           definition = function(x, i, j, y) {
 #'             x$evs[i,j] = y

@@ -26,7 +26,8 @@ Depends:
     lubridate,
     fmdates,
     jsonlite,
-    readxl
+    readxl,
+    data.tree
 Imports:
     timeSeries (>= 3012.99),
 SystemRequirements: R (>= 3.4.4) 

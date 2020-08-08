@@ -85,10 +85,10 @@ setMethod(f = "initialize", signature = "LinearAmortizer",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "LinearAmortizer",
-          function(object){
-            print(get(object = object, what = get.summary.fields("Lam")))
-          })
+# setMethod(f = "summary", signature = "LinearAmortizer",
+#           function(object){
+#             print(get(object = object, what = get.summary.fields("Lam")))
+#           })
 
 # lam_example=Lam()
 # getModelDetails(lam_example)

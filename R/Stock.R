@@ -69,10 +69,10 @@ setMethod(f = "initialize", signature = "Stock",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "Stock",
-          function(object){
-            print(get(object = object, what = get.summary.fields("Stk")))
-          })
+# setMethod(f = "summary", signature = "Stock",
+#           function(object){
+#             print(get(object = object, what = get.summary.fields("Stk")))
+#           })
 
 #object$allowed$ContractType
 # [1] "PAM"   "ANN"   "NAM"   "LAM"   "LAX"   "CLM"   "UMP"   "CSH"   "STK"   "COM"   "SWAPS" "SWPPV" "FXOUT" "CAPFL"

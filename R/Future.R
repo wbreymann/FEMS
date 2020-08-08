@@ -65,10 +65,10 @@ setMethod(f = "initialize", signature = "Future",
 ## @include 
 #' @export
 ## @rdname
-setMethod(f = "summary", signature = "Future",
-          function(object){
-            print(get(object = object, what = get.summary.fields("Futur")))
-          })
+# setMethod(f = "summary", signature = "Future",
+#           function(object){
+#             print(get(object = object, what = get.summary.fields("Futur")))
+#           })
 
 # futur_example=Futur()
 # getModelDetails(futur_example)
