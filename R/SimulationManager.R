@@ -1,8 +1,7 @@
-# @include Portfolio.R RiskFactorConnector.R PortfolioTree.R
+# @include Portfolio.R RiskFactorConnector.R ModelStructure.R
 #' @export
 setRefClass("SimulationManager",
-            fields = list(Portfolio = "Portfolio",
-                          ModelStructure = "PortfolioTree",
+            fields = list(ModelStructure = "environment",
                           RiskFactors = "RiskFactorConnector",
                           TimeBuckets = "timeBuckets",
                           Strategy = "matrix",
@@ -31,11 +30,8 @@ setMethod(f = "set", signature = c("SimulationManager"),
               if (is.valid.sm.field(i)) {
                 value <- what[[i]]
                 switch(i,
-                       Portfolio = {
-                         object$Portfolio <- value
-                       },
-                       TreeStructure = {
-                         object$TreeStructure <- value
+                       ModelStructure = {
+                         object$ModelStructure <- value
                        },
                        RiskFactors = {
                          object$RiskFactors <- value
