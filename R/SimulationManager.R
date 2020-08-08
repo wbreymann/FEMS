@@ -24,8 +24,8 @@ setMethod(f = "SimulationManager", signature = c(),
           })
 
 #' @export
-setMethod(f = "set", signature = c("SimulationManager","list"),
-          definition = function(object, what){
+setMethod(f = "set", signature = c("SimulationManager"),
+          definition = function(object, ...){
             object <- new("SimulationManager")
             for (i in names(what)) {
               if (is.valid.sm.field(i)) {
