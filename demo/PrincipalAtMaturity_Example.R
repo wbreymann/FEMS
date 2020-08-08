@@ -31,8 +31,25 @@ set(pam, what = list(
 
 # show method:
 pam
-length(as.data.frame(pam$attributes))
+# I don't want to have the attributes returned in list format, it's confusing.
+# But we may make it nicer.
+
+# Summary
 summary(pam)
+# We may add some useful information but it's a bad idea to simple return the
+# list of attributes
+
+# Subsetting Operators:
+pam[c(1,3,5)]
+pam[35]
+pam["NotionalPrincipal"]
+pam[c("ContractType", "ContractID", "NotionalPrincipal")]
+
+# Replacement operators
+pam[35] <- 100000
+pam[35]
+pam["NotionalPrincipal"] = 1000
+pam[35]
 
 # create yield curve
 yc <- YieldCurve(MarketObjectCode = "YC.USA.TREASURY",
