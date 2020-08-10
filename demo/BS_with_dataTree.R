@@ -7,7 +7,7 @@ source("./R/DataTreeFunctions.R")
 t0="2016-01-02T00"	
 ptf=Portfolio(source="./FixedIncomePortfolio2.csv")
 summary(ptf)
-obj = unique(CTvars(ptf, vars="MarketObjectCodeRateReset"))
+obj = unique(CTterms(ptf, vars="MarketObjectCodeRateReset"))
 obj = obj[which(obj!="NULL"),1] # "NULL" steht für undefiniert
 ir.1d = 0.001  # 1-day tenor
 ir.10y = 0.03  # 10-year tenor
@@ -40,7 +40,7 @@ Bilanz = Tree(list(branches = list(
 )))
 
 # Select contracts for leaf accounts:
-pars = CTvars(ptf, vars = c("ContractID", "ContractRole", "ContractType"))
+pars = CTterms(ptf, vars = c("ContractID", "ContractRole", "ContractType"))
 ct.kredite = subset(pars, ContractRole=="RPA" & ContractType=="PAM")$ContractID
 ct.hyp = subset(pars, ContractRole=="RPA" & ContractType %in% c("ANN", "LAM"))$ContractID
 ct.interbank = subset(pars, ContractRole=="RPL"&ContractType=="PAM")$ContractID

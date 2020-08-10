@@ -75,8 +75,8 @@ setMethod(f = "LinearAmortizer",signature = c(),
 setMethod(f = "initialize", signature = "LinearAmortizer",
           function(.Object, ...) {
               .Object <- callNextMethod()
-              atts <- lapply(CTM("LinearAmortizer")$attributes, function(x) {"NULL"})
-              .Object$attributes <- atts
+              atts <- lapply(CTM("LinearAmortizer")$ContractTerms, function(x) {"NULL"})
+              .Object$ContractTerms <- atts
               return(.Object)
           })
 

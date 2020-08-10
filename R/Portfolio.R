@@ -103,10 +103,10 @@ setMethod("generateEvents", signature = c("Portfolio", "AD0"),
             ## create body for contracts
             contracts <- list()
             for (i in 1:length(object$contracts)) {
-              attributes <- object$contracts[[i]]$attributes
+              ContractTerms <- object$contracts[[i]]$ContractTerms
               
               # erase NULL elements & convert dates in character formats
-              contract_list <- attributes[rapply(attributes, function(x) length(grep("^NULL$",x)) == 0)]
+              contract_list <- ContractTerms[rapply(ContractTerms, function(x) length(grep("^NULL$",x)) == 0)]
               
               # reformat the dates to reflect java format
               contract_list <- lapply(contract_list, function(x) {
@@ -154,7 +154,7 @@ setMethod("generateEvents", signature = c("Portfolio", "AD0"),
             response_content <- content(response_events)
             if (response_events$status_code != 200) {
               print(response_content$error)
-              stop("ErrorIn::ContractType:: API response error; Check if all necessary attributes were set correctly!!!")
+              stop("ErrorIn::ContractType:: API response error; Check if all necessary ContractTerms were set correctly!!!")
             }
             return(response_content)
             
@@ -167,7 +167,7 @@ setMethod("generateEvents", signature = c("Portfolio", "AD0"),
 #' particular, this is a convenience function to access the 
 #' Reference Class's fields. Further, using \code{what='size'}
 #' the number of contracts in the Portfolio is returned, for
-#' \code{what='ids'} a vector of \code{ContractID} attributes
+#' \code{what='ids'} a vector of \code{ContractID} ContractTerms
 #' of the contracts is returned, and if \code{what=[ContractID]}
 #' with \code{[ContractID]} the ContractID of a particular 
 #' contract in the portfolio then the respective contract is 
@@ -375,7 +375,7 @@ setMethod(f = "set",
 #' # create new portfolio
 #' ptf <- Portfolio()
 #' 
-#' # define subset of attributes to be used to create 
+#' # define subset of ContractTerms to be used to create 
 #' # new PrincipalAtMaturity contract
 #' # (we use a subset just to make the case here)
 #' attr.names=c("ContractID", 
@@ -521,7 +521,7 @@ setMethod(f = "show", signature = c("Portfolio"),
             # print(table(unlist(types)))
             # 
             # invisible(NULL)
-            print(CTvars(object))
+            print(CTterms(object))
           })
 
 ## @include
@@ -539,14 +539,14 @@ setMethod(f = "length", signature = c("Portfolio"),
 #' @docType methods
 #' @rdname ptf-methods
 ## @aliases
-setGeneric(name = "CTvars",
+setGeneric(name = "CTterms",
            def = function(x, i, vars, ...){
-             standardGeneric("CTvars")
+             standardGeneric("CTterms")
            })
 
 ## @include
 #' @export
-setMethod("CTvars", signature = c("Portfolio", "numeric", "missing"),
+setMethod("CTterms", signature = c("Portfolio", "numeric", "missing"),
           definition = function(x, i) {
             vars = c(
               "ContractID",
@@ -558,13 +558,13 @@ setMethod("CTvars", signature = c("Portfolio", "numeric", "missing"),
               "NominalInterestRate"
             )
             # ct = x$contracts[[i]]
-            CTvars(x, i, vars=vars)
+            CTterms(x, i, vars=vars)
           }
 )
 
 ## @include
 #' @export
-setMethod("CTvars", signature = c("Portfolio", "numeric", "character"),
+setMethod("CTterms", signature = c("Portfolio", "numeric", "character"),
           definition = function(x, i, vars) {
             cts = x$contracts[i]
             out = data.frame()
@@ -584,7 +584,7 @@ setMethod("CTvars", signature = c("Portfolio", "numeric", "character"),
 
 ## @include
 #' @export
-setMethod("CTvars", signature = c("Portfolio", "character", "missing"),
+setMethod("CTterms", signature = c("Portfolio", "character", "missing"),
           definition = function(x, i) {
             vars = c(
               "ContractID",
@@ -596,12 +596,12 @@ setMethod("CTvars", signature = c("Portfolio", "character", "missing"),
               "NominalInterestRate"
             )
             # ct = x$contracts[[i]]
-            return (CTvars(x, i, vars=vars))
+            return (CTterms(x, i, vars=vars))
           })
 
 ## @include
 #' @export
-setMethod("CTvars", signature = c("Portfolio", "character", "character"),
+setMethod("CTterms", signature = c("Portfolio", "character", "character"),
           definition = function(x, i, vars) {
             # cts = x$contracts[i]
             return(extractVariablesFromPortfolio(x$contracts[i], vars))
@@ -610,7 +610,7 @@ setMethod("CTvars", signature = c("Portfolio", "character", "character"),
 
 ## @include
 #' @export
-setMethod("CTvars", signature = c("Portfolio", "missing", "character"),
+setMethod("CTterms", signature = c("Portfolio", "missing", "character"),
           definition = function(x, vars) {
             return(extractVariablesFromPortfolio(x$contracts, vars))
           })
@@ -648,7 +648,7 @@ extractVariablesFromPortfolio = function(cts, vars) {
 
 ## @include
 #' @export
-setMethod("CTvars", signature = c("Portfolio", "missing", "missing"),
+setMethod("CTterms", signature = c("Portfolio", "missing", "missing"),
           definition = function(x) {
             vars = c(
               "ContractID",
@@ -659,7 +659,7 @@ setMethod("CTvars", signature = c("Portfolio", "missing", "missing"),
               "NotionalPrincipal",
               "NominalInterestRate"
             )
-            CTvars(x, vars=vars)
+            CTterms(x, vars=vars)
           }
 )
 

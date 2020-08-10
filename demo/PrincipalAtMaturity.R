@@ -54,7 +54,7 @@ set(pam, eng)
 #' only one interest payment at maturity date
 #' steady interest rate with 0.00
 #' contract term is 3 months
-#' specify the contract attributes
+#' specify the contract terms
 set(pam, what=list(
          ContractID = "001",
          Currency = "CHF",
@@ -69,9 +69,9 @@ set(pam, what=list(
          PremiumDiscountAtIED = -100,
          DayCountConvention = "30E/360",
          BusinessDayConvention = "SCF"))
-#' get values of specific attributes
+#' get values of specific ContractTerms
 get(pam, what = "ContractID")
-#' show summary of important attributes
+#' show summary of important ContractTerms
 summary(pam)
 
 #' generate contract events
@@ -115,7 +115,7 @@ sensitivity(pam,by = ad,type="macaulay",method = eng)
 # The upwards direction of the first arrow shows you that this is an asset position
 # At the 31.03.2013 you get repaid the notional of 1000,- (last red Arrow)
 
-#' reset certain attributes
+#' reset certain ContractTerms
 set(pam, what = list(PremiumDiscountAtIED = 0))
 
 ## ---------------------------------------------------------------
@@ -149,7 +149,7 @@ plot(pam,ad)
 ## ---------------------------------------------------------------
 ## 3. example 2 but as Liability
 ## ---------------------------------------------------------------
-#' same attributes as 2 but contract role is liability
+#' same ContractTerms as 2 but contract role is liability
 set(pam, what=list(
          ContractRole = "RPL",                    # Real Position Liability
          NominalInterestRate = 0.05))             # nominal Interest rate
@@ -264,9 +264,9 @@ plot(pam,ad)
 
 
 ## ---------------------------------------------------------------
-## 8. rate reset attributes
+## 8. rate reset ContractTerms
 ## ---------------------------------------------------------------
-#' we also use the last contract but reset the interest rate bi-annualy
+#' we also use the last contract but reset the interest rate bi-annually
 set(object = pam, what = list(
                   CycleAnchorDateOfRateReset = "2013-07-01",
                   CycleOfRateReset = "3M-"))

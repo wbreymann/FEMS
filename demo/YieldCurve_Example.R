@@ -38,8 +38,8 @@ show(yc)
 plot(yc)
 
 # get rates & discount factor from relative date
-rates(yc, "1Y")
-discountFactors(yc, "1Y")
+rates(yc, "1Y")  ###!! Fehler
+discountFactors(yc, "1Y")  ###!! Fehler
 
 # get 1 year forward rates as of specific dates
 rates(yc, "1Y", "2013-06-30")

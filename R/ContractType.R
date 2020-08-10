@@ -22,7 +22,7 @@
 #' @rdname ct-classes
 setRefClass("ContractType",
             fields = list(
-              attributes = "list",
+              ContractTerms = "list",
               rf_connector = "RiskFactorConnector",
               ct_events = "data.frame",
               val_engine = "ValuationEngine"
@@ -130,7 +130,7 @@ setMethod(f = "CT", signature = c("character"),
 #' @aliases terms,jobjRef-method
 setMethod(f = "terms", signature = c("ContractType"),
           definition = function(object) {
-            return(names(object$attributes))
+            return(names(object$ContractTerms))
           })
 
 
@@ -157,8 +157,8 @@ setMethod(f = "get", signature = c("ContractType","character"),
               # out <- .jcall(object$jref, "Lorg/actus/valuation/ValuationProvider;",
               #               "getValuationEngine")
             } else {
-              # out <- object$attributes[[what]]
-              out <- as.list(sapply(what, function(x) object$attributes[[x]]))
+              # out <- object$ContractTerms[[what]]
+              out <- as.list(sapply(what, function(x) object$ContractTerms[[x]]))
             }
             return(out)
           })
@@ -208,7 +208,7 @@ setMethod(f = "set", signature = c("ContractType","ValuationEngine"),
 setMethod(f = "set", signature = c("ContractType","list"),
           definition = function(object, what){
             for (i in 1:length(what)) {
-              object$attributes[names(what[i])] <- what[[i]]
+              object$ContractTerms[names(what[i])] <- what[[i]]
             }
             details <- getContractModel(object)
             checkArguments(details, what)
@@ -233,7 +233,7 @@ setMethod(f = "set", signature = c("ContractType", "RiskFactorConnector"),
 #' @export
 setMethod("show", signature = "ContractType",
           definition = function(object){
-            print(as.data.frame(object$attributes))
+            print(as.data.frame(object$ContractTerms))
           })
 
 
@@ -241,7 +241,7 @@ setMethod("show", signature = "ContractType",
 #' @export
 setMethod("summary", signature=c(object = "ContractType"),
   definition = function(object){
-    x = as.data.frame(object$attributes)
+    x = as.data.frame(object$ContractTerms)
     cat(paste("ContractType: ", as.character(x["ContractType"]), "\n", sep=""))
     cat(paste("ContractID: ", as.character(x["ContractID"]), "\n", sep=""))
   })
@@ -259,7 +259,7 @@ setMethod("summary", signature=c(object = "ContractType"),
 #' @rdname subscript-methods
 setMethod("[", signature = c("ContractType", "character", "missing"),
           definition = function(x, i) {
-            z = as.data.frame(x$attributes)
+            z = as.data.frame(x$ContractTerms)
             # id <- is.element(x$evs[,1], i)
             z[i]
           }
@@ -271,7 +271,7 @@ setMethod("[", signature = c("ContractType", "character", "missing"),
 #' @rdname subscript-methods
 setMethod("[", signature = c("ContractType", "numeric", "missing"),
           definition = function(x, i) {
-            z = as.data.frame(x$attributes)
+            z = as.data.frame(x$ContractTerms)
             z[i]  
           }
 )
@@ -282,7 +282,7 @@ setMethod("[", signature = c("ContractType", "numeric", "missing"),
 #' @rdname subscript-methods
 setMethod("[", signature = c("ContractType", "logical", "missing"),
           definition = function(x,i) {
-            z = as.data.frame(x$attributes)
+            z = as.data.frame(x$ContractTerms)
             z[i]  
           }
 )
@@ -294,7 +294,7 @@ setMethod("[", signature = c("ContractType", "logical", "missing"),
 #' @rdname subscript-methods
 setMethod("[<-", signature = c("ContractType", "character", "missing", "ANY"),
           definition = function(x, i, value) {
-            x$attributes[[i]] = value
+            x$ContractTerms[[i]] = value
             return(x)
           }
 )
@@ -305,7 +305,7 @@ setMethod("[<-", signature = c("ContractType", "character", "missing", "ANY"),
 #' @rdname subscript-methods
 setMethod("[<-", signature = c("ContractType", "numeric", "missing", "ANY"),
           definition = function(x, i, value) {
-            x$attributes[[i]] = value
+            x$ContractTerms[[i]] = value
             return(x)
           }
 )
@@ -318,7 +318,7 @@ setGeneric(name = "getContractModel",
 #' @export
 setMethod(f = "getContractModel",signature = c("ContractType"),
           definition = function(object,...){
-            long_name <- longName(tolower(object$attributes$ContractType))
+            long_name <- longName(tolower(object$ContractTerms$ContractType))
             return(CTM(long_name))
           })
 

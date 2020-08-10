@@ -4,7 +4,7 @@
 \name{Portfolio}
 \alias{Portfolio}
 \alias{Portfolio,ANY-method}
-\alias{CTvars}
+\alias{CTterms}
 \alias{ids}
 \title{Portfolio-class constructor}
 \usage{
@@ -12,7 +12,7 @@ Portfolio(...)
 
 \S4method{Portfolio}{ANY}(...)
 
-CTvars(x, i, vars, ...)
+CTterms(x, i, vars, ...)
 
 ids(x, ...)
 }

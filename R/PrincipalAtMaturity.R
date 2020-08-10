@@ -67,8 +67,8 @@ setMethod(f = "PrincipalAtMaturity", signature = c(),
 setMethod(f = "initialize", signature = "PrincipalAtMaturity",
           function(.Object, ...) {
               .Object <- callNextMethod()
-              atts <- lapply(CTM("PrincipalAtMaturity")$attributes, function(x) {"NULL"})
-              .Object$attributes <- atts
+              atts <- lapply(CTM("PrincipalAtMaturity")$ContractTerms, function(x) {"NULL"})
+              .Object$ContractTerms <- atts
               return(.Object)
           })
 

@@ -62,8 +62,8 @@ setMethod(f = "ExoticLinearAmortizer", signature = c(),
 setMethod(f = "initialize", signature = "ExoticLinearAmortizer",
           function(.Object, ...) {
             .Object <- callNextMethod()
-            atts <- lapply(CTM("ExoticLinearAmortizer")$attributes, function(x) {"NULL"})
-            .Object$attributes <- atts
+            atts <- lapply(CTM("ExoticLinearAmortizer")$ContractTerms, function(x) {"NULL"})
+            .Object$ContractTerms <- atts
             return(.Object)
           })
 

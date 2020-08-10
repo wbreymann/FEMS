@@ -3,7 +3,7 @@ rm(list=ls())
 devtools::load_all()
 
 
-# create a PAM & set attributes...
+# create a PAM & set ContractTerms...
 pam <- Pam()
 set(pam, what = list(
     Calendar = "MondayToFriday",
@@ -31,13 +31,17 @@ set(pam, what = list(
 
 # show method:
 pam
-# I don't want to have the attributes returned in list format, it's confusing.
+# I don't want to have the ContractTerms returned in list format, it's confusing.
 # But we may make it nicer.
 
 # Summary
 summary(pam)
 # We may add some useful information but it's a bad idea to simple return the
-# list of attributes
+# list of ContractTerms
+
+# Zugriff auf Elemente:
+get(pam, "ContractID")
+get(pam, "all")  # Dies sollte auch funktionieren
 
 # Subsetting Operators:
 pam[c(1,3,5)]
@@ -106,8 +110,17 @@ set(pam2, what = list(
 port <- Portfolio()
 
 # add the two contracts separately
+# Comment: Hier wäre die Syntax port$add(pam) angebracht
 add(port, pam)
 add(port, pam2)
+# Folgendes sollte auch möglich sein: port$add(list(pam, pam2))
+
+get(pam2, "ContractID")
+
+summary(port)
+port
+
+port["ContractType"] # Unklr, warum Fehler.
 
 # set riskfactor conector
 set(port, rf)
@@ -147,7 +160,7 @@ income(port, by = by, type = "marginal", revaluation.gains = TRUE, method = eng)
 ##### Seems dangerous not to include it into any initialize function...
 # pam1 <- Pam()
 # set(pam1, what = list(ContractID = "Test"))
-# pam1$attributes$ContractID
+# pam1$ContractTerms$ContractID
 # pam2 <- Pam()
-# pam1$attributes$ContractID
+# pam1$ContractTerms$ContractID
 

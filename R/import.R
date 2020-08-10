@@ -161,10 +161,10 @@ setMethod(f = "import", signature = c("Portfolio", "character"),
             for (i in 1:length(ctIDs)) {
               long_name <- longName(tolower(ctIDs[i]))
               contract <- CT(long_name)
-              attributes <- as.list(t(port_data[i,]))
-              names(attributes) <- colnames(port_data)
-              attributes <- attributes[rapply(attributes, function(x) length(grep("^NULL$",x)) == 0)]
-              set(object = contract, what = attributes)
+              ContractTerms <- as.list(t(port_data[i,]))
+              names(ContractTerms) <- colnames(port_data)
+              ContractTerms <- ContractTerms[rapply(ContractTerms, function(x) length(grep("^NULL$",x)) == 0)]
+              set(object = contract, what = ContractTerms)
               add(object, contract)
             }
             
