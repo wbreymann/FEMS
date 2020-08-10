@@ -11,7 +11,7 @@ setRefClass("CurrentAccount",
               CycleOfInterestPayment = "character",
               MarketObjectCodeRateReset = "character",
               Compound = "character",
-              Period = "character"
+              Period = "character",
               # Zusätzliche Variablen (sind Statusvariablen des Contracts)
               # Sie werden benötigt, um den Kontostand und die aufgelaufenen
               # Zinsen nachzuführen. 
