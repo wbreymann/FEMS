@@ -9,9 +9,9 @@ devtools::load_all()
 
 options(warn=-1)
 # load required libraries
-library(rActus)
-library(rflPortfolio)
-library(rflSimulation)
+# library(rActus)
+# library(rflPortfolio)
+# library(rflSimulation)
 
 # define analysis time
 ad="2016-01-01T00"
@@ -53,7 +53,8 @@ plot(ops.profit(rf, "GAS"))
 set(ops1, rf)
 # pure events
 events1 = events(ops1, ad)
-print(events1)
+print(events1)  # Error
+events1
 
 # liquidity
 by <- times[c(1, 13, 24)]
@@ -66,7 +67,7 @@ liquidity(ops1, by=tb, type="marginal")
 1000*sum(values[14:24])
 
 # income
-income(ops1, by=tb, type="marginal")
+income(ops1, by=tb, type="marginal")  ## Error
 
 # nominal value
 value(ops1, by=by, type="nominal")
@@ -76,7 +77,7 @@ eng <- DcEngine(RiskFactorObjectLink="YC_CH_EIDGENOSSEN")
 set(eng, rf)
 
 # Barwert der (erwarteten) operativen Cashflows
-value(ops1, by=tb, type="markToModel", method=eng)
+value(ops1, by=tb, type="markToModel", method=eng) ## Error
 
 #-----------------------------------------------------------------------------
 # Investition mit linearer Abschreibung
@@ -97,12 +98,13 @@ ops.invest(rf)
 # pure events
 events2 = events(ops2, ad)
 print(events2)
+events2
 
 # Liquidität
 liquidity(ops2, by=tb, type="marginal")
 
 # Income
-income(ops2, by=tb, type="marginal")
+income(ops2, by=tb, type="marginal")  ## Error
 
 # nominal value
 value(ops2, by=by, type="nominal")
@@ -110,7 +112,7 @@ value(ops2, by=by, type="nominal")
 # mark-to-model value
 # An der Grenze von 2 Timebuckets überprüfen.
 # Wahrscheinlich Fehler im Package
-value(ops2, by=tb, type="markToModel", method=eng)
+value(ops2, by=tb, type="markToModel", method=eng)  # Error
 
 # Reserve contract
 ops.reserve <- function(model,params) {
@@ -129,7 +131,8 @@ ops.reserve(rf)
 
 # pure events
 events3 <- events(ops3, ad)
-print(events3)
+print(events3)  # Error
+events3
 
 # liquidity
 liquidity(ops3, by= tb, type = "marginal")
@@ -141,5 +144,5 @@ income(ops3, by=tb, type="marginal")
 value(ops3, by=by, type="nominal")
 
 # mark-to-model value
-value(ops3, by=tb, type="markToModel", method=eng)
+value(ops3, by=tb, type="markToModel", method=eng)  ## Error
 

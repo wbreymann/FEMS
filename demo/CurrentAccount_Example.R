@@ -25,6 +25,7 @@ curr_acc <- CurrentAccount(ContractID = "Test_CurrAcc",
                          CycleAnchorDateOfInterestPayment = t0,
                          CycleOfInterestPayment = "1Y-",
                          MarketObjectCodeRateReset = "YC_FLAT")
+curr_acc
 
 # construct riskfactor connector
 rf <- RFConn(yc_flat)

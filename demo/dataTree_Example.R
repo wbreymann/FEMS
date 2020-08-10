@@ -25,6 +25,7 @@ ptf = list(bc1, bc2)
 # The names should be constructed automatically, cf. ptfPortfolio
 names(ptf) = c("bc1", "bc2") 
 ptf[["bc1"]]
+ptf["bc1"]
 
 # Analysis structure
 BS = Node$new("Portfolio")
@@ -44,6 +45,7 @@ BS
 BS$Wealth$ctNames
 BS$Payouts$ctNames
 
+BS$children
 class(BS$children)
 
 # yield curve

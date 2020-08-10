@@ -41,7 +41,11 @@ summary(pam)
 
 # Zugriff auf Elemente:
 get(pam, "ContractID")
-get(pam, "all")  # Dies sollte auch funktionieren
+get(pam, "ContractID", "ContractType") ## Error
+
+get(pam, c("ContractID", "ContractType")) ## ok
+get(pam, list("ContractID", "ContractType")) ## Error
+get(pam, "all")  # Dies sollte auch funktionieren, aber nur die Contract Terms oder alles?
 
 # Subsetting Operators:
 pam[c(1,3,5)]
@@ -120,7 +124,27 @@ get(pam2, "ContractID")
 summary(port)
 port
 
-port["ContractType"] # Unklr, warum Fehler.
+# Different ways to assess contract terms
+CTterms(port, "Contract-03", c("ContractID","ContractType"))
+CTterms(port, 1:2, c("ContractID","ContractType"))
+CTterms(port, , c("ContractID","ContractType"))
+
+length(CTterms(port, ,"ContractID"))
+CTterms(port, ,"ContractID")
+CTterms(port, ,"ContractID")[,1,TRUE]
+dim(CTterms(port, ,"ContractID"))
+
+port["Contract-03"] # Returns selected variables as data.frame
+port[1] # as before
+port[["Contract-03"]] # Returns all contract terms as a list, because "[[" has not been overwritten
+port[[1]] # As before
+
+port[c("Contract-03","Contract-03")]
+port[c("Contract-03","Contract-05")]
+port[c("Contract-03","Contract-05"),]
+port[c("Contract-03","Contract-05"),1] # Fehler, as it should be
+port[c("Contract-03","Contract-05"),"ContractID"] # Warum Fehler? 
+
 
 # set riskfactor conector
 set(port, rf)

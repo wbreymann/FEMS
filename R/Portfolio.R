@@ -429,6 +429,7 @@ setMethod(f = "add", signature = c("Portfolio", "list"),
             if (!test < len) {
               cat("A problem occured")
             }
+            names(object$contracts) <- CTterms(object, ,"ContractID")[,1,TRUE]
             # ids = character()
             # for (obj in what) {
             #   ids = c(ids, FEMS:::get(obj, "ContractID"))

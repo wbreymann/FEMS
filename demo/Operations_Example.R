@@ -2,6 +2,8 @@
 # Beginn des Lösungsskripts
 ################################################################################
 
+rm(list=ls())
+devtools::load_all()
 
 # define analysis time
 ad="2016-01-01"

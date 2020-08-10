@@ -23,3 +23,7 @@ is.null(FindNode(myModel, "Mortgages"))
 addContracts(list(CurrentAccount()), FindNode(myModel, "Mortgages"))
 length(myModel$Active$Mortgages$contracts)
 
+myModel
+
+cac = CurrentAccount()
+cac
