@@ -11,7 +11,7 @@ setRefClass("CurrentAccount",
               CycleOfInterestPayment = "character",
               MarketObjectCodeRateReset = "character",
               Compound = "character",
-              Period = "character",
+              Period = "character"
               # Zusätzliche Variablen (sind Statusvariablen des Contracts)
               # Sie werden benötigt, um den Kontostand und die aufgelaufenen
               # Zinsen nachzuführen. 
@@ -19,9 +19,9 @@ setRefClass("CurrentAccount",
               # per StatusDate
               # Sie sollten auch bei der Kontraktinitialisierung auf einen
               # vom Benutzer zu setzenden Startwert gesetzt werden.
-              StatusDate = "timeDate",
-              NominalPrincipal = "numeric",
-              AccruedInterest = "numeric"
+              #StatusDate = "timeDate",
+              #NominalPrincipal = "numeric",
+              #AccruedInterest = "numeric"
             ))
 # Grundsätzliche Bemerkung:
 # Du benutzt für Zeitreihen einen "data.frame". Das ist ungünstig.
@@ -87,15 +87,25 @@ setMethod(f = "EventSeries", signature = c("CurrentAccount", "character"),
             
             # evaluate reserving pattern
             out$evs <- currentaccount.evs(object, model, end_date, object$Compound, object$Period)
-            out$evs[rownames(out$evs)>=ad,] # inefficient, should be done in function call...
+            out$evs <- out$evs[out$evs$Date>=ad,] # inefficient, should be done in function call...
+            out$evs <- out$evs[out$evs$Date<=end_date,]
             return(out)
           })
 
 currentaccount.evs <- function(object, model, end_date, method, period){
   
+  # get the relevant yield curve from the risk factor connector
   yc <- get(model, object$MarketObjectCodeRateReset)
+  
+  # get dates for interest payments
   interest_dates <- get.dates.from.cycle(object$CycleAnchorDateOfInterestPayment, 
                                          object$CycleOfInterestPayment, end_date)
+  next_rate_dt <- get.dates.from.cycle(object$CycleAnchorDateOfInterestPayment, 
+                                       object$CycleOfInterestPayment,
+                                       as.character(as.Date(end_date) %m+% years(10)))
+  next_rate_dt <- min(next_rate_dt[next_rate_dt>max(interest_dates)])
+  
+  # get a combination of all dates
   all_dates <- sort(unique(c(interest_dates,
                              rownames(object$CashFlows),
                              rownames(object$PercentageOutflows),
@@ -103,43 +113,91 @@ currentaccount.evs <- function(object, model, end_date, method, period){
   if (min(all_dates) < yc$ReferenceDate[1]) {
     stop("ErrorIn::CurrentAccount:: Dates must all lay after first ReferenceDate of YieldCurve !!! ")
   }
+
+  # to use a shorter name
+  ccy <- object$Currency
   
-  # expand all data.frames to reflect same dates...
-  # Not necessary to do this with data.frames. Possibly switch to array later...
-  cashflow_df <- rbind(
-    object$CashFlows, 
-    setNames(data.frame(
-      rep(0,length(all_dates[!is.element(all_dates,rownames(object$CashFlows))])), 
-      row.names=all_dates[!is.element(all_dates,rownames(object$CashFlows))]),
-      names(object$CashFlows))
-    )
-  cashflow_df <- cashflow_df[order(row.names(cashflow_df)),,drop=FALSE]
-  perc_outflow_df <- rbind(
-    object$PercentageOutflows, 
-    setNames(data.frame(
-      rep(0,length(all_dates[!is.element(all_dates,rownames(object$PercentageOutflows))])), 
-      row.names=all_dates[!is.element(all_dates,rownames(object$PercentageOutflows))]),
-      names(object$PercentageOutflows)))
-  perc_outflow_df <- perc_outflow_df[order(row.names(perc_outflow_df)),,drop=FALSE]
-  
-  current_account_bef <- 0
-  current_account <- 0
-  outflow <- 0
+  # preparing loop
+  ev_tbl <- data.frame()
+  time <- 0
+  nominal_value <- 0
+  nominal_rate <- 0
+  nominal_accrued <- 0
+  rate_count <- 1
   for (i in 1:length(all_dates)) {
+    next_ev <- data.frame()
     if (i==1){
-      current_account_bef <- cashflow_df[i,]
-      outflow <- -current_account_bef*perc_outflow_df[i,]
-      current_account <- current_account_bef + outflow
+      if (all_dates[i] %in% interest_dates) {
+        tryCatch({
+          nominal_rate <- rates2(yc, interest_dates[rate_count+1], interest_dates[rate_count], isDateEnd=TRUE)
+        }, error = function(e) {
+          nominal_rate <- rates2(yc, next_rate_dt, interest_dates[rate_count], isDateEnd=TRUE)
+        })
+        rate_count <- rate_count + 1
+      }
+      if (all_dates[i] %in% rownames(object$CashFlows)){
+        value <- object$CashFlows[all_dates[i],]
+        nominal_value <- value
+        next_ev <- rbind(next_ev,
+                         data.frame(Date=all_dates[i], Value=value, Type="AM", Level="P", Currency=ccy,
+                                    Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
+                                    NominalAccrued=nominal_accrued))
+      } 
+      if (all_dates[i] %in% rownames(object$PercentageOutflows)) {
+        value <- -nominal_value * object$PercentageOutflows[all_dates[i],]
+        nominal_value <- nominal_value + value
+        next_ev <- rbind(next_ev,
+                         data.frame(Date=all_dates[i], Value=value, Type="AM", Level="P", Currency=ccy,
+                                    Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
+                                    NominalAccrued=nominal_accrued))
+      }
     } else {
+      if (all_dates[i] %in% interest_dates) {
+        tryCatch({
+          nominal_rate <- rates2(yc, interest_dates[rate_count+1], interest_dates[rate_count], isDateEnd=TRUE)
+        }, error = function(e) {
+          nominal_rate <- rates2(yc, next_rate_dt, interest_dates[rate_count], isDateEnd=TRUE)
+        })
+        rate_count <- rate_count + 1
+      }
+      time <- as.numeric((as.timeDate(all_dates[i])-as.timeDate(all_dates[1]))/365)
       df_s <- discountFactorsv2(yc, all_dates[i-1], all_dates[i], method=method, period=period)
-      current_account_bef <- c(current_account_bef, df_s*current_account[i-1] + cashflow_df[i,]) 
-      outflow <- c(outflow, -current_account_bef[i]*perc_outflow_df[i,])
-      current_account <- c(current_account, current_account_bef[i] + outflow[i])
+      nominal_accrued <- nominal_accrued + (df_s-1) * nominal_value
+      
+      if (all_dates[i] %in% interest_dates) {
+        value <- nominal_accrued
+        nominal_value <- nominal_value + nominal_accrued
+        nominal_accrued <- 0
+        next_ev <- rbind(next_ev,
+                         data.frame(Date=all_dates[i], Value=value, Type="IPIC", Level="P", Currency=ccy,
+                                    Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
+                                    NominalAccrued=nominal_accrued))
+      }  
+      if (all_dates[i] %in% rownames(object$CashFlows)) {
+        value <- object$CashFlows[all_dates[i],]
+        nominal_value <- nominal_value + value
+        next_ev <- rbind(next_ev,
+                         data.frame(Date=all_dates[i], Value=value, Type="AM", Level="P", Currency=ccy,
+                                    Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
+                                    NominalAccrued=nominal_accrued))
+      } 
+      if (all_dates[i] %in% rownames(object$PercentageOutflows)) {
+        value <- -object$PercentageOutflows[all_dates[i],] * nominal_value
+        nominal_value <- nominal_value + value
+        next_ev <- rbind(next_ev,
+                         data.frame(Date=all_dates[i], Value=value, Type="AM", Level="P", Currency=ccy,
+                                    Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
+                                    NominalAccrued=nominal_accrued))
+      }
     }
-  }
-  out <- data.frame(CurrentAccount = current_account, CashFlows = cashflow_df[,], Outflows = outflow)
-  rownames(out) <- all_dates
-  return(reformat.evs(object, out))
+    if (i == length(all_dates) & length(next_ev)==0) {
+      next_ev <- data.frame(Date=all_dates[i], Value=0, Type="AM", Level="P", Currency=ccy,
+                            Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
+                            NominalAccrued=nominal_accrued)
+    }
+    ev_tbl <- rbind(ev_tbl, next_ev)
+    }
+    return(ev_tbl)
 }
 
 get.dates.from.cycle <- function(anchor_date, cycle, end_date){
@@ -151,18 +209,6 @@ get.dates.from.cycle <- function(anchor_date, cycle, end_date){
   return(as.character(tSeq))
 }
 
-reformat.evs <- function(object, df) {
-  df_out <- data.frame(Date = rownames(df),
-                       Value = df$CurrentAccount,
-                       Type = "CA",
-                       Currency = object$Currency,
-                       Time = 0,
-                       NominalValue = 0,
-                       NominalRate = 0,
-                       NominalAccrued = 0)
-  return(df_out)
-}
-  
 
 
 
