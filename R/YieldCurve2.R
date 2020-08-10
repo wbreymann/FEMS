@@ -288,20 +288,20 @@ setMethod(f = "add", signature = c("YieldCurve2", "YieldCurve2"),
 #' This function still needs documentation, yes.
 #' 
 #' @export
-setGeneric(name = "getRateAt",
+setGeneric(name = "getRateAt2",
            def = function(object, from, to, ...){
-             standardGeneric("getRateAt")
+             standardGeneric("getRateAt2")
            })
 
 #########################################################################################
 #' @export
-setMethod(f = "getRateAt",
+setMethod(f = "getRateAt2",
           signature = c("YieldCurve2", "character", "character"),
           definition = function(object, from, to, method = "continuous", period = "Y", ...){
             
             if (length(from)>1 && length(to)>1) {
               if (length(from)!=length(to)){
-                stop("ErrorIn::YieldCurve2::getRateAt:: from and to dates must have same length !!! ")
+                stop("ErrorIn::YieldCurve2::getRateAt2:: from and to dates must have same length !!! ")
               }
             }
             if (length(from)< length(to)){
@@ -313,7 +313,7 @@ setMethod(f = "getRateAt",
             
             for (i in 1:length(from)) {
               if (as.Date(from[i])<object$ReferenceDate[1] || as.Date(to[i])<object$ReferenceDate[1]) {
-                stop("ErrorIn::YieldCurve2::getRateAt:: No Yields can be calculated before ReferenceDate of the YieldCurve2!!!")
+                stop("ErrorIn::YieldCurve2::getRateAt2:: No Yields can be calculated before ReferenceDate of the YieldCurve2!!!")
               }
               if (from[i]>to[i]) {
                 helper_to <- to[i]
@@ -347,7 +347,7 @@ setMethod(f = "getRateAt",
                 } else if (method == "continuous") {
                   out[i] <- (t2*s2 - t1*s1)/(t2 - t1)
                 } else {
-                  stop(paste("ErrorIn::YieldCurve2::getRateAt:: Method ", method, " not supported !!!"))
+                  stop(paste("ErrorIn::YieldCurve2::getRateAt2:: Method ", method, " not supported !!!"))
                 }
                 
               } else {
@@ -355,7 +355,7 @@ setMethod(f = "getRateAt",
                 # pre-allocate memory for necessary rates and time deltas
                 rates <- rep(NA, ref_idx_to-ref_idx_from+1)
                 dt <- rep(NA, ref_idx_to-ref_idx_from+1)
-                rates[1] <- getRateAt(object,from[i],object$ReferenceDate[ref_idx_from+1], method = method, period = period)
+                rates[1] <- getRateAt2(object,from[i],object$ReferenceDate[ref_idx_from+1], method = method, period = period)
                 dt[1] <- yearFraction(from[i], object$ReferenceDate[ref_idx_from+1], object$DayCountConvention)
                 
                 # prepare the while loop
@@ -387,7 +387,7 @@ setMethod(f = "getRateAt",
                 } else if (method == "continuous") {
                   out[i] <- sum( rates * dt )/T
                 } else {
-                  stop(paste("ErrorIn::YieldCurve2::getRateAt:: Method ", method, " not supported !!!"))
+                  stop(paste("ErrorIn::YieldCurve2::getRateAt2:: Method ", method, " not supported !!!"))
                 }
               }
             }
@@ -398,9 +398,9 @@ setMethod(f = "getRateAt",
 
 
 #' @export
-setGeneric(name = "setTimeSeries",
+setGeneric(name = "setTimeSeries2",
            def = function(object, startdate, enddate, ...){
-             standardGeneric("setTimeSeries")
+             standardGeneric("setTimeSeries2")
            })
 
 # Q bwlf:
@@ -412,11 +412,11 @@ setGeneric(name = "setTimeSeries",
 
 
 #' @export
-setMethod(f = "setTimeSeries",
+setMethod(f = "setTimeSeries2",
           signature = c("YieldCurve2", "character", "character"),
           definition = function(
             object, startdate, enddate, frequency = "month", forward = "1M", ...){
-            object$Data <- getRateSeries(object, startdate, enddate, 
+            object$Data <- getRateSeries2(object, startdate, enddate, 
                                          frequency = frequency, forward = forward)
           })
 
@@ -475,16 +475,16 @@ setMethod(f = "setTimeSeries",
 #' @rdname rts-methods
 #' @aliases rates, YieldCurve2, charachter, missing-method
 #' @aliases rates, YieldCurve2, character, character-method
-setGeneric(name = "rates",
+setGeneric(name = "rates2",
            def = function(object, termEnd, termStart, ...){
-             standardGeneric("rates")
+             standardGeneric("rates2")
            })
 
 ## @include
 #' @export
 #' @rdname rts-methods
 #' @aliases rates, YieldCurve2, character, missing-method
-setMethod(f = "rates",
+setMethod(f = "rates2",
           signature = c("YieldCurve2", "character", "missing"),
           definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
             if (!isDateEnd) {
@@ -494,7 +494,7 @@ setMethod(f = "rates",
               endDate <- termEnd
             }
             test.dates(endDate)
-            out <- getRateAt(object, object$ReferenceDate, endDate)
+            out <- getRateAt2(object, object$ReferenceDate, endDate)
             return(out)
             
           })
@@ -503,7 +503,7 @@ setMethod(f = "rates",
 #' @export
 #' @rdname rts-methods
 #' @aliases rates, YieldCurve2, character, character-method
-setMethod(f = "rates",
+setMethod(f = "rates2",
           signature = c("YieldCurve2", "character", "character"),
           definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
             
@@ -515,7 +515,7 @@ setMethod(f = "rates",
             }
             test.dates(termStart)
             test.dates(endDate)
-            out <- getRateAt(object, termStart, endDate)
+            out <- getRateAt2(object, termStart, endDate)
             return(out)
           })
 
@@ -581,59 +581,69 @@ setMethod(f = "rates",
 #' @docType methods
 #' @rdname dfs-methods
 ## @aliases
-setGeneric(name = "discountFactors",
+setGeneric(name = "discountFactorsv2",
            def = function(object, termEnd, termStart, ...){
-             standardGeneric("discountFactors")
+             standardGeneric("discountFactorsv2")
            })
 
 ## @include
 #' @export
 #' @rdname dfs-methods
 #' @aliases discountFactors, YieldCurve2, character, character-method
-setMethod(f = "discountFactors",
+setMethod(f = "discountFactorsv2",
           signature = c("YieldCurve2", "character", "missing"),
-          definition = function(object, termEnd, termStart, isDateEnd = FALSE, spread = 0.0, ...) {
-            if (!isDateEnd) {
-              endDate <- computeTenorDates(object$ReferenceDate, termEnd)
-              # endDate <- shiftDates(object$ReferenceDate, termEnd)
-            } else {
-              endDate <- termEnd
-            }
-            yearFraction <- yearFraction(object$ReferenceDate, endDate, object$DayCountConvention)
-            test.dates(endDate)
-            rate <- getRateAt(object, object$ReferenceDate, endDate)
-            return(exp(-yearFraction * rate))
+          definition = function(object, termEnd, termStart, method = "continuous", period = "Y", ...) {
+            termStart <- object$ReferenceDate
+            return(discountFactorsv2(object, termEnd, termStart, method, period, ...))
           })
+
 
 ## @include
 #' @export
 #' @rdname dfs-methods
 #' @aliases discountFactors, YieldCurve2, character, missing-method
-setMethod(f = "discountFactors",
+setMethod(f = "discountFactorsv2",
           signature = c("YieldCurve2", "character", "character"),
           definition = function(object, termEnd, termStart,
-                                isDateEnd = FALSE, spread = 0.0, ...){
-            if (!isDateEnd) {
+                                method = "continuous", period = "Y", ...){
+            # To consider: Implementierung von Unterjährigen Zinsen bei Bruchteilen von Perioden
+            
+            # test dates and convert possible termEnd to date type
+            test.dates(termStart)
+            err_testing <- tryCatch(test.dates(termEnd), error = function(e) e)
+            if (any(class(err_testing) == "error")) {
               endDate <- computeTenorDates(termStart, termEnd)
-              # endDate <- shiftDates(termStart, termEnd)
             } else {
               endDate <- termEnd
             }
+            
+            # calcluate year fraction
             yearFraction <- yearFraction(termStart, endDate, object$DayCountConvention)
-            test.dates(termStart)
-            test.dates(endDate)
-            rate <- getRateAt(object, termStart, endDate)
-            return(exp(-yearFraction * rate))
+            
+            # get the required rate from the yield curve
+            rates <- getRateAt2(object, termStart, endDate, method = method, period = period)
+            
+            # return requested discount factors
+            if (method == "linear") {
+              return((1 + rates*abs(yearFraction))^sign(-yearFraction))
+            } else if (method == "compound") {
+              num_period <- convert.rate.period(period)
+              return((1 + rates/num_period)^(-yearFraction*num_period))
+            } else if (method == "continuous") {
+              return(exp(-yearFraction * rates))
+            } else {
+              stop(paste("ErrorIn::discountFactorsv2:: Method ", method, " not supported !!!"))
+            }
           })
 
 
 #' @export
-setGeneric(name = "getRateSeries",
+setGeneric(name = "getRateSeries2",
            def = function(object, startdate, enddate, ...){
-             standardGeneric("getRateSeries")
+             standardGeneric("getRateSeries2")
            })
 #' @export
-setMethod(f = "getRateSeries",
+setMethod(f = "getRateSeries2",
           signature = c("YieldCurve2", "character", "character"),
           definition = function(
             object, startdate, enddate, frequency = "week", forward = "1M", ...){
@@ -642,7 +652,7 @@ setMethod(f = "getRateSeries",
             test.dates(startdate)
             test.dates(enddate)
             if (!frequency %in% c("day", "week", "month", "quarter", "year")) {
-              stop("ErrorIn::YieldCurve2::getRateSeries:: Frequency must be one of 'day',
+              stop("ErrorIn::YieldCurve2::getRateSeries2:: Frequency must be one of 'day',
                    'week', 'month', 'quarter' or 'year' !!!")
             }
             
@@ -651,7 +661,7 @@ setMethod(f = "getRateSeries",
                                             as.Date(enddate), by = frequency) - 1)
             
             # calculate forward rates with forward time defined
-            rates_seq <- rates(object, forward, dt_seq)
+            rates_seq <- rates2(object, forward, dt_seq)
             
             # output in a data.frame
             ts <- data.frame(Dates = dt_seq,
