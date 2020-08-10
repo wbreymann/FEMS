@@ -60,7 +60,7 @@ setMethod(f = "Option",signature = c(),
 setMethod(f = "initialize", signature = "Option",
           function(.Object, ...) {
               .Object <- callNextMethod()
-              .Object$attributes <- CTM("Option")$attributes
+              .Object$ContractTerms <- CTM("Option")$ContractTerms
               return(.Object)
           })
 

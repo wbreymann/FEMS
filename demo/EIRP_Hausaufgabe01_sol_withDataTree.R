@@ -141,7 +141,7 @@ vars = c( "ContractID", "ContractType", "ContractRole", "NotionalPrincipal",
           "NextPrincipalRedemptionPayment", "MarketObjectCodeRateReset")
 
 
-newcts.vars = CTvars(newcts, vars=vars)
+newcts.vars = CTterms(newcts, vars=vars)
 newcts.vars[,"ContractID"]
 Bilanz
 # Konto: Fixe Darlehen

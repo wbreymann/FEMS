@@ -59,8 +59,8 @@ setMethod(f = "Stock",signature = c(),
 setMethod(f = "initialize", signature = "Stock",
           function(.Object, ...) {
               .Object <- callNextMethod()
-              atts <- lapply(CTM("Stock")$attributes, function(x) {"NULL"})
-              .Object$attributes <- atts
+              atts <- lapply(CTM("Stock")$ContractTerms, function(x) {"NULL"})
+              .Object$ContractTerms <- atts
               return(.Object)
           })
 

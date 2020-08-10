@@ -59,8 +59,8 @@ setMethod(f = "NegativeAmortizer",signature = c(),
 setMethod(f = "initialize", signature = "NegativeAmortizer",
           function(.Object, ...) {
               .Object <- callNextMethod()
-              atts <- lapply(CTM("NegativeAmortizer")$attributes, function(x) {"NULL"})
-              .Object$attributes <- atts
+              atts <- lapply(CTM("NegativeAmortizer")$ContractTerms, function(x) {"NULL"})
+              .Object$ContractTerms <- atts
               return(.Object)
           })
 
@@ -76,5 +76,5 @@ setMethod(f = "initialize", signature = "NegativeAmortizer",
 
 # nam_example=Nam()
 # getModelDetails(nam_example)
-# nam_example$attributes$ContractType
-# "ContractType" %in% names(nam_example$attributes)
+# nam_example$ContractTerms$ContractType
+# "ContractType" %in% names(nam_example$ContractTerms)

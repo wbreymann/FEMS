@@ -61,8 +61,8 @@ setMethod(f = "ForeignExchangeOutright", signature = c(),
 setMethod(f = "initialize", signature="ForeignExchangeOutright",
           function(.Object, ...) {
               .Object <- callNextMethod()
-              atts <- lapply(CTM("ForeignExchangeOutright")$attributes, function(x) {"NULL"})
-              .Object$attributes <- atts
+              atts <- lapply(CTM("ForeignExchangeOutright")$ContractTerms, function(x) {"NULL"})
+              .Object$ContractTerms <- atts
               return(.Object)
           })
 

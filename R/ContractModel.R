@@ -25,9 +25,9 @@
 #' \code{\link{get}}/\code{\link{set}} which uses the JNI
 #' interface through R-package rJava.
 #' 
-#' For a list of available contract attributes use 
+#' For a list of available contract ContractTerms use 
 #' method \code{\link{terms}}. For an explanation of the 
-#' attributes refer to the official ACTUS data dictionary
+#' ContractTerms refer to the official ACTUS data dictionary
 #' under \link{www.projectactus.org}.
 #' 
 #' @field jref A rJava java object reference
@@ -43,7 +43,7 @@
 setRefClass("ContractModel",
             fields = list(
               contract_type = "character",
-              attributes = "list",
+              ContractTerms = "list",
               required = "list",
               allowed = "list"
             )
@@ -128,7 +128,7 @@ setMethod(f = "CTM", signature = c("character"),
             ctm <- new("ContractModel")
             
             ctm$contract_type <- model
-            ctm$attributes <- ActusDictionary$rflActus_attributes[[model]]
+            ctm$ContractTerms <- ActusDictionary$rflActus_attributes[[model]]
             ctm$required <- ActusDictionary$rflActus_required[[model]]
             ctm$allowed <- ActusDictionary$rflActus_allowed_vals[[model]]
             return(ctm)
@@ -176,7 +176,7 @@ setGeneric(name = "terms", useAsDefault = TRUE,
 #' @aliases terms,jobjRef-method
 setMethod(f = "terms", signature = c("ContractModel"),
           definition = function(object) {
-            return(names(object$attributes))
+            return(names(object$ContractTerms))
           })
 
 ##############################################################
@@ -256,7 +256,7 @@ setMethod(f = "get", signature = c("ContractModel","character"),
             out <- list()
             ## get the available terms
             for (i in 1:length(match)) {
-              out[[match[i]]] <- object$attributes[[match[i]]]
+              out[[match[i]]] <- object$ContractTerms[[match[i]]]
             }
             ## are there any terms we could not find?
             nomatch <- what[!what %in% all]

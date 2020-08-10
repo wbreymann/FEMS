@@ -105,7 +105,7 @@ plot(stk,ad)
 ## -----------------------------------------------------------------
 ## 2. with Termination Date
 ## -----------------------------------------------------------------
-#' same attributes as 1 but contract have a termination date at 2015-01-31
+#' same ContractTerms as 1 but contract have a termination date at 2015-01-31
 set(stk, what=list(TerminationDate = "2015-01-31",
                    PriceAtTerminationDate = 100))
 
@@ -127,7 +127,7 @@ plot(stk,ad)
 ## -----------------------------------------------------------------
 ## 3. Stock with dividend payment
 ## -----------------------------------------------------------------
-#' same attributes as 2
+#' same ContractTerms as 2
 #' steady dividend rate with 0.05
 set(stk, what=list(
   CycleAnchorDateOfDividend = "2013-01-01",
@@ -152,7 +152,7 @@ plot(stk,ad)
 ## -----------------------------------------------------------------
 ## 4. example 3 but as Liability
 ## -----------------------------------------------------------------
-#' same attributes as 3 but contract role is liability
+#' same ContractTerms as 3 but contract role is liability
 set(stk, what=list(ContractRole = "RPL"))     # Real Position Liability
 
 #' generate contract events

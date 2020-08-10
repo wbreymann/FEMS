@@ -55,8 +55,8 @@ setMethod(
 setMethod(f = "initialize", signature = "Future",
           function(.Object, ...) {
               .Object <- callNextMethod()
-              atts <- lapply(CTM("Future")$attributes, function(x) {"NULL"})
-              .Object$attributes <- atts
+              atts <- lapply(CTM("Future")$ContractTerms, function(x) {"NULL"})
+              .Object$ContractTerms <- atts
               return(.Object)
           })
 
