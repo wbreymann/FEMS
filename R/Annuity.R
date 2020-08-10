@@ -104,8 +104,8 @@ setMethod(f = "Annuity",signature = c(),
 setMethod(f = "initialize", signature = "Annuity",
           function(.Object, ...) {
               .Object <- callNextMethod()
-              atts <- lapply(CTM("Annuity")$, function(x) {"NULL"})
-              .Object$ <- atts
+              atts <- lapply(CTM("Annuity")$ContractTerms, function(x) {"NULL"})
+              .Object$ContractTerms <- atts
               return(.Object)
           })
 
