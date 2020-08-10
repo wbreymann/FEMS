@@ -167,6 +167,7 @@ leafs = list(
 Bilanz
 
 # Generiere Events
+evL <- events(ptf, t0)
 events <- as.data.frame(events(ptf, t0))
 dim(events)
 events
