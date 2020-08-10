@@ -19,9 +19,9 @@ setRefClass("CurrentAccount",
               # per StatusDate
               # Sie sollten auch bei der Kontraktinitialisierung auf einen
               # vom Benutzer zu setzenden Startwert gesetzt werden.
-              #StatusDate = "timeDate",
-              #NominalPrincipal = "numeric",
-              #AccruedInterest = "numeric"
+              StatusDate = "timeDate",
+              NotionalPrincipal = "numeric",
+              AccruedInterest = "numeric"
             ))
 # Grundsätzliche Bemerkung:
 # Du benutzt für Zeitreihen einen "data.frame". Das ist ungünstig.
@@ -45,7 +45,10 @@ setMethod(f = "CurrentAccount",signature = c(),
                          CashFlows=data.frame(),
                          PercentageOutflows=data.frame(),
                          Compound="compound",
-                         Period="Y")
+                         Period="Y",
+                         StatusDate = timeDate("0000-01-01"),
+                         NotionalPrincipal = 0,
+                         AccruedInterest = 0)
             if(length(pars)==0){
             }  else if (is.list(pars[[1]])) {
               FEMS:::set(object, pars[[1]])

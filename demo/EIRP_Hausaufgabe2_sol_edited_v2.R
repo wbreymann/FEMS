@@ -4,10 +4,14 @@
 
 # Deaktiviere Warnungen temporär
 options(warn=-1)
+library("devtools")
+rm(list=ls())
+devtools::load_all()
+
 # Lade nötige Pakete
-library(rActus)
-library(rflPortfolio)
-library(rflSimulation)
+# library(rActus)
+# library(rflPortfolio)
+# library(rflSimulation)
 # Definiere Analysezeitpunkt
 t0 <- "2018-01-02"	
 # Sammle Energiepreise (verwende eurostat package)
@@ -163,6 +167,7 @@ leafs = list(
 Bilanz
 
 # Generiere Events
+evL <- events(ptf, t0)
 events <- as.data.frame(events(ptf, t0))
 dim(events)
 events

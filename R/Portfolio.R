@@ -102,6 +102,12 @@ setMethod("generateEvents", signature = c("Portfolio", "AD0"),
             
             ## create body for contracts
             contracts <- list()
+# Bemerkung:
+# Hier muss man zwischen Actus-Kontrakten und FEMS Kontrakten unterscheiden.
+# Wenn wir entsprechende Zwischenplassen ActusContract u. FEMSContract haben,
+# dann kann man die Abfrage "inherits(i, "ActusContract") machen.
+# Oder man müsste sie gleich im Portfolio-Objekt gruppieren.
+            
             for (i in 1:length(object$contracts)) {
               ContractTerms <- object$contracts[[i]]$ContractTerms
               
@@ -429,6 +435,7 @@ setMethod(f = "add", signature = c("Portfolio", "list"),
             if (!test < len) {
               cat("A problem occured")
             }
+            names(object$contracts) <- CTterms(object, ,"ContractID")[,1,TRUE]
             # ids = character()
             # for (obj in what) {
             #   ids = c(ids, FEMS:::get(obj, "ContractID"))

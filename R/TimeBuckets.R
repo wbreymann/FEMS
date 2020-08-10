@@ -27,7 +27,7 @@ setClass(
 
 #' Constructor for class \code{timeBuckets}.
 #' 
-#' @param tSeq Sequence of dates either as character strings of format 
+#' @param by Sequence of dates either as character strings of format 
 #' \code{\%Y-\%m-\%d} or as \code{timeDate} object.
 #' @param bucketLabs Chararacter vector containing the labels of the time 
 #' buckets.
@@ -37,10 +37,14 @@ setClass(
 #' @docType methods
 #' @rdname tb-methods
 # timeBuckets = function(t0, by, length.out, bucketLabs=NULL, breakLabs=NULL, ...) 
-timeBuckets = function(t0, bucketLabs=NULL, breakLabs=NULL, ...) 
+timeBuckets = function(by, bucketLabs=NULL, breakLabs=NULL, ...) 
 {
   # tSeq <- timeSequence(substring(t0, 1, 10), by = by, length.out = length.out)
-  tSeq <- as.timeDate(substring(t0, 1, 10))
+  if (class(by) == "character" ) 
+    tSeq <- as.timeDate(substring(by, 1, 10))
+  else 
+    tSeq <- by
+  
   if (length(tSeq)<2) stop("tSeq must be at least o length 2.")
   if (class(tSeq) == "character") {
     tSeq = timeDate(tSeq, ...)
