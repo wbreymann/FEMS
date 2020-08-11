@@ -18,7 +18,7 @@
 #' @param Currency The currency in which \link{ReservingPattern}, \link{DepreciationPattern},
 #'                 \link{IncomePattern} are denominated
 #'
-#' @param Params A list containing parameters used in the \link{ProfitPattern}, 
+#' @param Params A list containing parameters used in the \link{CashFlowPattern}, 
 #'               \link{InvestPattern}, and \link{ReservePattern} functions
 #' 
 #' @param ReservePattern A function evaluating the pattern of building reserves. The 
@@ -35,8 +35,8 @@
 #' \item{params}{The \link{Params} object used when evaluating the pattern}
 #' }
 #' 
-#' @param ProfitPattern A function evaluating the pattern of generated profit. The 
-#'                       function must implemente two arguments:
+#' @param CashFlowPattern A function evaluating the pattern of generated cash flows. 
+#'                        The function must implement two arguments:
 #' \itemize{
 #' \item{model}{The \link{RiskFactorConnector} object used when evaluating the pattern}
 #' \item{params}{The \link{Params} object used when evaluating the pattern}
@@ -59,7 +59,7 @@ setRefClass("Operations",
               Params = "list",
               ReservePattern = "function",
               InvestPattern = "function",
-              ProfitPattern = "function",
+              CashFlowPattern = "function",
               RiskFactorConnector = "RiskFactorConnector"
             ))
 
@@ -99,7 +99,7 @@ setMethod(f = "initialize", signature="Operations",
               .Object <- callNextMethod()
               # initialize pars
               .Object$ContractType = "Operations"
-              .Object$ProfitPattern = function(model,params) { NULL }
+              .Object$CashFlowPattern = function(model,params) { NULL }
               .Object$InvestPattern = function(model,params) { NULL }
               .Object$ReservePattern = function(model,params) { NULL }
               return(.Object)
@@ -245,7 +245,7 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
                                 NominalAccrued=0.0)
             
             # evaluate profit pattern
-            ops <- object$ProfitPattern(object$RiskFactorConnector, object$params)
+            ops <- object$CashFlowPattern(object$RiskFactorConnector, object$params)
             if(!is.null(ops)) {
               vals <- as.numeric(series(ops))
               events <- rbind(events,

@@ -15,14 +15,14 @@ ops.profit = function(model, params) { # rename to ops-profit
 }
 #-----------------------------------------------------------------------------
 # Modelling of operational revenues and expenses (Betriebskosten und -erträge)
-# create Operations contract with "ProfitPattern"
+# create Operations contract with "CashFlowPattern"
 ops1 = Ops(ContractID="Ops001",
            Currency="CHF",
-           ProfitPattern = ops.profit)
+           CashFlowPattern = ops.profit)
 
 terms(ops1)
 ops1$ContractType
-ops1$ProfitPattern
+ops1$CashFlowPattern
 # etc.
 values = rnorm(24)
 idx <- Index(MarketObjectCode = "GAS",
@@ -34,7 +34,7 @@ plot(gas.ts)
 # This defines the yield curve observed at the analysis date. 
 yc.tnr <- c("3M", "1Y", "2Y", "5Y", "7Y", "10Y")
 yc.rts <- c(-0.28, -0.26, -0.21, 0.03, 0.20, 0.42)/100
-yc.ch <- YieldCurve(MarketObjectCode = "YC_CH_EIDGENOSSEN", ReferenceDate = ad, 
+yc.ch <- YieldCurve(MarketObjectCode = "YC_CH", ReferenceDate = ad, 
                     Tenors = yc.tnr, Rates = yc.rts)
 plot(yc.ch)
 rf = RFConn(list(yc.ch, idx))
@@ -67,7 +67,7 @@ liquidity(ops1, by=tb, type="marginal")
 value(ops1, by=by, type="nominal")
 
 # Discount-Engine für die Barwertberechnung:
-eng <- DcEngine(RiskFactorObject=yc.ch)
+eng <- DcEngine(RiskFactorObject=rf[["YC_CH"]])
 #set(eng, rf)
 
 # Barwert der (erwarteten) operativen Cashflows
