@@ -101,11 +101,9 @@ value(ops1, by=by, type="nominal")
 
 rf
 rf[["YC_CH"]]
-class(get(rf, "YC_CH"))
 
 # Discount-Engine für die Barwertberechnung:
-# eng <- DcEngine(RiskFactorObjectLink=rf[["YC_CH_EIDGENOSSEN"]])
-eng <- DcEngine(RiskFactorObjectLink="YC_CH")
+eng <- DcEngine(RiskFactorObjectLink=rf[["YC_CH"]])
 set(eng, rf)
 
 # Barwert der (erwarteten) operativen Cashflows
