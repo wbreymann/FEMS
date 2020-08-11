@@ -77,6 +77,9 @@ setMethod(f = "DcEngine", signature = c("missing"),
           definition = function(...){
               object <- new("DiscountingEngine")
               pars <- list(...)
+              if (!("DiscountingSpread" %in% names(pars))) {
+                pars <- c(pars, list(DiscountingSpread=0))
+              }
               if (length(pars) == 0) {
               } else if (is.list(pars[[1]])) {
                   set(object = object, what = pars[[1]])

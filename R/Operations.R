@@ -542,6 +542,7 @@ setMethod(f = "value", signature = c("Operations", "timeDate", "character",
 setMethod(f = "value", signature = c("Operations", "timeBuckets", "character", 
                                      "DiscountingEngine"),
           definition = function(object, by, type, method, ...){
+            
             # message("Method 'value' with signature with timeBuckets")
             if(type=="nominal") {
               by2 = as.timeDate(by)
@@ -578,11 +579,11 @@ ops.nominal = function(object, by, digits=2) {
 }
 
 ops.market = function(object, by, method, digits=2) {
-  
+ 
   # extract discounting parameters
   spread <- FEMS:::get(method,"DiscountingSpread")
-  dc <- FEMS:::YieldCurve(FEMS:::get(method,"InterestRatesModel"))
-  FEMS:::set(dc, list(Rates=FEMS:::get(dc,"Rates") + spread))
+  dc <- get(method, "RiskFactorObject")
+  FEMS::set(dc, list(Rates = FEMS::get(dc, "Rates") + spread))
   
   # extract cashflow events
   evs <- FEMS:::get(object,"evs")[, c("Date", "Value","Type")]
@@ -593,8 +594,6 @@ ops.market = function(object, by, method, digits=2) {
   # iterate through valuation times and compute present value of remaining 
   # cashflows
   by <- as.character(by)
-  by[grep("T", c(by, paste0(by, "T00")), invert=TRUE)] <- 
-    paste0(by[grep("T", c(by, paste0(by, "T00")), invert=TRUE)], "T00")
   val <- sapply(by, function(ad) {
     # times must be STRICTLY greater (">"), otherwise inconsistent with 
     # liquidity and income computation
@@ -603,7 +602,7 @@ ops.market = function(object, by, method, digits=2) {
       return(0.0)
     } else {
       cfs <- evs.sub$values
-      dts <- paste0(as.character(evs.sub$times),"T00")
+      dts <- as.character(evs.sub$times)
       dfs <- FEMS::discountFactors(dc, termStart=ad, termEnd=dts, 
                                      isDateEnd=TRUE)
       return(as.numeric(cfs%*%dfs))
