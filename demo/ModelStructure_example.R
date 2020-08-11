@@ -59,12 +59,12 @@ ops1 = Ops(ContractID="Ops001",
 terms(ops1)
 ops1$ContractType
 ops1$CashFlowPattern
-ops1$Params
+ops1$CashFlowParams
 
 # add contract to account Operations
 addContracts(list(ops1), FindNode(myModel, "Operations"))
 length(myModel$Operations$contracts)
-myModel$Operations$contracts
+myModel$Operations$contracts[[1]]
 
 # This defines the yield curve observed at the analysis date. 
 yc.tnr <- c("3M", "1Y", "2Y", "5Y", "7Y", "10Y")
@@ -91,6 +91,13 @@ by <- times[1:5]- 1*24*3600
 tb <- timeBuckets(by, bucketLabs=2016:2019)
 tb
 liquidity(ops1, by=tb, type="marginal")
+
+ptf = Portfolio()
+# Before computing an analytics, the values should be cleared.
+clearAnalytics(myModel, "liquidity")
+myModel$Do(fun=fAnalytics, "liquidity", ptf, by=tb, type="marginal", filterFun=isLeaf)
+myModel$Aktiva$Treasury[["liquidity"]] = rep(0, length=length(BS$Aktiva$Kredite$liquidity))
+aggregateAnalytics(myModel, "liquidity")
 
 
 # income

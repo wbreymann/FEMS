@@ -30,7 +30,7 @@ Depends:
     data.tree
 Imports:
     timeSeries (>= 3012.99),
-SystemRequirements: R (>= 3.4.4) 
+SystemRequirements: R (>= 3.5.0) 
 Encoding: UTF-8
 Collate: 
     'ContractModel.R'

@@ -85,6 +85,8 @@ setMethod(f = "EventSeries", signature = c("CurrentAccount", "character"),
             out$evs <- currentaccount.evs(object, model, end_date, object$Compound, object$Period)
             out$evs <- out$evs[out$evs$Date>=ad,] # inefficient, should be done in function call...
             out$evs <- out$evs[out$evs$Date<=end_date,]
+            ## Attach EventSeries to contract
+
             return(out)
           })
 

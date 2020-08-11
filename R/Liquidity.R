@@ -182,7 +182,7 @@ setMethod(f = "liquidity", signature = c("EventSeries", "timeDate", "character")
           definition = function(object, by, type, digits = 2){
             if (type == "marginal") {
               liq <- timeSeries(rep(0, length(by)), charvec = by)
-              cf.raw <- timeSeries(get(object,"evs")$Payoff,
+              cf.raw <- timeSeries(get(object,"evs")$Value,
                                  charvec = substring(get(object,"evs")$Date, 1, 10))
               # cf.aggr = .aggregate.timeSeries(cf.raw, by, FUN=sum)
               cf.aggr <- aggregate(cf.raw, by, FUN = sum)

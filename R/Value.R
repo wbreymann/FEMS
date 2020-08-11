@@ -177,7 +177,6 @@ setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character",
             return(val)
           })
 
-
 #' @include ContractType.R
 #' @export
 #' @rdname val-methods
@@ -193,6 +192,9 @@ setMethod(f = "value", signature = c("ContractType", "AD0", "character", "Valuat
             return(val)
           })
           
+#################################################################
+##### Various methods with object of class EventSeries as Input...
+#' @include EventSeries.R
 #' @export
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "AD0", "character", "missing"),
@@ -202,6 +204,7 @@ setMethod(f = "value", signature = c("EventSeries", "AD0", "character", "missing
 
 
 
+#' @include EventSeries.R
 #' @export
 #' @rdname val-methods
 #' The value is computed from an \code{EventSeries}, 
@@ -211,7 +214,7 @@ setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "mi
             return(FEMS::value(object, as.character(by), type, ...) )
           })
 
-#' @include ContractType.R
+#' @include EventSeries.R
 #' @include TimeBuckets.R
 #' @export
 #' @rdname val-methods
@@ -222,54 +225,8 @@ setMethod(f = "value", signature = c("EventSeries", "timeBuckets", "character", 
             return(val)
           })
 
-#################################################################
-##### Various generics for Portfolio as Input...
 
-setMethod(f = "value", signature = c("Portfolio", "character", "character", "ValuationEngine"),
-          definition = function(object, by, type, method, ...){
-            if (type == "nominal") {
-              val <- FEMS::value(FEMS::events(object, by[1]), by, "nominal", method, ...)
-            } else if (type %in% c("markToModel", "markToMarket") ) {
-              val <- FEMS::value(FEMS::events(object, by[1]), by, "markToModel", method, ...)
-            } else {
-              stop(paste("Value type '", type, "' not recognized!", sep=""))
-            }
-            return(val)
-          })
-
-setMethod(f = "value", signature = c("Portfolio", "character", "character", "missing"),
-          definition = function(object, by, type, method, ...){
-            val <- FEMS::value(FEMS::events(object, by[1]), by, type, ...)
-            return(val)
-          })
-
-setMethod(f = "value", signature = c("Portfolio", "timeBuckets", "character", "missing"),
-          definition = function(object, by, type, ...){
-            val <- FEMS::value(object, as.character(by), type, ...)
-            names(val) <- by@breakLabs
-            return(val)
-          })
-
-setMethod(f = "value", signature = c("Portfolio", "timeBuckets", "character", "ValuationEngine"),
-          definition = function(object, by, type, method, ...){
-            val <- FEMS::value(object, as.character(by), type, method, ...)
-            names(val) <- by@breakLabs
-            return(val)
-          })
-
-setMethod(f = "value", signature = c("Portfolio", "timeDate", "character", "missing"),
-          definition = function(object, by, type, ...){
-            val <- FEMS::value(object, as.character(by), type, ...)
-            return(val)
-          })
-
-setMethod(f = "value", signature = c("Portfolio", "timeDate", "character", "ValuationEngine"),
-          definition = function(object, by, type, method, ...){
-            val <- FEMS::value(object, as.character(by), type, method, ...)
-            return(val)
-          })
-
-
+#' @include EventSeries.R
 #' @export
 #' @rdname val-methods
 #' The value is computed from an \code{EventSeries}, 
@@ -279,7 +236,7 @@ setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "Di
             return(FEMS::value(object, as.character(by), type, method, ...) )
           })
 
-#' @include ContractType.R
+#' @include EventSeries.R
 #' @include TimeBuckets.R
 #' @export
 #' @rdname val-methods
@@ -291,6 +248,7 @@ setMethod(f = "value", signature = c("EventSeries", "timeBuckets", "character", 
           })
 
 
+#' @include EventSeries.R
 #' @export
 #' @rdname val-methods
 #' The value is computed from an \code{EventSeries}, 
@@ -364,35 +322,39 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "D
           })
 
 
+#' @include EventSeries.R
 #' @export
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "character", "character", "missing"),
           definition = function(object, by, type, digits = 2, ...){
 
+            print("by is character")
               ev.df = as.data.frame(object)
               pars = list(...)
-              
+            print(pars)  
               if ("filter" %in% names(pars)) {
                 ev.df = subset(ev.df, ContractID %in% pars[["filter"]][[1]])
               }
-              
               # convert dates to time date
               date <- timeDate(substring(by, 1, 10))
               ev.df$Date <- timeDate(substring(ev.df$Date, 1, 10))
-              
               # compute value
               if (type == "nominal") {
                 
                 # extract state of nominal value from most-recent event for each contract 
                 # and analysis date (i.e. by-vector element)
                 ids <- unique(ev.df$ContractID)
+                if (is.null(ids)) ids = "noID"
                 val <- matrix(, nrow = length(ids), ncol = length(date))
                 for (t in 1:length(date)) {
                   for (i in 1:length(ids)) {
                     if (date[t] < min(ev.df$Date)) {
                       val[i,t] <- 0
                     } else {
-                      val[i,t] <- tail(subset(ev.df, ContractID == ids[i] & Date <= date[t]), 1)$NominalValue
+                      if (ids[i]=="noID")
+                        val[i,t] <- tail(subset(ev.df, Date <= date[t]), 1)$NominalValue
+                      else
+                        val[i,t] <- tail(subset(ev.df, ContractID == ids[i] & Date <= date[t]), 1)$NominalValue
                     }
                   }                
                 }
@@ -420,4 +382,51 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "m
             return(round(val, digits))
           })
 
+
+#################################################################
+##### Various methods with object of class Portfolio as Input...
+
+setMethod(f = "value", signature = c("Portfolio", "character", "character", "ValuationEngine"),
+          definition = function(object, by, type, method, ...){
+            if (type == "nominal") {
+              val <- FEMS::value(FEMS::events(object, by[1]), by, "nominal", method, ...)
+            } else if (type %in% c("markToModel", "markToMarket") ) {
+              val <- FEMS::value(FEMS::events(object, by[1]), by, "markToModel", method, ...)
+            } else {
+              stop(paste("Value type '", type, "' not recognized!", sep=""))
+            }
+            return(val)
+          })
+
+setMethod(f = "value", signature = c("Portfolio", "character", "character", "missing"),
+          definition = function(object, by, type, method, ...){
+            val <- FEMS::value(FEMS::events(object, by[1]), by, type, ...)
+            return(val)
+          })
+
+setMethod(f = "value", signature = c("Portfolio", "timeBuckets", "character", "missing"),
+          definition = function(object, by, type, ...){
+            val <- FEMS::value(object, as.character(by), type, ...)
+            names(val) <- by@breakLabs
+            return(val)
+          })
+
+setMethod(f = "value", signature = c("Portfolio", "timeBuckets", "character", "ValuationEngine"),
+          definition = function(object, by, type, method, ...){
+            val <- FEMS::value(object, as.character(by), type, method, ...)
+            names(val) <- by@breakLabs
+            return(val)
+          })
+
+setMethod(f = "value", signature = c("Portfolio", "timeDate", "character", "missing"),
+          definition = function(object, by, type, ...){
+            val <- FEMS::value(object, as.character(by), type, ...)
+            return(val)
+          })
+
+setMethod(f = "value", signature = c("Portfolio", "timeDate", "character", "ValuationEngine"),
+          definition = function(object, by, type, method, ...){
+            val <- FEMS::value(object, as.character(by), type, method, ...)
+            return(val)
+          })
 

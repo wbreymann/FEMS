@@ -41,7 +41,13 @@ rf <- RFConn(yc_flat)
 (evs.curr_acc.5 <- events(curr_acc, "2016-12-31", rf, end_date="2017-12-31"))  
 (evs.curr_acc.6 <- events(curr_acc, "2017-12-31", rf, end_date="2018-12-31"))  
 
+evs = evs.curr_acc
+by = timeSequence("2013-01-01", "2018-01-01", by="year")
+by = timeBuckets(by, bucketLabs=2013:2017)
+by
 
+liquidity(evs, by, "marginal", digits=0)
+value(evs, by, "nominal", digits=0)
 
 
 #################################################################################################

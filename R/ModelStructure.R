@@ -129,16 +129,21 @@ setMethod(f = "addContracts", signature = c("list", "Node"),
 fAnalytics = function(node, ...) {
   pars = list(...)
   # print(pars)
-  nams = node$ctNames
+  # print(pars)
+  ctrs = node$contracts
   res = sapply(
-    X=nams,
+    X=ctrs,
     FUN = function(x, pars) {
       pars = list(...)
       fnam = pars[[1]] # the name of the analytics [liquidity|income|value]
-      object = pars[[2]][[x]] # the contracts
+      # object = pars[[2]][[x]] # the contract
+      object = x # the contract
       # print(x)
       pars = pars[c(-1,-2)]
-      do.call(fnam, unlist(list(object, pars)))
+      print("Pars:")
+    print(pars)
+    do.call(fnam, list(object=object, pars))
+    # do.call(fnam, unlist(list(object, pars)))
     })
   if (!is.null(dim(res)) ) {
     res = rowSums(res)
