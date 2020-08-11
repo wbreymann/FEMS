@@ -441,23 +441,24 @@ setMethod(f = "show", signature = c("RiskFactorConnector"),
 
 ## @include
 #' @export
-# setMethod("[[", signature = c("RiskFactorConnector", "character"),
-#           definition = function(x, i) {
-#             if ( !is.element(i, get(x, "keys")) ) 
-#               return(NULL)
-#             else
-#               get(x, what=i)
-#           }
-# )
+setMethod("[[", signature = c("RiskFactorConnector", "character"),
+          definition = function(x, i) {
+            if ( !is.element(i, get(x, "keys")) )
+              return(NULL)
+            else
+              get(x, what=i)
+          }
+)
 
 ## @include
 #' @export
-# setMethod("[[<-", signature = c("RiskFactorConnector", "ANY"),
-#           definition = function(x, i, value) {
-#             if (containsID (x, i)) {
-#               remove(x, i)
-#             }
-#             add (x, value) 
-#             x
-#           }
-# )
+setMethod("[[<-", signature = c("RiskFactorConnector", "ANY"),
+          definition = function(x, i, value) {
+            # if (containsID (x, i)) {
+            #   remove(x, i)
+            # }
+            # add (x, value)
+            # x
+            stop("Method '[[<-' not available for object of class RiskFactorConnector")
+          }
+)
