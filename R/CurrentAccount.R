@@ -12,13 +12,6 @@ setRefClass("CurrentAccount",
               MarketObjectCodeRateReset = "character",
               Compound = "character",
               Period = "character",
-              # Zusätzliche Variablen (sind Statusvariablen des Contracts)
-              # Sie werden benötigt, um den Kontostand und die aufgelaufenen
-              # Zinsen nachzuführen. 
-              # Die Werte von NominalPrincipal und AccruedInterest sind immer
-              # per StatusDate
-              # Sie sollten auch bei der Kontraktinitialisierung auf einen
-              # vom Benutzer zu setzenden Startwert gesetzt werden.
               StatusDate = "timeDate",
               NotionalPrincipal = "numeric",
               AccruedInterest = "numeric"
@@ -109,11 +102,12 @@ currentaccount.evs <- function(object, model, end_date, method, period){
   next_rate_dt <- min(next_rate_dt[next_rate_dt>max(interest_dates)])
   
   # get a combination of all dates
-  all_dates <- sort(unique(c(interest_dates,
+  all_dates <- sort(unique(c(object$ContractDealDate,
+                             interest_dates,
                              rownames(object$CashFlows),
                              rownames(object$PercentageOutflows),
                              end_date)))
-  if (min(all_dates) < yc$ReferenceDate[1]) {
+  if (min(c(all_dates,object$ContractDealDate)) < yc$ReferenceDate[1]) {
     stop("ErrorIn::CurrentAccount:: Dates must all lay after first ReferenceDate of YieldCurve !!! ")
   }
 
@@ -121,11 +115,11 @@ currentaccount.evs <- function(object, model, end_date, method, period){
   ccy <- object$Currency
   
   # preparing loop
-  ev_tbl <- data.frame()
   time <- 0
   nominal_value <- 0
-  nominal_rate <- 0
   nominal_accrued <- 0
+  nominal_rate <- 0
+  ev_tbl <- data.frame()
   rate_count <- 1
   for (i in 1:length(all_dates)) {
     next_ev <- data.frame()
@@ -137,6 +131,14 @@ currentaccount.evs <- function(object, model, end_date, method, period){
           nominal_rate <- rates2(yc, next_rate_dt, interest_dates[rate_count], isDateEnd=TRUE)
         })
         rate_count <- rate_count + 1
+      }
+      if (all_dates[i] %in% object$ContractDealDate){
+        nominal_value <- object$NotionalPrincipal
+        nominal_accrued <- object$AccruedInterest
+        next_ev <- rbind(next_ev,
+                        data.frame(Date=object$ContractDealDate, Value=nominal_value, Type="AD0", Level="P", Currency=ccy,
+                                   Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
+                                   NominalAccrued=nominal_accrued))
       }
       if (all_dates[i] %in% rownames(object$CashFlows)){
         value <- object$CashFlows[all_dates[i],]
