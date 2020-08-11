@@ -133,8 +133,8 @@ gas.func <- function(model,params) {
              valueAt(get(model, "GAS"), paste0(time(gas.p), "T00")),
              ops.times)
 }
-# Definiere Operations-Kontrakt mitProfitPattern
-gas <- Ops(ContractID="Gas01", Currency="EUR", ProfitPattern=gas.func)
+# Definiere Operations-Kontrakt mit CashFlowPattern
+gas <- Ops(ContractID="Gas01", Currency="EUR", CashFlowPattern=gas.func)
 # Definiere Gas-Einkaufs-Pattern
 el.func <- function(model,params) {
   timeSeries(24*300*100*1000*
@@ -142,7 +142,7 @@ el.func <- function(model,params) {
              ops.times)
 }
 # Definiere Investitions-Kontrakt
-el <- Ops(ContractID="El01", Currency="EUR", ProfitPattern=el.func)
+el <- Ops(ContractID="El01", Currency="EUR", CashFlowPattern=el.func)
 # Erstelle Portfolio
 ptf <- Portfolio()
 add(ptf, list(Kredit, gas, el, inv))

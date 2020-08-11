@@ -51,14 +51,14 @@ ops.expenses = function(model, params) {
 
 #-----------------------------------------------------------------------------
 # Modelling the expenses
-# create Operations contract with "ProfitPattern"
+# create Operations contract with "CashFlowPattern"
 ops1 = Ops(ContractID="Ops001",
            Currency="CHF",
-           ProfitPattern = ops.expenses)
+           CashFlowPattern = ops.expenses)
 
 terms(ops1)
 ops1$ContractType
-ops1$ProfitPattern
+ops1$CashFlowPattern
 ops1$Params
 
 # add contract to account Operations
