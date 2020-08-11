@@ -21,8 +21,7 @@ setRefClass("CurrentAccount",
 # Es gibt eine Reihe von Zeitreihenklassen in R.
 # Nils hat "zoo" und "timeSeries" benutzt.
 # Ich schlage vor, dass wir als Zeitklasse "timeDate" und als Zeitreihenklassen
-# "timeSeries" benutzen. "zoo" kenne ich nicht wirklich, kanan aber durchaus
-# effizienter sein.
+# "timeSeries" benutzen. "zoo" kenne ich nicht wirklich.
 
 #' @export
 setGeneric(name = "CurrentAccount",
@@ -70,7 +69,6 @@ setMethod(f = "get", signature = "CurrentAccount",
 #' @export
 setMethod(f = "events", signature = c("CurrentAccount", "character", "RiskFactorConnector"),
           definition = function(object, ad, model, end_date){
-            stopifnot( !missing(end_date) )
             return(FEMS:::EventSeries(object, ad, model, end_date=end_date))
           })
 
@@ -90,9 +88,9 @@ setMethod(f = "EventSeries", signature = c("CurrentAccount", "character"),
             return(out)
           })
 
-# SUGGESTION: Couldn't this be implemented as a method of the reference class?
 currentaccount.evs <- function(object, model, end_date, method, period){
-  # the start date is missing
+  
+  # get the relevant yield curve from the risk factor connector
   yc <- get(model, object$MarketObjectCodeRateReset)
   
   # get dates for interest payments
@@ -116,36 +114,13 @@ currentaccount.evs <- function(object, model, end_date, method, period){
   # to use a shorter name
   ccy <- object$Currency
   
-  # !!!MISSING: Only retain data >= start date!!!
-  
-  # expand all data.frames to reflect same dates...
-  # Not necessary to do this with data.frames. Possibly switch to array later...
-  cashflow_df <- rbind(
-    object$CashFlows, 
-    setNames(data.frame(
-      rep(0,length(all_dates[!is.element(all_dates,rownames(object$CashFlows))])), 
-      row.names=all_dates[!is.element(all_dates,rownames(object$CashFlows))]),
-      names(object$CashFlows))
-    )
-  cashflow_df <- cashflow_df[order(row.names(cashflow_df)),,drop=FALSE]
-  perc_outflow_df <- rbind(
-    object$PercentageOutflows, 
-    setNames(data.frame(
-      rep(0,length(all_dates[!is.element(all_dates,rownames(object$PercentageOutflows))])), 
-      row.names=all_dates[!is.element(all_dates,rownames(object$PercentageOutflows))]),
-      names(object$PercentageOutflows)))
-  perc_outflow_df <- perc_outflow_df[order(row.names(perc_outflow_df)),,drop=FALSE]
-  
-  current_account_bef <- 0
-  current_account <- 0
-  outflow <- 0
-  # # preparing loop
-  # time <- 0
-  # nominal_value <- 0
-  # nominal_accrued <- 0
-  # nominal_rate <- 0
-  # ev_tbl <- data.frame()
-  # rate_count <- 1
+  # preparing loop
+  time <- 0
+  nominal_value <- 0
+  nominal_accrued <- 0
+  nominal_rate <- 0
+  ev_tbl <- data.frame()
+  rate_count <- 1
   for (i in 1:length(all_dates)) {
     next_ev <- data.frame()
     if (i==1){
