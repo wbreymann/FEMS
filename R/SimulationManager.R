@@ -18,7 +18,7 @@ setMethod(f = "SimulationManager", signature = c(),
           definition = function(...){
             object <- new("SimulationManager")
             pars <- list(...)
-            set(object = object, what = pars)
+            set(object, pars)
             return(object)
           })
 
@@ -26,6 +26,7 @@ setMethod(f = "SimulationManager", signature = c(),
 setMethod(f = "set", signature = c("SimulationManager"),
           definition = function(object, ...){
             object <- new("SimulationManager")
+            what <- pars(...)
             for (i in names(what)) {
               if (is.valid.sm.field(i)) {
                 value <- what[[i]]
