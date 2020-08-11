@@ -79,7 +79,6 @@ Collate:
     'Swap.R'
     'defaults.R'
     'yearFraction.R'
-    'discountFactorsv2.R'
     'export.R'
     'import.R'
     'onAttach.R'
