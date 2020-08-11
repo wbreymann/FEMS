@@ -56,10 +56,12 @@ setRefClass("Operations",
               ContractID = "character",
               ContractDealDate = "character",
               Currency = "character",
-              Params = "list",
-              ReservePattern = "function",
-              InvestPattern = "function",
               CashFlowPattern = "function",
+              InvestPattern = "function",
+              ReservePattern = "function",
+              CashFlowParams = "list",
+              InvestParams = "list",
+              ReserveParams = "list",
               RiskFactorConnector = "RiskFactorConnector"
             ))
 
@@ -244,8 +246,11 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
                                 NominalRate=0.0,
                                 NominalAccrued=0.0)
             
-            # evaluate profit pattern
-            ops <- object$CashFlowPattern(object$RiskFactorConnector, object$params)
+            # evaluate cash flow pattern
+            # ops <- object$CashFlowPattern(object$RiskFactorConnector, object$params)
+            # code is generalized so that an arbitrary function with arbitrary
+            # arguments can be passed.
+            ops <- do.call(object$CashFlowPattern, object$CashFlowParams)
             if(!is.null(ops)) {
               vals <- as.numeric(series(ops))
               events <- rbind(events,
@@ -260,6 +265,7 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
                                       NominalAccrued=0.0))
             }
             # evaluate invest pattern
+            # Should be generalized, cf. above
             ops <- object$InvestPattern(object$RiskFactorConnector,object$params)
             if(!is.null(ops)) {
               if (length(ops)<2) stop("An investment pattern needs to have length>1!")
@@ -276,6 +282,7 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
                                       NominalAccrued=0.0))
             }
             # evaluate reserving pattern
+            # Should be generalized, cf. above
             ops <- object$ReservePattern(object$RiskFactorConnector,object$params)
             if(!is.null(ops)) {
               # compute change in nominal value, note, reserves are liabilities so interprete
