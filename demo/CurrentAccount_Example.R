@@ -43,6 +43,7 @@ rf <- RFConn(yc_flat)
 
 
 
+
 #################################################################################################
 # Example 2:
 # Just a negative amount from the beginning...
@@ -78,7 +79,7 @@ curr_acc3 <- CurrentAccount(ContractID = "Test_CurrAcc3",
                             MarketObjectCodeRateReset = "YC_FLAT",
                             Compound = "continuous")
 
-(evs.curr_acc3 <- events(curr_acc3, "2014-12-31", rf, end_date="2020-12-31"))
+(evs.curr_acc3 <- events(curr_acc3, t0, rf, end_date="2020-12-31"))
 
 
 #################################################################################################
@@ -102,5 +103,73 @@ curr_acc <- CurrentAccount(ContractID = "CurrentAccount_1",
 
 (ev <- events(curr_acc, "2013-12-31", RFConn(yc_flat), end_date="2018-12-31"))
 
+#################################################################################################
+# Example 5:
+# check some accruels 
+t0 <- "2013-12-31"
+(yc_flat <- FlatCurve2(0.03, t0))
+yc_flat$MarketObjectCode <- "FlatCurve"
+cashflows_dt <- c("2013-12-31","2014-06-30","2014-12-31","2015-06-30","2015-12-31")
+(cashflows <- data.frame(CashFlows = c(10000,-1000,2000,-3000,-5000), row.names = cashflows_dt))
+perc_out_dt <- c("2013-12-31","2014-12-31","2015-12-31","2016-12-31","2017-12-31")
+(percentage_outflows <- data.frame(PercentageOutflows = rep(0.04, length(perc_out_dt)), 
+                                   row.names = perc_out_dt))
+curr_acc5 <- CurrentAccount(ContractID = "CurrentAccount_1",
+                           ContractDealDate = t0,
+                           Currency = "CHF",
+                           CashFlows = cashflows,
+                           PercentageOutflows = percentage_outflows,
+                           CycleAnchorDateOfInterestPayment = t0,
+                           CycleOfInterestPayment = "1Y-",
+                           MarketObjectCodeRateReset = "FlatCurve")
+
+(evs.curr_acc5 <- events(curr_acc5, "2013-12-31", RFConn(yc_flat), end_date="2018-03-31"))
+
+
+#################################################################################################
+# Example 6:
+# check some accruels 
+t0 <- "2013-12-31"
+yc_flat <- FlatCurve2(0.03, t0)
+yc_flat <- add(yc_flat, FlatCurve2(0.04, "2014-12-31"))
+(yc_flat <- add(yc_flat, FlatCurve2(0.05, "2015-12-31")))
+yc_flat$MarketObjectCode <- "FlatCurve"
+
+cashflows_dt <- c("2013-12-31","2014-12-31","2015-12-31")
+(cashflows <- data.frame(CashFlows = c(10000,-1000,2000), row.names = cashflows_dt))
+
+curr_acc6 <- CurrentAccount(ContractID = "CurrentAccount_6",
+                            ContractDealDate = t0,
+                            Currency = "CHF",
+                            CashFlows = cashflows,
+                            CycleAnchorDateOfInterestPayment = t0,
+                            CycleOfInterestPayment = "1Y-",
+                            MarketObjectCodeRateReset = "FlatCurve")
+
+(evs.curr_acc6 <- events(curr_acc6, "2013-12-31", RFConn(yc_flat), end_date="2018-03-31"))
+
+
+
+#################################################################################################
+# Example 7:
+# check some accruels 
+t0 <- "2012-06-30"
+yc_flat <- FlatCurve2(0.03, t0)
+yc_flat$MarketObjectCode <- "FlatCurve"
+
+cashflows_dt <- c("2013-12-31","2014-12-31","2015-12-31")
+(cashflows <- data.frame(CashFlows = c(1000,-1000,2000), row.names = cashflows_dt))
+
+curr_acc7 <- CurrentAccount(ContractID = "CurrentAccount_7",
+                            ContractDealDate = t0,
+                            Currency = "CHF",
+                            CashFlows = cashflows,
+                            CycleAnchorDateOfInterestPayment = "2013-12-31",
+                            CycleOfInterestPayment = "1Y-",
+                            MarketObjectCodeRateReset = "FlatCurve",
+                            NotionalPrincipal = 15000,
+                            AccruedInterest = 120)
+
+(evs.curr_acc7 <- events(curr_acc7, t0, RFConn(yc_flat), end_date="2016-03-31"))
 
 

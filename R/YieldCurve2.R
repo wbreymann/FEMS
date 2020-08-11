@@ -323,7 +323,7 @@ setMethod(f = "getRateAt2",
               
               # set the interpolator with year fractions and rates
               ref_idx_from <- max(cumsum(object$ReferenceDate <= from[i]))
-              ref_idx_to <- max(cumsum(object$ReferenceDate <= to[i]))
+              ref_idx_to <- max(cumsum(object$ReferenceDate < to[i]))
               
               if (ref_idx_from == ref_idx_to) {
                 t1 <- yearFraction(object$ReferenceDate[ref_idx_from], from[i], object$DayCountConvention)
