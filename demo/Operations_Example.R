@@ -9,20 +9,8 @@ devtools::load_all()
 ad="2016-01-01"
 (times = timeSequence(from=timeDate(substring(ad, 1, 10)), by="1 months", 
                       length.out=24))
-# Ausgaben bzw. einnahmen für Rohstoff
-ops.profit = function(model, params) { # rename to ops-profit
-  timeSeries( valueAt(get(model, "GAS"), paste0(times, "T00")) * 1000, times)
-}
-#-----------------------------------------------------------------------------
-# Modelling of operational revenues and expenses (Betriebskosten und -erträge)
-# create Operations contract with "CashFlowPattern"
-ops1 = Ops(ContractID="Ops001",
-           Currency="CHF",
-           CashFlowPattern = ops.profit)
 
-terms(ops1)
-ops1$ContractType
-ops1$CashFlowPattern
+# Define risk factor model
 # etc.
 values = rnorm(24)
 idx <- Index(MarketObjectCode = "GAS",
@@ -37,11 +25,38 @@ yc.rts <- c(-0.28, -0.26, -0.21, 0.03, 0.20, 0.42)/100
 yc.ch <- YieldCurve(MarketObjectCode = "YC_CH", ReferenceDate = ad, 
                     Tenors = yc.tnr, Rates = yc.rts)
 plot(yc.ch)
-rf = RFConn(list(yc.ch, idx))
-rf
-plot(ops.profit(rf, "GAS"))
+rf1 = RFConn(list(yc.ch, idx))
+rf1
+
+
+
+# Ausgaben bzw. einnahmen für Rohstoff
+ops.profit = function(model, params) { 
+  timeSeries( valueAt(get(model, "GAS"), paste0(times, "T00")) * 1000, times)
+}
+#-----------------------------------------------------------------------------
+# Modelling of operational revenues and expenses (Betriebskosten und -erträge)
+# create Operations contract with "CashFlowPattern"
+# ATTENTION: if a variable in CashFlowParams is not defined and happens to be
+# the same as the one of an object available in the session, this on gets allocated
+# and will produce an error.
+# 
+ops1 = Ops(ContractID="Ops001",
+           Currency="CHF",
+           CashFlowPattern = ops.profit,
+           CashFlowParams = list(model=rf1, params="GAS"))
+
+terms(ops1)
+ops1$ContractType
+ops1$CashFlowPattern
+ops1$CashFlowParams 
+
+
+cfPattern = do.call("ops.profit", ops1$CashFlowParams)
+plot(cfPattern)
+
 # link Operations contract with market environment
-set(ops1, rf)
+set(ops1, rf1)
 # pure events
 events1 = events(ops1, ad)
 print(events1$evs)
