@@ -53,15 +53,33 @@ setMethod(f = "set", signature = c("SimulationManager"),
 
 #' @export
 setGeneric(name = "simulate",
-           def = function(object, start_date, end_date, ...){
+           def = function(object, start, end, by, ...){
              standardGeneric("simulate")
            })
 
 #' @export
-setMethod(f = "simulate", signature = c("SimulationManager","list"),
-          definition = function(object, start_date, end_date, ...){
+#' Carries out the simulation.
+#' For every Object, in creates an EventSeries that is the basis for all further
+#' analytics.
+setMethod(f = "simulate", 
+          signature = c("SimulationManager", "timeDate", "timeDate", "character"),
+          definition = function(object, start, end, by, ...) {
+          
+          tSeq = timeSequence(from=start, to=end, by=by)
+          
+          for (tt in as.character(tSeq)) {
+            # The following steps must be carried out:
+            #   1. Update variable contract terms except current account,
+            #      in particular Operations contracts.
+            #   2. Generate new contracts as defined by strategy matrix 
+            #   3. Compute Contract Events except for current account
+            #   4. Update ContractTerm "CashFlows" of current account with 
+            #      marginal liquidity at the end of current time step.
+            #  5.  Compute ContractEvents for current account
             
+          }
             
+         
             
             
           })
