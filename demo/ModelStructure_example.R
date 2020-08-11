@@ -110,8 +110,8 @@ rf
 rf[["YC_CH"]]
 
 # Discount-Engine für die Barwertberechnung:
-eng <- DcEngine(RiskFactorObjectLink=rf[["YC_CH"]])
-set(eng, rf)
+eng <- DcEngine(RiskFactorObject=rf[["YC_CH"]])
 
 # Barwert der (erwarteten) operativen Cashflows
 value(ops1, by=tb, type="markToModel", method=eng) ## Error
+#Currently, yield curve needs to be defined at all dates from the event table...
