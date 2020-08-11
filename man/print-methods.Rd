@@ -3,24 +3,12 @@
 \docType{methods}
 \name{print,EventSeries-method}
 \alias{print,EventSeries-method}
-\alias{[,EventSeries,character,missing-method}
-\alias{[,EventSeries,numeric,missing-method}
-\alias{[,EventSeries,numeric,numeric-method}
-\alias{[,EventSeries,numeric,logical-method}
-\alias{[,EventSeries,numeric,character-method}
+\alias{print,eventList-method}
 \title{\code{EventSeries}-print method}
 \usage{
 \S4method{print}{EventSeries}(x, type = "pretty", indices, ...)
 
-\S4method{[}{EventSeries,character,missing}(x, i)
-
-\S4method{[}{EventSeries,numeric,missing}(x, i)
-
-\S4method{[}{EventSeries,numeric,numeric}(x, i, j)
-
-\S4method{[}{EventSeries,numeric,logical}(x, i, j)
-
-\S4method{[}{EventSeries,numeric,character}(x, i, j)
+\S4method{print}{eventList}(x, type = "pretty", indices, ...)
 }
 \arguments{
 \item{x}{An object of class \code{EventSeries}}
@@ -30,21 +18,12 @@ An R-data.frame containing a the structured printout
 }
 \description{
 Prints an \code{EventSeries}
-
-accesses elements of an \code{EventSeries}
 }
 \details{
 This method prints an object of class \code{EventSeries} in an formatted way.
 
 Formatting options are provided
 each event's EventDate, EventType, EventValue, and state 
-variables from the java-object to R (through rJava) and
-structures the data in an R-data.frame object.
-
-This method prints an object of class \code{EventSeries} in an formatted way.
-Formatting options are provided
-
-each event's EventDate, EventType, EventValue, and state
 variables from the java-object to R (through rJava) and
 structures the data in an R-data.frame object.
 }

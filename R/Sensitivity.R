@@ -114,34 +114,34 @@ setGeneric(name = "sensitivity",
   standardGeneric("sensitivity")
 })
 
-#' #' @include ContractType.R
-#' #' @export
-#' #' @rdname sen-methods
-#' setMethod(f="sensitivity", 
-#'           signature = c("ContractType", "character", "missing", "missing", "missing"), 
-#'           definition = function(object, by, type, method, scenarios) {
-#'             # set default type
-#'             type = "fisherweil"
-#'             
-#'             if (type=="macaulay") {
-#'               
-#'               D = sensitivity(EventSeries(object, by[1]), by, type, 
-#'                               DcEngine(get(object, "ValuationEngine")))
-#'               
-#'             } else if (type=="fisherweil") {
-#'               
-#'               D = sensitivity(EventSeries(object, by[1]), by, type, 
-#'                               DcEngine(get(object, "ValuationEngine")))
-#'               
-#'             } else if (type=="numeric") {
-#'               
-#'               stop("Needs a vector of scenarios in order to compute numeric sensitivity!")
-#'               
-#'             } else {
-#'               stop(paste("Value type '", type, "' not recognized!", sep=""))
-#'             }
-#'               return(D)
-#'           })
+# #' @include ContractType.R
+# #' @export
+# #' @rdname sen-methods
+# setMethod(f="sensitivity", 
+#           signature = c("ContractType", "character", "missing", "missing", "missing"), 
+#           definition = function(object, by, type, method, scenarios) {
+#             # set default type
+#             type = "fisherweil"
+#             
+#             if (type=="macaulay") {
+#               
+#               D = sensitivity(EventSeries(object, by[1]), by, type, 
+#                               DcEngine(get(object, "ValuationEngine")))
+#               
+#             } else if (type=="fisherweil") {
+#               
+#               D = sensitivity(EventSeries(object, by[1]), by, type, 
+#                               DcEngine(get(object, "ValuationEngine")))
+#               
+#             } else if (type=="numeric") {
+#               
+#               stop("Needs a vector of scenarios in order to compute numeric sensitivity!")
+#               
+#             } else {
+#               stop(paste("Value type '", type, "' not recognized!", sep=""))
+#             }
+#               return(D)
+#           })
 
 #' @include ContractType.R
 #' @export

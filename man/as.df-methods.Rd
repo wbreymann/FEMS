@@ -6,7 +6,7 @@
 \title{## @include 
 #' @export
 #' @docType methods
-#' @rdname print-methods
+#' @rdname subscript-methods
 setMethod("[<-", signature = c("EventSeries", "numeric", "numeric", "ANY"),
           definition = function(x, i, j, y) {
             x$evs[i,j] = y

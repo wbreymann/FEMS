@@ -9,7 +9,7 @@ ActusURL <- NULL
 .onLoad <- function(libname, pkgname) {
 
     ## load java library in "java"-Path
-    .jpackage(pkgname, lib.loc = libname)
+    # .jpackage(pkgname, lib.loc = libname)
     ## ommit conversion of strings in data.frame to factor variables
     options(stringsAsFactors = FALSE)
     options("getSymbols.warning4.0"=FALSE)

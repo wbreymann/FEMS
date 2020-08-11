@@ -240,13 +240,6 @@ setMethod(f = "get", signature = c("YieldCurve2", "character"),
           })
 
 
-##' @export
-#setGeneric(name = "add",
-#           def = function(object, what,...) {
-#             standardGeneric("add")
-#           })
-
-
 #' @export
 setMethod(f = "add", signature = c("YieldCurve2", "data.frame"),
           definition = function(object, what, ...){

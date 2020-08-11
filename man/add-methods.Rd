@@ -99,7 +99,7 @@ data(BondPortfolio)
 # create new portfolio
 ptf <- Portfolio()
 
-# define subset of attributes to be used to create 
+# define subset of ContractTerms to be used to create 
 # new PrincipalAtMaturity contract
 # (we use a subset just to make the case here)
 attr.names=c("ContractID", 

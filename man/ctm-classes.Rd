@@ -25,9 +25,9 @@ accessed/changed using methods
 \code{\link{get}}/\code{\link{set}} which uses the JNI
 interface through R-package rJava.
 
-For a list of available contract attributes use 
+For a list of available contract ContractTerms use 
 method \code{\link{terms}}. For an explanation of the 
-attributes refer to the official ACTUS data dictionary
+ContractTerms refer to the official ACTUS data dictionary
 under \link{www.projectactus.org}.
 }
 \section{Fields}{

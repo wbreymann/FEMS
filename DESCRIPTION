@@ -78,7 +78,6 @@ Collate:
     'Stock.R'
     'Swap.R'
     'defaults.R'
-    'yearFraction.R'
     'export.R'
     'import.R'
     'onAttach.R'
@@ -86,4 +85,5 @@ Collate:
     'rActus.R'
     'solve.R'
     'testClosure.R'
-RoxygenNote: 7.1.0
+    'yearFraction.R'
+RoxygenNote: 7.1.1

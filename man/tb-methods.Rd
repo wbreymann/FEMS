@@ -10,7 +10,7 @@
 \alias{aDates2tDates}
 \title{Constructor for class \code{timeBuckets}.}
 \usage{
-timeBuckets(t0, by, length.out, bucketLabs = NULL, breakLabs = NULL, ...)
+timeBuckets(by, bucketLabs = NULL, breakLabs = NULL, ...)
 
 \S4method{length}{timeBuckets}(x)
 
@@ -43,9 +43,6 @@ the "from" and "to" part of the output.}
 \item{sep}{Separator of "from" and "to" part of output.}
 
 \item{char}{Character string in ACTUS time format.}
-
-\item{tSeq}{Sequence of dates either as character strings of format 
-\code{\%Y-\%m-\%d} or as \code{timeDate} object.}
 }
 \value{
 Object of class \code{timeBuckets}.

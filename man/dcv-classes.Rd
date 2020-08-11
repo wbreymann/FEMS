@@ -6,7 +6,7 @@
 \alias{DiscountingEngine-class}
 \alias{CAPMEngine-class}
 \alias{MultiCurrencyDiscountingEngine-class}
-\title{A \code{\ref ValuationEngine} implementing discounting of
+\title{A \code{\link{ValuationEngine}} implementing discounting of
 future cash flows}
 \description{
 This class represents a \code{\link{ValuationEngine}} that

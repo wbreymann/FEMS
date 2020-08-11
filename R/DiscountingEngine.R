@@ -4,7 +4,7 @@
 #*************************************************************
 
 ##############################################################
-#' A \code{\ref ValuationEngine} implementing discounting of
+#' A \code{\link{ValuationEngine}} implementing discounting of
 #' future cash flows
 #' 
 #' This class represents a \code{\link{ValuationEngine}} that
