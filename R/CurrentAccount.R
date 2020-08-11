@@ -28,7 +28,8 @@ setRefClass("CurrentAccount",
 # Es gibt eine Reihe von Zeitreihenklassen in R.
 # Nils hat "zoo" und "timeSeries" benutzt.
 # Ich schlage vor, dass wir als Zeitklasse "timeDate" und als Zeitreihenklassen
-# "timeSeries" benutzen. "zoo" kenne ich nicht wirklich.
+# "timeSeries" benutzen. "zoo" kenne ich nicht wirklich, kanan aber durchaus
+# effizienter sein.
 
 #' @export
 setGeneric(name = "CurrentAccount",
@@ -76,6 +77,7 @@ setMethod(f = "get", signature = "CurrentAccount",
 #' @export
 setMethod(f = "events", signature = c("CurrentAccount", "character", "RiskFactorConnector"),
           definition = function(object, ad, model, end_date){
+            stopifnot( !missing(end_date) )
             return(FEMS:::EventSeries(object, ad, model, end_date=end_date))
           })
 
@@ -95,7 +97,7 @@ setMethod(f = "EventSeries", signature = c("CurrentAccount", "character"),
           })
 
 currentaccount.evs <- function(object, model, end_date, method, period){
-  
+  # the start date is missing
   yc <- get(model, object$MarketObjectCodeRateReset)
   interest_dates <- get.dates.from.cycle(object$CycleAnchorDateOfInterestPayment, 
                                          object$CycleOfInterestPayment, end_date)

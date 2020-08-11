@@ -33,6 +33,7 @@ rf <- RFConn(yc_flat)
 # calculate event series
 # currently still not the same format as an rActus EventSeries
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2018-12-31"))
+(evs.curr_acc <- events(curr_acc, "2012-12-31", rf))
 (evs.curr_acc.1 <- events(curr_acc, "2012-12-31", rf, end_date="2013-12-31"))  ## Error: start/ end dates
 (evs.curr_acc.2 <- events(curr_acc, "2013-12-31", rf, end_date="2014-12-31"))
 (evs.curr_acc.3 <- events(curr_acc, "2014-12-31", rf, end_date="2015-12-31"))  ## Error: start date
