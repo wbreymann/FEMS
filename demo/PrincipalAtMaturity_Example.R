@@ -30,7 +30,7 @@ set(pam, what = list(
 
 # show method:
 pam
-pam
+
 # I don't want to have the ContractTerms returned in list format, it's confusing.
 # But we may make it nicer.
 

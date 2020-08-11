@@ -67,7 +67,7 @@ set(pam, what=list(
          NotionalPrincipal = 1000,               # nominal value
          NominalInterestRate = 0.00,             # nominal Interest rate
          PremiumDiscountAtIED = -100,
-         DayCountConvention = "30E/360",
+         DayCountConvention = "30E360",
          BusinessDayConvention = "SCF"))
 #' get values of specific ContractTerms
 get(pam, what = "ContractID")

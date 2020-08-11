@@ -44,7 +44,13 @@ rflActus_attributes <- lapply( rflActus_required, function(x) {
 # get allowed values for each attribute
 rflActus_allowed_vals <- lapply( rflActus_required, function(x) {
                                         terms_temp <- lapply( json_body$terms[names(x)],
-                                                              function(y) unname(unlist(y["allowedValues"])))
+                                                              function(y) {
+                                                                tryCatch({
+                                                                  unlist(lapply(y[["allowedValues"]], function(z) z$acronym))
+                                                                }, error = function(e) {
+                                                                  unname(unlist(y["allowedValues"]))
+                                                                })
+                                                              })
                                         x <- terms_temp
                                     })
 

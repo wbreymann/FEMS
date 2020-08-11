@@ -302,6 +302,8 @@ setMethod(f = "checkArguments", signature = c("ContractModel","list"),
                   if (arguments[[i]] > 0) {
                     stop(paste("ErrorIn::ContractModel:: A Value of '", arguments[[i]], "' is not allowed for Attribute '",names(arguments[i]),". Must be Negative  !!!"))
                   }
+                } else if (data_type[1] == "[ISO8601 Duration]L[s={0,1}]") {
+                  # do nothing for now....
                 } else {
                   if (grepl(",", arguments[[i]], fixed = TRUE)) {
                     arg_vec <- unlist(strsplit(arguments[[i]], ", "))
