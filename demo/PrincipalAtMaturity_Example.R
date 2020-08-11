@@ -6,7 +6,7 @@ devtools::load_all()
 # create a PAM & set ContractTerms...
 pam <- Pam()
 set(pam, what = list(
-    Calendar = "MondayToFriday",
+    Calendar = "MF",
     BusinessDayConvention = "SCF",
     ContractType = "PAM",
     StatusDate = "2015-01-01",
@@ -15,7 +15,7 @@ set(pam, what = list(
     CycleAnchorDateOfInterestPayment = "2016-01-02",
     CycleOfInterestPayment = "1Y+",
     NominalInterestRate = 0.00,
-    DayCountConvention = "30E/360",
+    DayCountConvention = "30E360",
     Currency = "USD",
     ContractDealDate = "2015-01-01",
     InitialExchangeDate = "2015-01-02",
@@ -25,11 +25,11 @@ set(pam, what = list(
     PremiumDiscountAtIED = 0,
     CycleAnchorDateOfRateReset = "2016-01-02",
     CycleOfRateReset = "1Y+",
-    # RateSpread = 0.02,
     RateMultiplier = 1,
-    MarketObjectCodeRateReset = "YC.USA.TREASURY"))
+    MarketObjectCodeOfRateReset = "YC.USA.TREASURY"))
 
 # show method:
+pam
 pam
 # I don't want to have the ContractTerms returned in list format, it's confusing.
 # But we may make it nicer.
