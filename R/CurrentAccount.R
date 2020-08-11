@@ -96,6 +96,7 @@ setMethod(f = "EventSeries", signature = c("CurrentAccount", "character"),
             return(out)
           })
 
+# SUGGESTION: Couldn't this be implemented as a method of the reference class?
 currentaccount.evs <- function(object, model, end_date, method, period){
   # the start date is missing
   yc <- get(model, object$MarketObjectCodeRateReset)
@@ -108,6 +109,8 @@ currentaccount.evs <- function(object, model, end_date, method, period){
   if (min(all_dates) < yc$ReferenceDate[1]) {
     stop("ErrorIn::CurrentAccount:: Dates must all lay after first ReferenceDate of YieldCurve !!! ")
   }
+  
+  # !!!MISSING: Only retain data >= start date!!!
   
   # expand all data.frames to reflect same dates...
   # Not necessary to do this with data.frames. Possibly switch to array later...
