@@ -233,7 +233,9 @@ setMethod(f = "set", signature = c("ContractType", "RiskFactorConnector"),
 #' @export
 setMethod("show", signature = "ContractType",
           definition = function(object){
-            print(as.data.frame(object$ContractTerms))
+            df <- t(as.data.frame(object$ContractTerms))
+            colnames(df) <- "ContractTerms"
+            print(df)
           })
 
 
