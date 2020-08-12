@@ -3,8 +3,6 @@
 # Please see accompanying distribution file for license.
 #*************************************************************
 
-ActusDictionary <- NULL
-ActusURL <- NULL
 #' @import rJava
 .onLoad <- function(libname, pkgname) {
 
@@ -14,9 +12,5 @@ ActusURL <- NULL
     options(stringsAsFactors = FALSE)
     options("getSymbols.warning4.0"=FALSE)
     
-    # also load the json containing the ActusDictionary
-    load("./data/rflActusDictionary.RData", ActusDictionary <<- new.env(parent = emptyenv()))
-    # ActusURL <<- "http://abanaxos.com:8080/"
-    ActusURL <<- "http://ractus.ch:8080/"
 }
 

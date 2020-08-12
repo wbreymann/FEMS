@@ -121,16 +121,16 @@ setGeneric(name = "CTM",
 #' @aliases CTM, character-method
 setMethod(f = "CTM", signature = c("character"),
           definition = function(model) {
-            
-            if (!model %in% names(ActusDictionary$rflActus_attributes)) {
+
+            if (!model %in% names(actusDictionary$rflActus_attributes)) {
               stop(paste("ErrorIn::ContractModel:: Type of Contract ", model, " does not exist !!!"))
             }
             ctm <- new("ContractModel")
             
             ctm$contract_type <- model
-            ctm$ContractTerms <- ActusDictionary$rflActus_attributes[[model]]
-            ctm$required <- ActusDictionary$rflActus_required[[model]]
-            ctm$allowed <- ActusDictionary$rflActus_allowed_vals[[model]]
+            ctm$ContractTerms <- actusDictionary$rflActus_attributes[[model]]
+            ctm$required <- actusDictionary$rflActus_required[[model]]
+            ctm$allowed <- actusDictionary$rflActus_allowed_vals[[model]]
             return(ctm)
           })
 

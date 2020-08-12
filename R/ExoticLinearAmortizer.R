@@ -77,10 +77,10 @@ setMethod(f = "initialize", signature = "ExoticLinearAmortizer",
 #             print(get(object = object, what = get.summary.fields("Lax")))
 #           })
 
-# names(ActusDictionary$rflActus_attributes$ExoticLinearAmortizer$ContractType)
-# names(ActusDictionary$rflActus_attributes$LinearAmortizer$ContractType)
+# names(actusDictionary$rflActus_attributes$ExoticLinearAmortizer$ContractType)
+# names(actusDictionary$rflActus_attributes$LinearAmortizer$ContractType)
 # # lax_example=Lax()
 # # getModelDetails(lax_example)
-# ActusDictionary$rflActus_allowed_vals$Swap$ContractType
+# actusDictionary$rflActus_allowed_vals$Swap$ContractType
 #lax_example=Lax()
 #getModelDetails(lax_example)
