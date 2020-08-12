@@ -136,33 +136,46 @@ setMethod(f = "EventSeries", signature = c("ContractType", "character"),
 #' @aliases EventSeries, missing-method
 setMethod(f = "EventSeries", signature = c("Portfolio", "AD0"),
           definition = function(object, ad, ...){
-            
-            # create event series object and extract meta info
-            out <- new("EventSeries")
-            
-            # out$id <- get(object, what = "ContractID")
-            # out$ct <- get(object, what = "ContractType")
-            
+
             # compute events
             evs_raw <- generateEvents(object, ad)
-            
-            # extract events
+            evs_list <- list()
+            ct_list <- list()
+            id_list <- list()
             for (i in 1:length(evs_raw)) {
               types <- getEventAttributes(evs_raw[[i]]$events, "type")
               payoff <- getEventAttributes(evs_raw[[i]]$events, "payoff")
               # payoff[types %in% c("IPCI","PRY","CD","RR","RRY","SC","IPCB")] = 0
               time <- getEventAttributes(evs_raw[[i]]$events, "time")
               temp_df <- data.frame(
-                ContractID = evs_raw[[i]]$contractId,
+                # ContractID = evs_raw[[i]]$contractId,
                 Date = substring(time, 1, 10),
-                Payoff = payoff,
+                Value = payoff,
                 Type = types,
                 Currency = getEventAttributes(evs_raw[[i]]$events, "currency"),
+                Time = yearFraction(substring(time[1], 1, 10), substring(time, 1, 10), convention = "A/365"),
                 NominalValue = getEventAttributes(evs_raw[[i]]$events, "nominalValue"),
                 NominalRate = getEventAttributes(evs_raw[[i]]$events, "nominalRate"),
                 NominalAccrued = getEventAttributes(evs_raw[[i]]$events, "nominalAccrued"))
-              out$evs <- rbind(out$evs, temp_df)
-              out$id <- c(out$id, evs_raw[[i]]$contractId)
+              evs_list[[i]] <- temp_df
+              id_list[[i]] <- evs_raw[[i]]$contractId
+              ct_list[[i]] <- object$contracts[[evs_raw[[i]]$contractId]]$ContractTerms$ContractType
+            }
+            
+            if (length(evs_raw)==1){
+              out <- new("EventSeries")
+              out$evs <- evs_list[[1]]
+              out$id <- unlist(id_list)
+              out$ct <- unlist(ct_list)
+            } else {
+              out <- eventList()
+              for (j in 1:length(evs_raw)) {
+                temp <- new("EventSeries")
+                temp$evs <- evs_list[[j]]
+                temp$id <- id_list[[j]]
+                temp$ct <- ct_list[[j]]
+                out[[as.character(temp$id)]] <- temp
+              }
             }
             return(out)
           })
@@ -245,30 +258,6 @@ setMethod("print", signature = "EventSeries",
               }
               y$Date <- as.vector(sapply(y$Date, function(x) 
                               check.date.format(x, add = FALSE)))
-              y
-            }
-          }
-)
-
-#' @export
-#' @docType methods
-#' @rdname print-methods
-setMethod("print", signature = "eventList", 
-          definition = function(x, type = "pretty", indices, ...) {
-            if (type == "raw") {
-              x
-            } else {
-              y = as.data.frame(x)
-              if (!missing(indices)){ 
-                y = y[,indices] 
-              }
-              if (type == "pretty") { 
-                colnames(y) = .defaults$shortNames[colnames(y)]
-                for (nam  in colnames(y))
-                {
-                  if (is.numeric(y[,nam])) y[,nam] = round(y[,nam],4)
-                }
-              }
               y
             }
           }
@@ -521,6 +510,179 @@ setMethod( f = "set" , signature = c( "EventSeries" , "list" ) ,
                }
              }
            })
+
+# -----------------------------------------------------------------
+# Methods related to eventList
+## @export
+## @docType methods
+## @rdname print-methods
+# setMethod("print", signature = "eventList", 
+#           definition = function(x, type = "pretty", indices, ...) {
+#             if (type == "raw") {
+#               x
+#             } else {
+#               y = as.data.frame(x)
+#               if (!missing(indices)){ 
+#                 y = y[,indices] 
+#               }
+#               if (type == "pretty") { 
+#                 colnames(y) = .defaults$shortNames[colnames(y)]
+#                 for (nam  in colnames(y))
+#                 {
+#                   if (is.numeric(y[,nam])) y[,nam] = round(y[,nam],4)
+#                 }
+#               }
+#               y
+#             }
+#           }
+# )
+
+
+
+##############################################################
+#' list-of-\code{EventSeries} to data.frame method
+#'
+#' Convert a list of \code{EventSeries}-elements to an R-data.frame
+#' 
+#' This method extracts all events in the list of EventSeries
+#' objects, sends each event's EventDate, EventType, EventValue, 
+#' and state variables from the java-object to R (through rJava) and
+#' structures the data in an R-data.frame object. An additional
+#' column is added containing the \code{ContractID} of the 
+#' contract from which the events have been derived.
+#' 
+#' @param x A \code{list} with \code{EVentSeries}-elements 
+#'        
+#'
+#' @return An R-data.frame containing a structured 
+#'         representation of the events in the function argument
+#' 
+#' @seealso \link{EventSeries} and \code{\link{as.data.frame.EventSeries}}
+#'
+#' @examples 
+#' # import a portfolio
+#' data(BondPortfolio)
+#' ptf <- Portfolio()
+#' import(ptf,BondPortfolio, valuationEngines=TRUE)
+#' 
+#' ## set analysis date
+#' ad <- "2015-01-02T00"
+#' 
+#' # define risk factors
+#' yc <- YieldCurve()
+#' tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
+#' rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
+#' set(yc, what = list(
+#'   MarketObjectCode = "YC_EA_AAA",
+#'   Nodes = list(ReferenceDate = ad, 
+#'                Tenors = tenors, Rates = rates)))
+#' cpi <- Index()
+#' times <- c("2015-01-01T00", "2016-01-01T00", "2017-01-01T00", "2018-01-01T00",
+#'            "2019-01-01T00")
+#' values <- c(100, 110, 120, 130, 140)
+#' set(cpi, what=list(
+#'   MarketObjectCode = "IND_CPI_EA",
+#'   Data=list(Dates=times,Values=values)))
+#' rf <- RFConn()
+#' add(rf, list(yc, cpi))
+#' set(ptf,rf)
+#' 
+#' # compute events
+#' generateEvents(ptf,ad)
+#' processEvents(ptf,ad)
+#' 
+#' # extract EventSeries from portfolio
+#' evs=EventSeries(ptf)
+#' class(evs)
+#' 
+#' # convert to data.frame
+#' evs.df=as.data.frame(evs)
+#' class(evs.df)
+#'
+## @include
+#' @export
+#' @docType methods
+#' @rdname as.df.list-methods
+as.data.frame.eventList = function (x) {
+  out=do.call("rbind",lapply(x,
+                             FUN = function(evs){
+                               cbind(
+                                 ContractID = evs$id,
+                                 FEMS:::as.data.frame.EventSeries(evs))}))
+  row.names(out)=NULL
+  return(out)
+}
+
+##############################################################
+#' \code{eventList}-print method
+#'
+#' Prints an \code{eventList} 
+#' 
+#' This method prints an object of class \code{eventList} in an formatted way.
+#' 
+#' Formatting options are provided
+#' each event's EventDate, EventType, EventValue, and state 
+#' variables from the java-object to R (through rJava) and
+#' structures the data in an R-data.frame object.
+#' 
+#' @param x An object of class \code{eventList} 
+#'        
+#'
+#' @return An R-data.frame containing a the structured printout
+#' 
+#' @seealso \code{\link{Portfolio, events}}
+#'
+#' @examples 
+#'
+## @include
+#' @export
+#' @docType methods
+#' @rdname print-methods
+setMethod("print", signature = "eventList", 
+          definition = function(x, type = "pretty", indices, ...) {
+            df = as.data.frame.eventList(x)
+            FEMS:::print.eventList.as.data.frame(df, type=type, indices=indices, ...)
+          }
+)
+
+## @include
+#' @export
+#' @docType methods
+#' @rdname print-methods
+setMethod("show", signature = "eventList", 
+          definition = function(object) {
+            df = as.data.frame.eventList(object)
+            FEMS:::print.eventList.as.data.frame(df, type="pretty", indices=c(-5))
+          }
+)
+
+## @include
+#' @export
+#' @docType methods
+#' @rdname print-methods
+setMethod("head", signature = "eventList", 
+          definition = function(x, n=6, indices=c(-5), ...) {
+            df = as.data.frame.eventList(x)[1:n, ]
+            FEMS:::print.eventList.as.data.frame(df, type="pretty", indices=indices, ...)
+          }
+)
+
+#' @export
+#' @docType methods
+#' @rdname print-methods
+setMethod("[", signature = c("eventList", "ANY", "missing"),
+          definition = function(x, i) {
+            nams = names(x)
+            if (is.character(i) ) {
+              i = is.element(nams, i)
+            }
+            l = x@.Data[i]
+            names(l) = nams[i]
+            new("eventList", .Data=l)
+          }
+)
+
+
 
 
 # -----------------------------------------------------------------

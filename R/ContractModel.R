@@ -303,7 +303,17 @@ setMethod(f = "checkArguments", signature = c("ContractModel","list"),
                     stop(paste("ErrorIn::ContractModel:: A Value of '", arguments[[i]], "' is not allowed for Attribute '",names(arguments[i]),". Must be Negative  !!!"))
                   }
                 } else if (data_type[1] == "[ISO8601 Duration]L[s={0,1}]") {
-                  # do nothing for now....
+                  first_letter <- substr(arguments[[i]],1,1)
+                  last_two <- substr(arguments[[i]],nchar(arguments[[i]])-1,nchar(arguments[[i]]))
+                  if (!(first_letter == "P") || !(last_two %in% c("L0","L1"))) {
+                    stop(paste("ErrorIn::ContractModel:: A Value of '", arguments[[i]], "' is not allowed for Attribute '",names(arguments[i]),". Must start with 'P' and end with 'L0' or 'L1'  !!!"))
+                  }
+                } else if (data_type[1] == "ISO8601 Duration") {
+                  first_letter <- substr(arguments[[i]],1,1)
+                  last_two <- substr(arguments[[i]],nchar(arguments[[i]])-1,nchar(arguments[[i]]))
+                  if (!(first_letter == "P") || (last_two %in% c("L0","L1"))) {
+                    stop(paste("ErrorIn::ContractModel:: A Value of '", arguments[[i]], "' is not allowed for Attribute '",names(arguments[i]),". Must start with 'P' and NOT end with 'L0' or 'L1'!!!"))
+                  }
                 } else {
                   if (grepl(",", arguments[[i]], fixed = TRUE)) {
                     arg_vec <- unlist(strsplit(arguments[[i]], ", "))
