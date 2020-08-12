@@ -51,6 +51,11 @@ liquidity(evs, by, "marginal", digits=0)
 value(evs, by, "nominal", digits=0)
 
 
+# now add another cash flow to the current account...
+add.cashflow(curr_acc, 
+             data.frame(CashFlows = 1000, row.names = "2015-06-30"))
+(evs.curr_acc_new <- events(curr_acc, "2012-12-31", rf, end_date="2018-12-31"))
+
 #################################################################################################
 # Example 2:
 # Just a negative amount from the beginning...

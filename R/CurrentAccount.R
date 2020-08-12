@@ -72,10 +72,36 @@ setMethod(f = "get", signature = "CurrentAccount",
             return(fields)
           })
 
+#' @export
+setGeneric(name = "add.cashflow",
+           def = function(object, added_cf){
+             standardGeneric("add.cashflow")
+           })
+
+#' @export
+setMethod(f = "add.cashflow", signature = c("CurrentAccount", "data.frame"),
+          definition = function(object, added_cf){
+            
+            # extend the cash-flows in existing object
+            cf_prev <- object$CashFlows
+            cf_prev$temp_name <- rownames(cf_prev)
+            added_cf$temp_name <- rownames(added_cf)
+            
+            # bind the two dataframes together by row and aggregate
+            agg <- aggregate(. ~ temp_name, rbind(cf_prev,setNames(added_cf, names(cf_prev))), sum)
+            
+            # reformat again 
+            rownames(agg) <- agg$temp_name
+            object$CashFlows <-agg[!(names(agg) %in% "temp_name")]
+          })
+
 #' @include Events.R
 #' @export
 setMethod(f = "events", signature = c("CurrentAccount", "character", "RiskFactorConnector"),
           definition = function(object, ad, model, end_date){
+            if (missing(end_date)) {
+              stop("ErrorIn::CurrentAccount::events:: end_date needs to be provided !!! ")
+            }
             return(FEMS:::EventSeries(object, ad, model, end_date=end_date))
           })
 
