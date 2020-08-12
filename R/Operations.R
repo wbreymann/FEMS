@@ -169,7 +169,7 @@ setMethod(f = "add", signature = c("Portfolio","Operations"),
           })
 
 ## -----------------------------------------------------------------
-## Operations Contract events definition
+## events methods for Operations contract
 #' @export
 #' @rdname ev-methods
 setMethod(f = "events", signature = c("Operations", "character", "missing"),
@@ -214,7 +214,7 @@ setMethod(f = "events", signature = c("Operations", "timeDate", "RiskFactorConne
           })
 
 #' ## -----------------------------------------------------------------
-#' ## Operations Contract EventSeries definition
+#' ## EventSeries methods for Operations contract
 #' @export
 #' @rdname evs-methods
 setMethod(f = "EventSeries", signature = c("Operations", "character"),
@@ -330,7 +330,7 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
           })
 
 ## -----------------------------------------------------------------
-## Operations Contract liquidity definition
+## liquidity methods for Operations contract
 #' @export
 #' @rdname liq-methods
 setMethod(f = "liquidity", signature = c("Operations", "timeDate", "missing"),
@@ -391,7 +391,7 @@ ops.liquidity = function(object, by, type, digits=2){
 }
 
 #' ## -----------------------------------------------------------------
-#' ## Operations Contract income definition
+#' ## income methods for Operations contract
 #' #' @export
 #' #' @rdname inc-methods
 #' setMethod(f = "income", signature = c("Operations", "timeDate", "missing"),
@@ -463,7 +463,7 @@ ops.liquidity = function(object, by, type, digits=2){
 
 
 ## -----------------------------------------------------------------
-## Operations Contract value definition
+## value methods for Operations Contract
 #' @export
 #' @rdname val-methods
 setMethod(f = "value", signature = c("Operations", "AD0", "character", "missing"),
@@ -531,7 +531,7 @@ setMethod(f = "value", signature = c("Operations", "timeDate", "character",
               return(ops.nominal(events(object, by[1]), by, ...))
             } else if (type %in% c("markToModel","markToMarket")) {
               # print("valuation of operations contract")
-              return(ops.market(events(object, by[1]), by, method, ...))
+              return(ops.marketValue(events(object, by[1]), by, method, ...))
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
             }
@@ -550,7 +550,7 @@ setMethod(f = "value", signature = c("Operations", "timeBuckets", "character",
               names(val) = by@breakLabs
               return(val)
             } else if (type %in% c("markToModel","markToMarket")) {
-              val = ops.market(events(object, by[1]), by, method, ...)
+              val = ops.marketValue(events(object, by[1]), by, method, ...)
               names(val) = by@breakLabs
               return(val)
             } else {
@@ -559,7 +559,8 @@ setMethod(f = "value", signature = c("Operations", "timeBuckets", "character",
           })
 
 
-# internal value function
+#-------------------------------------------------
+# internal value functions
 ops.nominal = function(object, by, digits=2) {
   # message("entered ops.nominal")
   # extract events and times
@@ -578,7 +579,7 @@ ops.nominal = function(object, by, digits=2) {
   return(round(val, digits=digits))
 }
 
-ops.market = function(object, by, method, digits=2) {
+ops.marketValue = function(object, by, method, digits=2) {
  
   # extract discounting parameters
   spread <- FEMS:::get(method,"DiscountingSpread")
