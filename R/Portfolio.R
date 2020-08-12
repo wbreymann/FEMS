@@ -151,7 +151,7 @@ setMethod("generateEvents", signature = c("Portfolio", "AD0"),
             }
             fin_list <- list(contracts = contracts, 
                              riskFactors = riskFactors)
-            browser()
+
             # combine the two and create final request body in json format
             request_body <- toJSON(fin_list, pretty = TRUE, auto_unbox = TRUE)
             response_events <- POST(paste0(actusURL, "eventsBatch"), 
@@ -231,6 +231,9 @@ setMethod(f = "get", signature = c("Portfolio", "character"),
             } else if(tolower(what[1]) == "ids") {
               out <- unlist(lapply(object$contracts, FEMS::get,
                                    what="ContractID"))
+            } else if(tolower(what[1]) == "types") {
+              out <- unlist(lapply(object$contracts, FEMS::get,
+                                   what="ContractType"))
             } else {
               out <- list()
               for (i in 1:length(what) ) {
