@@ -726,6 +726,7 @@ setMethod(f = "names", signature = c("YieldCurve2"),
 ##############################################################
 #' A Reference Class 
 #' 
+#' @export
 Interpolator <- setRefClass("Interpolator", 
                             fields = list(xValues = "numeric",
                                           yValues = "numeric"),

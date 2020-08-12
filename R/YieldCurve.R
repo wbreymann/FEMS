@@ -530,7 +530,7 @@ setMethod(f = "getRateSeries",
 
 
 ## @include
-#' @export
+## @export
 setMethod(f = "show", signature = c("YieldCurve"),
           definition = function(object){
             cat(paste0("MarketObjectCode: ", object$MarketObjectCode,"\n"))
@@ -543,7 +543,7 @@ setMethod(f = "show", signature = c("YieldCurve"),
           })
 
 ## @include
-#' @export
+## @export
 setMethod(f = "names", signature = c("YieldCurve"),
           definition = function(x){
             return(names(x$getRefClass()$fields()))
@@ -552,7 +552,7 @@ setMethod(f = "names", signature = c("YieldCurve"),
 
 # WHAT are these two for???
 ## @include
-#' @export
+## @export
 # setMethod("[[", signature = c("YieldCurve", "ANY"),
 #           definition = function(x, i) {
 #             l <- x
@@ -562,7 +562,7 @@ setMethod(f = "names", signature = c("YieldCurve"),
 # )
 
 ## @include
-#' @export
+## @export
 # setMethod("[[<-", signature = c("YieldCurve", "ANY"),
 #           definition = function(x, i, value) {
 #             y <- x
@@ -585,6 +585,7 @@ setMethod(f = "names", signature = c("YieldCurve"),
 ##############################################################
 #' A Reference Class 
 #' 
+#' @export
 Interpolator <- setRefClass("Interpolator", 
             fields = list(xValues = "numeric",
                           yValues = "numeric"),
