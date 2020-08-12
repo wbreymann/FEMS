@@ -530,7 +530,7 @@ setMethod(f = "getRateSeries",
 
 
 ## @include
-## @export
+#' @export
 setMethod(f = "show", signature = c("YieldCurve"),
           definition = function(object){
             cat(paste0("MarketObjectCode: ", object$MarketObjectCode,"\n"))
@@ -543,7 +543,7 @@ setMethod(f = "show", signature = c("YieldCurve"),
           })
 
 ## @include
-## @export
+#' @export
 setMethod(f = "names", signature = c("YieldCurve"),
           definition = function(x){
             return(names(x$getRefClass()$fields()))

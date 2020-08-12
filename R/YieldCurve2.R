@@ -693,7 +693,7 @@ setMethod(f = "names", signature = c("YieldCurve2"),
 
 # WHAT are these two for???
 ## @include
-#' @export
+## @export
 # setMethod("[[", signature = c("YieldCurve2", "ANY"),
 #           definition = function(x, i) {
 #             l <- x
@@ -703,7 +703,7 @@ setMethod(f = "names", signature = c("YieldCurve2"),
 # )
 
 ## @include
-#' @export
+## @export
 # setMethod("[[<-", signature = c("YieldCurve2", "ANY"),
 #           definition = function(x, i, value) {
 #             y <- x
