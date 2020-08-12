@@ -13,7 +13,7 @@ set(pam, what = list(
     ContractRole = "RPA",
     ContractID = "Contract-03",
     CycleAnchorDateOfInterestPayment = "2016-01-02",
-    CycleOfInterestPayment = "P1Y",
+    CycleOfInterestPayment = "P1YL0",
     NominalInterestRate = 0.00,
     DayCountConvention = "30E360",
     Currency = "USD",
@@ -24,7 +24,7 @@ set(pam, what = list(
     RateSpread = 0,
     PremiumDiscountAtIED = 0,
     CycleAnchorDateOfRateReset = "2016-01-02",
-    CycleOfRateReset = "P1Y",
+    CycleOfRateReset = "P1YL0",
     RateMultiplier = 1,
     MarketObjectCodeOfRateReset = "YC.USA.TREASURY"))
 
@@ -84,20 +84,21 @@ value(pam, by = "2015-01-02", type = "nominal")
 eng <- DcEngine(RiskFactorObject = yc, DiscountingSpread = 0.0)
 value(pam, by = "2015-01-02", type = "markToModel", method = eng)
 
+plot(pam,"2015-01-01")
 
 ######Now do this on a portfolio level...
 pam2 <- Pam()
 set(pam2, what = list(
-  Calendar = "MondayToFriday",
+  Calendar = "MF",
   BusinessDayConvention = "SCF",
   ContractType = "PAM",
   StatusDate = "2015-01-01",
   ContractRole = "RPA",
   ContractID = "Contract-05",
   CycleAnchorDateOfInterestPayment = "2016-01-02",
-  CycleOfInterestPayment = "1Y+",
+  CycleOfInterestPayment = "P1YL0",
   NominalInterestRate = 0.00,
-  DayCountConvention = "30E/360",
+  DayCountConvention = "30E360",
   Currency = "USD",
   ContractDealDate = "2015-01-01",
   InitialExchangeDate = "2015-01-02",
@@ -106,9 +107,9 @@ set(pam2, what = list(
   RateSpread = 0,
   PremiumDiscountAtIED = 0,
   CycleAnchorDateOfRateReset = "2016-01-02",
-  CycleOfRateReset = "1Y+",
+  CycleOfRateReset = "P1YL0",
   RateMultiplier = 1,
-  MarketObjectCodeRateReset = "YC.USA.TREASURY"))
+  MarketObjectCodeOfRateReset = "YC.USA.TREASURY"))
 
 # Create a portfolio
 port <- Portfolio()
@@ -171,20 +172,4 @@ liquidity(port, by = by, type = "cumulative")
 income(port, by = by, type = "marginal", revaluation.gains = FALSE)
 income(port, by = by, type = "marginal", revaluation.gains = TRUE, method = eng)
 
-
-
-
-##### This is to replicate the call that was sent to Postman to test the API initially...
-# json_body <- read_json("./data-raw/sample_data.json")
-# json_body <- toJSON(json_body, pretty = TRUE, auto_unbox = TRUE)
-# response_events <- POST("http://ractus.ch:8080/eventsBatch", body = json_body, content_type_json())
-# response_content <- content(response_events)
-
-##### This is interesting behaviour when dropping the CallNextMethod() function in initialize within Pam...
-##### Seems dangerous not to include it into any initialize function...
-# pam1 <- Pam()
-# set(pam1, what = list(ContractID = "Test"))
-# pam1$ContractTerms$ContractID
-# pam2 <- Pam()
-# pam1$ContractTerms$ContractID
 

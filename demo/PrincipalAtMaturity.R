@@ -7,7 +7,7 @@
 ## import rActus library
 ## ---------------------------------------------------------------
 rm(list = ls())
-library(rActus)
+library(FEMS)
 
 ## ---------------------------------------------------------------
 ## Preparations
@@ -58,7 +58,7 @@ set(pam, eng)
 set(pam, what=list(
          ContractID = "001",
          Currency = "CHF",
-         Calendar = "MondayToFriday",
+         Calendar = "MF",
          ContractRole = "RPA",                   # Real Position Asset
          StatusDate       = "2012-12-31",     # on this day we analyse our PAM.
          ContractDealDate = "2012-12-31",
@@ -101,11 +101,8 @@ income(pam, by = by, type="marginal", revaluation.gains = TRUE, method = eng)
 #' plot contract events
 plot(pam,ad)
 
-#CHRIS (13.05.2020): WORKS UNTIL HERE!!!!
 #' compute sensitivity
 sensitivity(pam,by = ad,type="macaulay",method = eng)
-
-
 
 # Summary of the Plot
 # ~~~~~~~~~~~~~~~~~~~
@@ -135,7 +132,7 @@ set(pam, what = list(
 as.data.frame(events(pam,ad))
 
 #' compute mark-to-model value
-value(pam,by="2013-01-02",type="markToModel")
+value(pam,by="2013-01-02",type="markToModel", method=eng)
 
 #' plot contract events
 plot(pam,ad)
@@ -155,10 +152,10 @@ set(pam, what=list(
          NominalInterestRate = 0.05))             # nominal Interest rate
 
 #' generate contract events
-as.data.frame(events(pam,ad))
+as.data.frame(events(pam,ad)) # here is no interest payment without cycle definition...
 
 #' compute mark-to-model value
-value(pam,by="2013-01-02",type="markToModel")
+value(pam,by="2013-01-02",type="markToModel", method=eng)
 
 #' plot contract events
 plot(pam,ad)
@@ -175,13 +172,13 @@ set(pam, what = list(ContractRole = "RPA"))
 #' steady interest rate of 5% p.a. and contract term with 2 years
 set(pam, what = list(
          CycleAnchorDateOfInterestPayment = "2013-01-01",  # start of the coupon payment
-         CycleOfInterestPayment = "6M-"))                      # interest payment cycle
+         CycleOfInterestPayment = "P6ML0"))                      # was "6M-" not sure what the L0 does?
 
 #' generate contract events
-as.data.frame(events(pam,ad))
+as.data.frame(events(pam,ad)) 
 
 #' compute mark-to-model value
-value(pam,by="2013-01-02",type="markToModel")
+value(pam,by="2013-01-02",type="markToModel", method=eng)
 
 #' plot contract events
 plot(pam,ad)
@@ -197,13 +194,13 @@ plot(pam,ad)
 ## ---------------------------------------------------------------
 ## 5. An another way to handle the last (short) coupon payment
 ## ---------------------------------------------------------------
-set(pam, what = list(CycleOfInterestPayment = "6M+"))
+set(pam, what = list(CycleOfInterestPayment = "P6ML1")) # was "6M+" not sure what the L1 does?
 
 #' generate contract events
 as.data.frame(events(pam,ad))
 
 #' compute mark-to-model value
-value(pam,by="2013-01-02",type="markToModel")
+value(pam,by="2013-01-02",type="markToModel", method=eng)
 
 #' plot contract events
 plot(pam,ad)
@@ -211,7 +208,7 @@ plot(pam,ad)
 # Summary of the Plot
 # the coupon payment leading to a short last coupon period has been
 # ... suppressed. Thus, a long last coupon period results.
-set(pam, what = list(CycleOfInterestPayment = "6M-"))
+set(pam, what = list(CycleOfInterestPayment = "P6ML0")) # was "6M-" not sure what the L0 does?
 
 ## ---------------------------------------------------------------
 ## 6. add capitalisation of interest payments
@@ -224,7 +221,7 @@ set(object = pam, what = list(CapitalizationEndDate = "2013-07-01" ))
 as.data.frame(events(pam,ad))
 
 #' compute mark-to-model value
-value(pam,by="2013-01-02",type="markToModel")
+value(pam,by="2013-01-02",type="markToModel", method=eng)
 
 #' plot contract events
 plot(pam,ad)
@@ -243,14 +240,14 @@ plot(pam,ad)
 #' we use the last contract and reset the rates yearly
 set(object = pam, what = list(
                   CycleAnchorDateOfRateReset = "2014-01-01",
-                  CycleOfRateReset = "1Y-",
-                  MarketObjectCodeRateReset = "YC_Prim"))
+                  CycleOfRateReset = "P1YL0", # was "1Y-"
+                  MarketObjectCodeOfRateReset = "YC_Prim"))
 
 #' generate contract events
 as.data.frame(events(pam,ad))
 
 #' compute mark-to-model value
-value(pam,by="2013-01-02",type="markToModel")
+value(pam,by="2013-01-02",type="markToModel", method=eng)
 
 #' plot contract events
 plot(pam,ad)
@@ -269,13 +266,13 @@ plot(pam,ad)
 #' we also use the last contract but reset the interest rate bi-annually
 set(object = pam, what = list(
                   CycleAnchorDateOfRateReset = "2013-07-01",
-                  CycleOfRateReset = "3M-"))
+                  CycleOfRateReset = "P3ML0")) # was "3M-"
 
 #' generate contract events
 as.data.frame(events(pam,ad))
 
 #' compute mark-to-model value
-value(pam,by="2013-01-02",type="markToModel")
+value(pam,by="2013-01-02",type="markToModel",method=eng)
 
 #' plot contract events
 plot(pam,ad)
@@ -289,15 +286,15 @@ tenors <- get(yc,"Tenors")
 rates <- get(yc,"Rates")+0.1
 
 set(yc, what = list(
-          Nodes = list(
           ReferenceDate = ad,
-          Rates=rates,Tenors=tenors)))
+          Rates=rates,
+          Tenors=tenors))
 
 #' generate contract events
 as.data.frame(events(pam,ad))
 
 #' compute mark-to-model value
-value(pam,by="2013-01-02",type="markToModel")
+value(pam,by="2013-01-02",type="markToModel",method=eng)
 
 #' plot contract events
 plot(pam,ad)
