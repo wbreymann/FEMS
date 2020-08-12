@@ -6,6 +6,13 @@ setRefClass("CurrentAccount",
               ContractDealDate = "character",
               Currency = "character",
               CashFlows = "data.frame",
+              # Instead of a hard-coded mechanism we should provided the possibility 
+              # to define an arbitrary function with arbitrary arguments
+              # cf. the modification of the CashFlowPattern in class Operations
+              # The only specialized mechnism we need is to get the cashflows
+              # from a call to liquidity for the whole model, discarding the current account.
+              # This may be hard-coded by a specialized function 
+              # but we should allow for wome flexibility
               PercentageOutflows = "data.frame", # besser timeSeries?
               CycleAnchorDateOfInterestPayment = "character",
               CycleOfInterestPayment = "character",

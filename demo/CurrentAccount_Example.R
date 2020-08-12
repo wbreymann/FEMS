@@ -20,6 +20,7 @@ perc_out_dt <- c("2013-12-31","2014-12-31")
 curr_acc <- CurrentAccount(ContractID = "Test_CurrAcc",
                          ContractDealDate = t0,
                          Currency = "CHF",
+                         NotionalPrincipal = 50000,
                          CashFlows = cashflows,
                          PercentageOutflows = percentage_outflows,
                          CycleAnchorDateOfInterestPayment = t0,

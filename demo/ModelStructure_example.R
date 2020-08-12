@@ -8,7 +8,20 @@ myModel = ModelStructure("Minimal Model")
 myModel
 myModel$Active$Treasury$contracts
 
-# Current account must be initialized
+# Initialize current account
+# define analysis time
+ad="2016-01-01"
+CurrAcc.balance = 150000
+curr_acc <- CurrentAccount(ContractID = "CurrAcc",
+                           ContractDealDate = ad,
+                           Currency = "CHF",
+                           NotionalPrincipal = CurrAcc.balance,
+                           CashFlows = cashflows,
+                           PercentageOutflows = percentage_outflows,
+                           CycleAnchorDateOfInterestPayment = t0,
+                           CycleOfInterestPayment = "1Y-",
+                           MarketObjectCodeRateReset = "YC_FLAT")
+curr_acc
 
 
 # addActive("Mortgages", myModel)
@@ -31,7 +44,6 @@ myModel
 
 # Add Operations account
 # define analysis time
-ad="2016-01-01"
 (times = timeSequence(from=timeDate(substring(ad, 1, 10)), by="1 years", 
                       length.out=5))
 # Expenses for the daughter's studies:
