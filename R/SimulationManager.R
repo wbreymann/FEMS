@@ -58,10 +58,10 @@ setGeneric(name = "simulate",
              standardGeneric("simulate")
            })
 
-#' @export
 #' Carries out the simulation.
 #' For every Object, in creates an EventSeries that is the basis for all further
 #' analytics.
+#' @export
 setMethod(f = "simulate", 
           signature = c("SimulationManager", "timeDate", "timeDate", "character"),
           definition = function(object, start, end, by, ...) {
