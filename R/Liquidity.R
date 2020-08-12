@@ -182,7 +182,7 @@ setMethod(f = "liquidity", signature = c("EventSeries", "timeDate", "character")
           definition = function(object, by, type, digits = 2){
             if (type == "marginal") {
               liq <- timeSeries(rep(0, length(by)), charvec = by)
-              cf.raw <- timeSeries(get(object,"evs")$Payoff,
+              cf.raw <- timeSeries(get(object,"evs")$Value,
                                  charvec = substring(get(object,"evs")$Date, 1, 10))
               # cf.aggr = .aggregate.timeSeries(cf.raw, by, FUN=sum)
               cf.aggr <- aggregate(cf.raw, by, FUN = sum)
@@ -207,3 +207,93 @@ setMethod(f = "liquidity", signature = c("EventSeries", "timeBuckets", "characte
             names(liq) <- by@bucketLabs
             return(liq)
           })
+
+#' @include EventSeries.R
+#' @export
+#' @rdname liq-methods
+setMethod(f = "liquidity", signature = c("eventList", "timeDate", "missing"),
+          definition = function(object, by, ...){
+            return(liquidity(object, by, type="marginal", ...))
+          })
+
+#' @include Portfolio.R
+#' @export
+#' @docType methods
+#' @rdname liq-methods
+setMethod(f = "liquidity", signature = c("eventList", "timeBuckets", "missing"),
+          definition = function(object, by, type, ...){
+            liq = liquidity(object, as.timeDate(by), type="marginal", ...)
+            names(liq) = tb@bucketLabs
+            return(liq)
+          })
+
+#' @include EventSeries.R
+#' @export
+#' @rdname liq-methods
+setMethod(f = "liquidity", signature = c("eventList", "timeDate", "character"),
+          definition = function(object, by, type, ...){
+            return(liquidity(as.data.frame(object), by, type, ...))
+          })
+
+#' @include Portfolio.R
+#' @export
+#' @docType methods
+#' @rdname liq-methods
+setMethod(f = "liquidity", signature = c("eventList", "timeBuckets", "character"),
+          definition = function(object, by, type, ...){
+            liq = liquidity(object, as.timeDate(by), type, ...)
+            names(liq) = tb@bucketLabs
+            return(liq)
+          })
+
+#' @export
+#' @rdname liq-methods
+setMethod(f = "liquidity", signature = c("data.frame", "timeDate", "character"),
+          definition = function(object, by, type, ...){
+            
+            pars <- list(...)
+            
+            if ("digits" %in% names(pars)) {
+              digits <- pars$digits
+            } else {
+              digits <- 2
+            }
+            
+            if("select" %in% names(pars)) {
+              object <- subset(object, ContractID %in% pars[["select"]][[1]])
+            }
+            
+            # Analysis according to tree
+            if( "tree" %in% names(pars) ) {
+              tree <- pars[["tree"]]
+              evs.df <- as.data.frame(object)
+              leafs <- lapply(
+                tree$leafs, 
+                FUN = function(x) {
+                  liquidity(subset(evs.df, ContractID%in%x), by=by, type=type, digits=digits)
+                })
+              liq = FEMS:::aggregate.leafs(leafs, tree$branches, by)
+
+            } else if (type=="marginal") {
+              ev.raw <- subset(object, !Type %in% c("DPR","RES"))
+              liq <- timeSeries(rep(0, length(by)), charvec=by)
+              cf.raw <- timeSeries(ev.raw$Value,
+                                  charvec=substring(ev.raw$Date,1,10))
+              cf.aggr <- aggregate(cf.raw, by, FUN=sum)
+              liq[time(cf.aggr),] <- cf.aggr
+              liq <- round(as.numeric(series(liq)), digits)
+              if ( is.null(dim(liq)) )
+                liq = liq[-1]
+              else
+                liq = liq[,-1]
+            } else if (type=="cumulative") {
+              liq <- cumsum(liquidity(object, by, type="marginal", ...))
+            } else {
+              stop(paste("Liquidity type '", type, "' not recognized!", sep=""))
+            }
+            return(liq)
+          })
+
+
+
+
