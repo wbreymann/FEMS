@@ -13,7 +13,7 @@ set(pam, what = list(
     ContractRole = "RPA",
     ContractID = "Contract-03",
     CycleAnchorDateOfInterestPayment = "2016-01-02",
-    CycleOfInterestPayment = "1Y+",
+    CycleOfInterestPayment = "P1Y",
     NominalInterestRate = 0.00,
     DayCountConvention = "30E360",
     Currency = "USD",
@@ -24,7 +24,7 @@ set(pam, what = list(
     RateSpread = 0,
     PremiumDiscountAtIED = 0,
     CycleAnchorDateOfRateReset = "2016-01-02",
-    CycleOfRateReset = "1Y+",
+    CycleOfRateReset = "P1Y",
     RateMultiplier = 1,
     MarketObjectCodeOfRateReset = "YC.USA.TREASURY"))
 
