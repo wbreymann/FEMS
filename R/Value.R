@@ -328,10 +328,8 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "D
 setMethod(f = "value", signature = c("EventSeries", "character", "character", "missing"),
           definition = function(object, by, type, digits = 2, ...){
 
-            print("by is character")
               ev.df = as.data.frame(object)
               pars = list(...)
-            print(pars)  
               if ("filter" %in% names(pars)) {
                 ev.df = subset(ev.df, ContractID %in% pars[["filter"]][[1]])
               }
