@@ -15,6 +15,8 @@ options(warn=-1)
 
 # define analysis time
 ad="2016-01-01T00"
+(times = timeSequence(from=timeDate(substring(ad, 1, 10)), by="1 months", 
+                      length.out=24))
 # First, the market environment must be defined
 # etc.
 values = rnorm(24)
@@ -33,16 +35,15 @@ yc.ch <- YieldCurve(MarketObjectCode = "YC_CH_EIDGENOSSEN", ReferenceDate = ad,
 plot(yc.ch)
 rf1 = RFConn(list(yc.ch, idx))
 rf1
-plot(ops.profit(rf1, "GAS"))
 
 
 # Define Operations contract for operational cash flow pattern
-(times = timeSequence(from=timeDate(substring(ad, 1, 10)), by="1 months", 
-                      length.out=24))
 # Ausgaben bzw. einnahmen für Rohstoff
 ops.profit = function(model, params) { # rename to ops-profit
   timeSeries( valueAt(get(model, "GAS"), paste0(times, "T00")) * 1000, times)
 }
+plot(ops.profit(rf1, "GAS"))
+
 #-----------------------------------------------------------------------------
 # Modelling of operational revenues and expenses (Betriebskosten und -erträge)
 # create Operations contract with "CashFlowPattern"
