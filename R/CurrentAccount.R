@@ -23,7 +23,8 @@ setRefClass("CurrentAccount",
               StatusDate = "timeDate",
               NotionalPrincipal = "numeric",
               AccruedInterest = "numeric",
-              rf_connector = "RiskFactorConnector"
+              rf_connector = "RiskFactorConnector",
+              val_engine = "ValuationEngine"
             ))
 # Grundsätzliche Bemerkung:
 # Du benutzt für Zeitreihen einen "data.frame". Das ist ungünstig.
@@ -65,6 +66,21 @@ setMethod(f = "CurrentAccount",signature = c(),
 setMethod(f = "set", signature = c("CurrentAccount","list"),
           function(object, what, ...){
             silent <- lapply(names(what),function(x) object$field(x,what[[x]]))
+          })
+
+#' @include ValuationEngine.R
+#' @export
+#' @rdname set-methods
+setMethod(f = "set", signature = c("ContractType","ValuationEngine"),
+          definition = function(object, what){
+            object$val_engine <- what
+          })
+
+#' @include RiskFactorConnector.R
+#' @export
+setMethod(f = "set", signature = c("CurrentAccount", "RiskFactorConnector"),
+          definition = function(object, what){
+            object$rf_connector <- what
           })
 
 #' @export
@@ -120,13 +136,6 @@ setGeneric(name = "add.internalcashflow",
 setMethod(f = "add.internalcashflow", signature = c("CurrentAccount", "data.frame"),
           definition = function(object, added_cf){
             add.cashflow(object, added_cf, type = "internal")
-          })
-
-#' @include RiskFactorConnector.R
-#' @export
-setMethod(f = "set", signature = c("CurrentAccount", "RiskFactorConnector"),
-          definition = function(object, what){
-            object$rf_connector <- what
           })
 
 #' @include Events.R
@@ -291,8 +300,9 @@ currentaccount.evs <- function(object, model, end_date, method, period){
     return(ev_tbl)
 }
 
+
 ################## Analysis functions ###################################################
-# Liquidity functions....
+# Liquidity methods...
 
 #' @include Liquidity.R
 #' @export
@@ -333,6 +343,34 @@ setMethod(f = "liquidity", signature = c("CurrentAccount", "timeDate", "characte
             liq <- liquidity(evs, by, type, digits=digits)
             return(liq)
           })
+
+########################################################################################
+# Value methods...
+
+#' @include Value.R
+#' @export
+#' @rdname val-methods
+setMethod(f = "value", signature = c("CurrentAccount", "character", "character", "missing"),
+          definition = function(object, by, type, method, end_date, ...){
+            val <- value(object, by, type, object$rf_connector, end_date=end_date)
+            return(val)
+          })
+
+#' @include Value.R
+#' @export
+#' @rdname val-methods
+setMethod(f = "value", signature = c("CurrentAccount", "character", "character", "ValuationEngine"),
+          definition = function(object, by, type, method, end_date, ...){
+            if (type == "nominal") {
+              val <- FEMS::value(FEMS::events(object, by[1], object$rf_connector, end_date=end_date), by, "nominal", method, ...)
+            } else if (type %in% c("markToModel", "markToMarket") ) {
+              val <- FEMS::value(FEMS::events(object, by[1], object$rf_connector, end_date=end_date), by, "markToModel", method, ...)
+            } else {
+              stop(paste("Value type '", type, "' not recognized!", sep=""))
+            }
+            return(val)
+          })
+
 
 get.dates.from.cycle <- function(anchor_date, cycle, end_date){
   period <- substr(cycle, nchar(cycle)-1, nchar(cycle)-1)
