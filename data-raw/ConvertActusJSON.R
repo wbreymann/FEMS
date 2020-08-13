@@ -1,5 +1,6 @@
 library(jsonlite)
 library(stringr)
+library(usethis)
 
 
 convertActusDefaults <- function(actus_defaults) {
@@ -44,7 +45,13 @@ rflActus_attributes <- lapply( rflActus_required, function(x) {
 # get allowed values for each attribute
 rflActus_allowed_vals <- lapply( rflActus_required, function(x) {
                                         terms_temp <- lapply( json_body$terms[names(x)],
-                                                              function(y) unname(unlist(y["allowedValues"])))
+                                                              function(y) {
+                                                                tryCatch({
+                                                                  unlist(lapply(y[["allowedValues"]], function(z) z$acronym))
+                                                                }, error = function(e) {
+                                                                  unname(unlist(y["allowedValues"]))
+                                                                })
+                                                              })
                                         x <- terms_temp
                                     })
 
@@ -71,10 +78,15 @@ rflActus_allowed_vals <- lapply(rflActus_allowed_vals, function(x) {
 })
 
 # save this into the data folder
-save(list = c("rflActus_required", "rflActus_attributes","rflActus_allowed_vals"),
-                        file = "./data/rflActusDictionary.RData")
+# save(list = c("rflActus_required", "rflActus_attributes","rflActus_allowed_vals"),
+#                         file = "./data/rflActusDictionary.RData")
 
-
+actusDictionary <- list(rflActus_required = rflActus_required,
+                        rflActus_attributes = rflActus_attributes,
+                        rflActus_allowed_vals = rflActus_allowed_vals)
+actusURL <- "http://ractus.ch:8080/"
+usethis::use_data(actusDictionary, actusURL, 
+                  internal = TRUE)
 
 
 

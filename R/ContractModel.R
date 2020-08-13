@@ -121,16 +121,16 @@ setGeneric(name = "CTM",
 #' @aliases CTM, character-method
 setMethod(f = "CTM", signature = c("character"),
           definition = function(model) {
-            
-            if (!model %in% names(ActusDictionary$rflActus_attributes)) {
+
+            if (!model %in% names(actusDictionary$rflActus_attributes)) {
               stop(paste("ErrorIn::ContractModel:: Type of Contract ", model, " does not exist !!!"))
             }
             ctm <- new("ContractModel")
             
             ctm$contract_type <- model
-            ctm$ContractTerms <- ActusDictionary$rflActus_attributes[[model]]
-            ctm$required <- ActusDictionary$rflActus_required[[model]]
-            ctm$allowed <- ActusDictionary$rflActus_allowed_vals[[model]]
+            ctm$ContractTerms <- actusDictionary$rflActus_attributes[[model]]
+            ctm$required <- actusDictionary$rflActus_required[[model]]
+            ctm$allowed <- actusDictionary$rflActus_allowed_vals[[model]]
             return(ctm)
           })
 
@@ -301,6 +301,18 @@ setMethod(f = "checkArguments", signature = c("ContractModel","list"),
                 } else if (data_type[1] == "Negative") {
                   if (arguments[[i]] > 0) {
                     stop(paste("ErrorIn::ContractModel:: A Value of '", arguments[[i]], "' is not allowed for Attribute '",names(arguments[i]),". Must be Negative  !!!"))
+                  }
+                } else if (data_type[1] == "[ISO8601 Duration]L[s={0,1}]") {
+                  first_letter <- substr(arguments[[i]],1,1)
+                  last_two <- substr(arguments[[i]],nchar(arguments[[i]])-1,nchar(arguments[[i]]))
+                  if (!(first_letter == "P") || !(last_two %in% c("L0","L1"))) {
+                    stop(paste("ErrorIn::ContractModel:: A Value of '", arguments[[i]], "' is not allowed for Attribute '",names(arguments[i]),". Must start with 'P' and end with 'L0' or 'L1'  !!!"))
+                  }
+                } else if (data_type[1] == "ISO8601 Duration") {
+                  first_letter <- substr(arguments[[i]],1,1)
+                  last_two <- substr(arguments[[i]],nchar(arguments[[i]])-1,nchar(arguments[[i]]))
+                  if (!(first_letter == "P") || (last_two %in% c("L0","L1"))) {
+                    stop(paste("ErrorIn::ContractModel:: A Value of '", arguments[[i]], "' is not allowed for Attribute '",names(arguments[i]),". Must start with 'P' and NOT end with 'L0' or 'L1'!!!"))
                   }
                 } else {
                   if (grepl(",", arguments[[i]], fixed = TRUE)) {

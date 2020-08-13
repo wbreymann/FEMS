@@ -440,7 +440,7 @@ setMethod(f = "income", signature = c("Portfolio", "timeDate", "character",
                   ), 1, sum)
                   return(inc)
                 })
-                inc = rflPortfolio:::aggregate.leafs(leafs, tree$branches, by)
+                inc = FEMS:::aggregate.leafs(leafs, tree$branches, by)
               } else {
                 inc = apply(as.data.frame(lapply(
                   ct.selected,
@@ -642,7 +642,7 @@ setMethod(f = "income",
 income.from.payments = function(eventSeries, by, digits=2, ...) {
   income.events <- subset(as.data.frame(eventSeries), Type %in% c("IP","FP"))
   inc <- timeSeries(rep(0, length(by)), charvec = by)
-  cf.raw <- timeSeries(income.events$Payoff, charvec = substring(income.events$Date, 1, 10))
+  cf.raw <- timeSeries(income.events$Value, charvec = substring(income.events$Date, 1, 10))
   cf.aggr <- aggregate(cf.raw, by, FUN=sum)
   if (length(cf.aggr) > 0) {
     inc[time(cf.aggr),] <- cf.aggr
@@ -680,7 +680,7 @@ income.from.revaluation = function(object, by, method, digits=2, ...) {
   evs <- events(object, as.character(by[1]))
   dates <- FEMS:::get(evs,"evs")$Date
   types <- FEMS:::get(evs,"evs")$Type
-  values <- FEMS:::get(evs,"evs")$Payoff
+  values <- FEMS:::get(evs,"evs")$Value
   pr.cf <- aggregate(
     timeSeries(
       c(rep(0, length(by)), values[types %in% c("IED","PR","MD")]),
@@ -706,7 +706,7 @@ income.from.revaluation.from.es = function(evs, by, method, digits=2, ...) {
   # from delta-market-values between by-times
   dates <- FEMS:::get(evs,"evs")$Date
   types <- FEMS:::get(evs,"evs")$Type
-  values <- FEMS:::get(evs,"evs")$Payoff
+  values <- FEMS:::get(evs,"evs")$Value
   pr.cf <- aggregate(
     timeSeries(
       c(rep(0, length(by)), values[types %in% c("IED","PR","MD")]),
@@ -726,3 +726,133 @@ income.from.revaluation.from.es = function(evs, by, method, digits=2, ...) {
   inc <- as.numeric( diff(vals) + pr.cf[-1])
   return(round(inc, digits))
 }
+
+
+
+#' @include EventSeries.R
+#' @export
+#' @rdname inc-methods
+setMethod(f = "income", signature = c("eventList", "timeDate", "missing"),
+          definition = function(object, by, type, method, ...){
+            return(income(object, by, type="marginal", ...))
+          })
+
+#' @include EventSeries.R
+#' @export
+#' @rdname inc-methods
+setMethod(f = "income", signature = c("eventList", "timeDate", "character"),
+          definition = function(object, by, type, ...){
+            return(income(as.data.frame(object), by, type, ...))
+          })
+
+#' @include EventSeries.R
+#' @export
+#' @rdname inc-methods
+setMethod(f = "income", signature = c("eventList", "timeDate", "character", 
+                                      "logical", "missing"),
+          definition = function(object, by, type, revaluation.gains, ...){
+            return(income(as.data.frame(object), by, type, revaluation.gains, ...))
+          })
+
+#' @export
+#' @rdname inc-methods
+setMethod(f = "income", signature = c("data.frame", "timeDate", "character"),
+          definition = function(object, by, type, method, ...){
+            pars=list(...)
+
+            if("select"%in%names(pars)) {
+              object=subset(object, ContractID %in% pars[["select"]][[1]])
+            }
+            
+            if (!("revaluation.gains" %in% names(pars) && 
+                  pars[["revaluation.gains"]]==FALSE) ) {
+              stop("Cannot compute revaluation gains from 'EventSeries' and 'EventTable' objects!")
+            } else if ( "tree" %in% names(pars) ) {
+              tree = pars[["tree"]]
+              leafs = lapply(tree$leafs, FUN=function(x) {
+                income( subset( object, ContractID %in% x), by=by, type=type, 
+                        revaluation.gains=FALSE)
+              })
+              inc = FEMS:::aggregate.leafs(leafs, tree$branches, by)
+              # if ( is.null(dim(inc)) )
+              #   inc = inc[-1]
+              # else
+              #   inc = inc[,-1]
+              
+            } else if (type=="marginal" ) {
+              ev.raw = subset(as.data.frame(object), 
+                              Type %in% c("AD0", "IP", "FP", "OPS", "DPR", "RES"))
+              inc = timeSeries(rep(0, length(by)), charvec=by)
+              cf.raw = timeSeries(ev.raw$Value,
+                                  charvec=substring(ev.raw$Date, 1, 10))
+              cf.aggr = aggregate(cf.raw, by, FUN=sum)
+              inc[time(cf.aggr),] <- cf.aggr
+              inc  = as.numeric(series(inc))
+              if ( is.null(dim(inc)) )
+                inc = inc[-1]
+              else
+                inc = inc[,-1]
+            } else if(type=="cumulative") {
+              inc = cumsum(income(object, by, type="marginal",...))
+            } else {
+              stop(paste("Income type '", type, "' not recognized!", sep=""))
+            }
+            return(inc)
+          })
+
+## @include
+#' @export
+#' @rdname inc-methods
+setMethod(f = "income", signature = c("data.frame", "timeDate", "character", 
+                                      "logical", "missing"),
+          definition = function(object, by, type, revaluation.gains, ...){
+
+            pars=list(...)
+            if ("digits" %in% names(pars)) {
+              digits = pars$digits
+            } else {
+              digits = 2
+            }
+            
+            if("select" %in% names(pars)) {
+              object=subset(object, ContractID %in% pars[["select"]][[1]])
+            }
+            
+            if ( revaluation.gains ) {
+              stop("Cannot compute revaluation gains from 'EventSeries' and 'EventTable' objects!")
+            } else if ( "tree" %in% names(pars) ) {
+              tree=pars[["tree"]]
+              leafs = lapply(tree$leafs, FUN=function(x) {
+                income( subset( object, ContractID %in% x), by=by, type=type, 
+                        revaluation.gains=FALSE, digits=digits)
+              })
+              inc = FEMS:::aggregate.leafs(leafs, tree$branches, by)
+              # if ( is.null(dim(inc)) )
+              #   inc = inc[-1]
+              # else
+              #   inc = inc[,-1]
+              
+            } else if (type=="marginal" ) {
+              ev.raw = subset(as.data.frame(object), 
+                              Type %in% c("AD0", "IP", "FP", "OPS", "DPR", "RES"))
+              inc = timeSeries(rep(0, length(by)), charvec=by)
+              cf.raw = timeSeries(ev.raw$Value,
+                                  charvec=substring(ev.raw$Date, 1, 10))
+              cf.aggr = aggregate(cf.raw, by, FUN=sum)
+              inc[time(cf.aggr),] <- cf.aggr
+              inc  = round(as.numeric(series(inc)), digits=digits)
+              if ( is.null(dim(inc)) )
+                inc = inc[-1]
+              else
+                inc = inc[,-1]
+            } else if(type=="cumulative") {
+              inc = cumsum(income(object, by, type="marginal", 
+                                  revaluation.gains=FALSE, ...))
+            } else {
+              stop(paste("Income type '", type, "' not recognized!", sep=""))
+            }
+            return(inc)
+          })
+
+
+

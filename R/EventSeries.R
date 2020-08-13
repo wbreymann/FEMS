@@ -136,33 +136,46 @@ setMethod(f = "EventSeries", signature = c("ContractType", "character"),
 #' @aliases EventSeries, missing-method
 setMethod(f = "EventSeries", signature = c("Portfolio", "AD0"),
           definition = function(object, ad, ...){
-            
-            # create event series object and extract meta info
-            out <- new("EventSeries")
-            
-            # out$id <- get(object, what = "ContractID")
-            # out$ct <- get(object, what = "ContractType")
-            
+
             # compute events
             evs_raw <- generateEvents(object, ad)
-            
-            # extract events
+            evs_list <- list()
+            ct_list <- list()
+            id_list <- list()
             for (i in 1:length(evs_raw)) {
               types <- getEventAttributes(evs_raw[[i]]$events, "type")
               payoff <- getEventAttributes(evs_raw[[i]]$events, "payoff")
               # payoff[types %in% c("IPCI","PRY","CD","RR","RRY","SC","IPCB")] = 0
               time <- getEventAttributes(evs_raw[[i]]$events, "time")
               temp_df <- data.frame(
-                ContractID = evs_raw[[i]]$contractId,
+                # ContractID = evs_raw[[i]]$contractId,
                 Date = substring(time, 1, 10),
-                Payoff = payoff,
+                Value = payoff,
                 Type = types,
                 Currency = getEventAttributes(evs_raw[[i]]$events, "currency"),
+                Time = yearFraction(substring(time[1], 1, 10), substring(time, 1, 10), convention = "A/AISDA"),
                 NominalValue = getEventAttributes(evs_raw[[i]]$events, "nominalValue"),
                 NominalRate = getEventAttributes(evs_raw[[i]]$events, "nominalRate"),
                 NominalAccrued = getEventAttributes(evs_raw[[i]]$events, "nominalAccrued"))
-              out$evs <- rbind(out$evs, temp_df)
-              out$id <- c(out$id, evs_raw[[i]]$contractId)
+              evs_list[[i]] <- temp_df
+              id_list[[i]] <- evs_raw[[i]]$contractId
+              ct_list[[i]] <- object$contracts[[evs_raw[[i]]$contractId]]$ContractTerms$ContractType
+            }
+            
+            if (length(evs_raw)==1){
+              out <- new("EventSeries")
+              out$evs <- evs_list[[1]]
+              out$id <- unlist(id_list)
+              out$ct <- unlist(ct_list)
+            } else {
+              out <- eventList()
+              for (j in 1:length(evs_raw)) {
+                temp <- new("EventSeries")
+                temp$evs <- evs_list[[j]]
+                temp$id <- id_list[[j]]
+                temp$ct <- ct_list[[j]]
+                out[[as.character(temp$id)]] <- temp
+              }
             }
             return(out)
           })
@@ -245,30 +258,6 @@ setMethod("print", signature = "EventSeries",
               }
               y$Date <- as.vector(sapply(y$Date, function(x) 
                               check.date.format(x, add = FALSE)))
-              y
-            }
-          }
-)
-
-#' @export
-#' @docType methods
-#' @rdname print-methods
-setMethod("print", signature = "eventList", 
-          definition = function(x, type = "pretty", indices, ...) {
-            if (type == "raw") {
-              x
-            } else {
-              y = as.data.frame(x)
-              if (!missing(indices)){ 
-                y = y[,indices] 
-              }
-              if (type == "pretty") { 
-                colnames(y) = .defaults$shortNames[colnames(y)]
-                for (nam  in colnames(y))
-                {
-                  if (is.numeric(y[,nam])) y[,nam] = round(y[,nam],4)
-                }
-              }
               y
             }
           }
@@ -521,6 +510,51 @@ setMethod( f = "set" , signature = c( "EventSeries" , "list" ) ,
                }
              }
            })
+
+# -----------------------------------------------------------------
+# Methods related to eventList
+## @export
+## @docType methods
+## @rdname print-methods
+setMethod("print", signature = "eventList",
+          definition = function(x, type = "pretty", indices, ...) {
+            browser()
+            if (type == "raw") {
+              x
+            } else {
+              y = as.data.frame(x)
+              if (!missing(indices)){
+                y = y[,indices]
+              }
+              if (type == "pretty") {
+                colnames(y) = .defaults$shortNames[colnames(y)]
+                for (nam  in colnames(y))
+                {
+                  if (is.numeric(y[,nam])) y[,nam] = round(y[,nam],4)
+                }
+              }
+              y
+            }
+          }
+)
+
+
+#' @export
+#' @docType methods
+#' @rdname print-methods
+setMethod("[", signature = c("eventList", "ANY", "missing"),
+          definition = function(x, i) {
+            nams = names(x)
+            if (is.character(i) ) {
+              i = is.element(nams, i)
+            }
+            l = x@.Data[i]
+            names(l) = nams[i]
+            new("eventList", .Data=l)
+          }
+)
+
+
 
 
 # -----------------------------------------------------------------

@@ -206,6 +206,7 @@ setMethod(f="sensitivity",
 setMethod(f="sensitivity", 
           signature=c("ContractType", "character", "missing", "ValuationEngine", "missing"), 
           definition=function(object, by, type, method, scenarios) {
+            
             # set default type
             type = "fisherweil"
             
@@ -234,7 +235,7 @@ setMethod(f="sensitivity",
 setMethod(f="sensitivity", 
           signature=c("ContractType", "character", "character", "ValuationEngine", "missing"), 
           definition=function(object, by, type, method, scenarios) {
-            
+
             if (type=="macaulay") {
               
               D=sensitivity(EventSeries(object, by[1]) , by, type, method)
@@ -354,7 +355,7 @@ setMethod(
   f = "sensitivity", 
   signature = c("EventSeries", "character", "character", "ValuationEngine", "missing"), 
   definition = function(object, by, type, method, scenarios) {
-    
+
     if (type=="macaulay") {
               
       ## cash flow data
@@ -364,7 +365,7 @@ setMethod(
               
       ## discount factors
       ad0 <- by[1]
-      yc <- YieldCurve(get(method, "InterestRatesModel"))
+      yc <- get(method,"RiskFactorObject")
       dfs <- discountFactors(yc, dates, ad0, isDateEnd = TRUE)
               
       ## Calculating the Macauly Duration
@@ -379,7 +380,7 @@ setMethod(
               
       ## discount factors
       ad0 <- by[1]
-      yc <- YieldCurve(get(method, "InterestRatesModel"))
+      yc <- get(method,"RiskFactorObject")
       dfs <- discountFactors(yc, dates, ad0, isDateEnd=TRUE)
       s <- rates(yc, dates, isDateEnd=TRUE)
               

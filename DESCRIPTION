@@ -62,7 +62,6 @@ Collate:
     'CurrentAccount.R'
     'DataTreeFunctions.R'
     'ExoticLinearAmortizer.R'
-    'FinancialModel.R'
     'ForeignExchangeOutright.R'
     'ForeignExchangeRate.R'
     'Future.R'

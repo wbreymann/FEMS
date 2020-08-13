@@ -24,7 +24,7 @@ setMethod(f = "Pam", signature = c(),
             ContractRole = "RPA",
             StatusDate = "0000-01-01",
             PremiumDiscountAtIED = 0,
-            DayCountConvention = "30E/360",
+            DayCountConvention = "30E360",
             ...){
               object <- new("PrincipalAtMaturity")
               pars <- list(...,

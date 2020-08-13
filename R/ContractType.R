@@ -92,7 +92,7 @@ setGeneric(name = "CT",
 #' @aliases CT,character-method
 setMethod(f = "CT", signature = c("character"),
           definition = function(contract_name) {
-            if (!contract_name %in% names(ActusDictionary$rflActus_attributes)) {
+            if (!contract_name %in% names(actusDictionary$rflActus_attributes)) {
               stop(paste("ErrorIn::ContractType:: Type of Contract ", contract_name, " does not exist !!!"))
             }
             out <- new(contract_name)
@@ -233,7 +233,9 @@ setMethod(f = "set", signature = c("ContractType", "RiskFactorConnector"),
 #' @export
 setMethod("show", signature = "ContractType",
           definition = function(object){
-            print(as.data.frame(object$ContractTerms))
+            df <- t(as.data.frame(object$ContractTerms))
+            colnames(df) <- "ContractTerms"
+            print(df)
           })
 
 
