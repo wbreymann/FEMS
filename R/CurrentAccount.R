@@ -93,7 +93,7 @@ setMethod(f = "get", signature = "CurrentAccount",
 
 #' @export
 setGeneric(name = "add.cashflow",
-           def = function(object, added_cf, type){
+           def = function(object, added_cf, ...){
              standardGeneric("add.cashflow")
            })
 
@@ -257,11 +257,11 @@ currentaccount.evs <- function(object, model, end_date, method, period){
       nominal_accrued <- nominal_accrued + (df_s-1) * nominal_value
       
       if (all_dates[i] %in% interest_dates) {
-        value <- nominal_accrued
+        value <- 0
         nominal_value <- nominal_value + nominal_accrued
         nominal_accrued <- 0
         next_ev <- rbind(next_ev,
-                         data.frame(Date=all_dates[i], Value=value, Type="IPIC", Level="P", Currency=ccy,
+                         data.frame(Date=all_dates[i], Value=value, Type="IPCI", Level="P", Currency=ccy,
                                     Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
                                     NominalAccrued=nominal_accrued))
       }  
@@ -274,8 +274,8 @@ currentaccount.evs <- function(object, model, end_date, method, period){
                                     NominalAccrued=nominal_accrued))
       } 
       if (all_dates[i] %in% rownames(object$InternalCashFlows)) {
-        value <- object$InternalCashFlows[all_dates[i],]
-        nominal_value <- nominal_value + value
+        value <- 0
+        nominal_value <- nominal_value + object$InternalCashFlows[all_dates[i],]
         next_ev <- rbind(next_ev,
                          data.frame(Date=all_dates[i], Value=value, Type="IAM", Level="P", Currency=ccy,
                                     Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
@@ -337,7 +337,7 @@ setMethod(f = "liquidity", signature = c("CurrentAccount", "timeBuckets", "chara
 #' @rdname liq-methods
 setMethod(f = "liquidity", signature = c("CurrentAccount", "timeDate", "character"),
           definition = function(object, by, type, digits = 2) {
-            filtered=c("DPR", "IAM","RES","IPIC")
+            filtered=c("DPR", "IAM","RES","IPCI")
             evs <- events(object, as.character(by[1]), 
                           object$rf_connector, end_date=as.character(by[length(by)]))
             evs$evs <- evs$evs[!is.element(evs$evs$Type, filtered),]
