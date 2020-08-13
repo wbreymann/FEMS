@@ -387,16 +387,16 @@ setMethod("[", signature = c("EventSeries", "numeric", "character"),
           }
 )
 
-#' ## @include 
-#' #' @export
-#' #' @docType methods
-#' #' @rdname subscript-methods
-#' setMethod("[<-", signature = c("EventSeries", "numeric", "numeric", "ANY"),
-#'           definition = function(x, i, j, y) {
-#'             x$evs[i,j] = y
-#'             x
-#'           }
-#' )
+## @include 
+## @export
+## @docType methods
+## @rdname subscript-methods
+# setMethod("[<-", signature = c("EventSeries", "numeric", "numeric", "ANY"),
+#           definition = function(x, i, j, y) {
+#             x$evs[i,j] = y
+#             x
+#           }
+# )
 
 
 ##############################################################
@@ -438,12 +438,13 @@ setMethod("[", signature = c("EventSeries", "numeric", "character"),
 #' class(evs.df)
 #'
 ## @include
-#' @export as.data.frame.EventSeries
+#' @export 
 #' @docType methods
 #' @rdname as.df-methods
-as.data.frame.EventSeries = function(x) {
+as.data.frame.EventSeries <- function(x) {
   x$evs
 }
+
 
 ## @include
 #' @export
@@ -518,7 +519,7 @@ setMethod( f = "set" , signature = c( "EventSeries" , "list" ) ,
 ## @rdname print-methods
 setMethod("print", signature = "eventList",
           definition = function(x, type = "pretty", indices, ...) {
-            browser()
+            
             if (type == "raw") {
               x
             } else {
