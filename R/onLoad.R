@@ -3,7 +3,7 @@
 # Please see accompanying distribution file for license.
 #*************************************************************
 
-#' @import rJava
+## @import rJava
 .onLoad <- function(libname, pkgname) {
 
     ## load java library in "java"-Path

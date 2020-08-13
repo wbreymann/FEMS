@@ -30,7 +30,8 @@ Depends:
     fmdates,
     jsonlite,
     readxl,
-    data.tree
+    data.tree,
+    R (>= 2.10)
 Imports:
     timeSeries (>= 3012.99),
 SystemRequirements: R (>= 3.5.0) 
