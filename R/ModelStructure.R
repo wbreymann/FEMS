@@ -128,7 +128,7 @@ setMethod(f = "liquidity", signature = c("Node", "timeBuckets", "character"),
 ####---------------------------------------------------------------
 ## value methods
 
-#' @include Value
+#' @include Value.R
 #' @rdname val-methods
 #' @export
 setMethod(f = "value", signature = c("Node", "timeBuckets", "character"),
