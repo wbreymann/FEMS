@@ -138,6 +138,7 @@ setGeneric(name = "FlatCurve",
 #' @export
 setMethod(f = "FlatCurve", signature = c("numeric","character"),
           definition = function(rate, ref_date){
+            
             yc <- YieldCurve()
             tenors <- c("1W", "6M", "1Y", "5Y", "10Y", "50Y", "100Y")
             rates <- rep(1, length(tenors)) * rate
@@ -170,7 +171,7 @@ setMethod(f = "set", signature = c("YieldCurve", "list"),
                        },
                        Tenors = {
                          object$Tenors <- value
-                         object$TenorDates <- computeTenorDates(yc$ReferenceDate, value)
+                         object$TenorDates <- computeTenorDates(object$ReferenceDate, value)
                        },
                        DayCountConvention = {
                          object$DayCountConvention <- tolower(value)
