@@ -153,7 +153,7 @@ setMethod(f = "EventSeries", signature = c("Portfolio", "AD0"),
                 Value = payoff,
                 Type = types,
                 Currency = getEventAttributes(evs_raw[[i]]$events, "currency"),
-                Time = yearFraction(substring(time[1], 1, 10), substring(time, 1, 10), convention = "A/365"),
+                Time = yearFraction(substring(time[1], 1, 10), substring(time, 1, 10), convention = "A/AISDA"),
                 NominalValue = getEventAttributes(evs_raw[[i]]$events, "nominalValue"),
                 NominalRate = getEventAttributes(evs_raw[[i]]$events, "nominalRate"),
                 NominalAccrued = getEventAttributes(evs_raw[[i]]$events, "nominalAccrued"))
