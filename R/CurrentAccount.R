@@ -337,9 +337,10 @@ setMethod(f = "liquidity", signature = c("CurrentAccount", "timeBuckets", "chara
 #' @rdname liq-methods
 setMethod(f = "liquidity", signature = c("CurrentAccount", "timeDate", "character"),
           definition = function(object, by, type, digits = 2) {
+            filtered=c("DPR", "IAM","RES","IPIC")
             evs <- events(object, as.character(by[1]), 
                           object$rf_connector, end_date=as.character(by[length(by)]))
-            evs$evs <- evs$evs[!(evs$evs$Type == "IAM"),]
+            evs$evs <- evs$evs[!is.element(evs$evs$Type, filtered),]
             liq <- liquidity(evs, by, type, digits=digits)
             return(liq)
           })

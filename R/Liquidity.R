@@ -179,7 +179,8 @@ setMethod(f = "liquidity", signature = c("EventSeries", "timeBuckets", "missing"
 #' @export
 #' @rdname liq-methods
 setMethod(f = "liquidity", signature = c("EventSeries", "timeDate", "character"),
-          definition = function(object, by, type, digits = 2){
+          definition = function(object, by, type, digits = 2, filtered=c("DPR", "IAM","RES","IPIC")){
+            object$evs <- object$evs[!is.element(object$evs$Type,filtered),]
             if (type == "marginal") {
               liq <- timeSeries(rep(0, length(by)), charvec = by)
               cf.raw <- timeSeries(get(object,"evs")$Value,
