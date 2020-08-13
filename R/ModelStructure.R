@@ -94,9 +94,8 @@ events.modelstructure = function(node, ..., filterFun=isLeaf) {
   res = sapply(
     X=ctrs,
     FUN = function(x, pars) {
-      # print(x$ContractID)
       pars = c(object=x, pars)
-      if ( class(x)!="CurrentAccount") pars[["end_date"]] <- NULL
+      if ( class(x)!="CurrentAccount") { pars[["end_date"]] <- NULL }
       evs = do.call("events", pars)
       if (!is.null(evs) ) {
         if (is.null(node$eventList)) {
@@ -166,17 +165,13 @@ fAnalytics = function(node, ...) {
       fnam = pars[[1]] # the name of the analytics [liquidity|income|value]
       object = node$eventList[[x$ContractID]] # the eventSeries of the contract
       pars = pars[c(-1)]
-    #   print("Pars:")
-    # print(pars)
     do.call(fnam, c(object=object, pars))
     })
-  # print(node)
   if (!is.null(dim(res)) ) {
     res = rowSums(res)
   } else if (length(res) == 0) {
     res <- NULL
   }
-  # print(res)
   node[[pars[[1]] ]] = res
 }
 
