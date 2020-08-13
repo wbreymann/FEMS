@@ -563,7 +563,8 @@ setMethod(f = "names", signature = c("YieldCurve"),
 # )
 
 ## @include
-# @export
+## @export
+
 # setMethod("[[<-", signature = c("YieldCurve", "ANY"),
 #           definition = function(x, i, value) {
 #             y <- x
@@ -586,6 +587,7 @@ setMethod(f = "names", signature = c("YieldCurve"),
 ##############################################################
 #' A Reference Class 
 #' 
+#' @export
 Interpolator <- setRefClass("Interpolator", 
             fields = list(xValues = "numeric",
                           yValues = "numeric"),

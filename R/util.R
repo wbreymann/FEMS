@@ -272,3 +272,32 @@ longName <- function(name) {
   return(out)
 }
 
+
+# function for formatted printing of an eventList as data.frame
+print.eventList.as.data.frame = function(df, type, indices, ...) {
+
+  if (type == "raw") {
+    print(df)
+  } else {
+    cNams = colnames(df)
+    
+    if (type == "pretty") { 
+      # print(df)
+      colnames(df)[-1] = FEMS:::.defaults$shortNames[cNams[-1]]
+      colnames(df)[1] = "ID"
+      for (nam  in colnames(df))
+      {
+        if (is.numeric(df[,nam])) {
+          df[,nam] = round(df[,nam],4)
+        }
+      }
+    }
+    if (!missing(indices)){
+      df = df[,indices]
+    }
+    print(df)
+  }
+}
+
+
+
