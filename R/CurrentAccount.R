@@ -6,6 +6,7 @@ setRefClass("CurrentAccount",
               ContractDealDate = "character",
               Currency = "character",
               CashFlows = "data.frame",
+              InternalCashFlows = "data.frame",
               # Instead of a hard-coded mechanism we should provided the possibility 
               # to define an arbitrary function with arbitrary arguments
               # cf. the modification of the CashFlowPattern in class Operations
@@ -43,6 +44,7 @@ setMethod(f = "CurrentAccount",signature = c(),
             pars <- list(...,
                          ContractType="CurrentAccount",
                          CashFlows=data.frame(),
+                         InternalCashFlows=data.frame(),
                          PercentageOutflows=data.frame(),
                          Compound="compound",
                          Period="Y",
@@ -74,26 +76,51 @@ setMethod(f = "get", signature = "CurrentAccount",
 
 #' @export
 setGeneric(name = "add.cashflow",
-           def = function(object, added_cf){
+           def = function(object, added_cf, type){
              standardGeneric("add.cashflow")
            })
 
 #' @export
 setMethod(f = "add.cashflow", signature = c("CurrentAccount", "data.frame"),
-          definition = function(object, added_cf){
-            
+          definition = function(object, added_cf, type = "external"){
             # extend the cash-flows in existing object
-            cf_prev <- object$CashFlows
+            if (type == "internal") {
+              cf_prev <- object$InternalCashFlows
+            } else {
+              cf_prev <- object$CashFlows
+            }
             cf_prev$temp_name <- rownames(cf_prev)
             added_cf$temp_name <- rownames(added_cf)
             
-            # bind the two dataframes together by row and aggregate
-            agg <- aggregate(. ~ temp_name, rbind(cf_prev,setNames(added_cf, names(cf_prev))), sum)
+            # if previous df is not empty, bind the two dataframes together by row and aggregate
+            if ((dim(cf_prev)[1]==0)) {
+              agg <- added_cf
+            } else {
+              agg <- aggregate(. ~ temp_name, rbind(cf_prev,setNames(added_cf, names(cf_prev))), sum)
+            }
             
             # reformat again 
             rownames(agg) <- agg$temp_name
-            object$CashFlows <-agg[!(names(agg) %in% "temp_name")]
+            cf_new <- agg[!(names(agg) %in% "temp_name")]
+            if (type == "internal") {
+              object$InternalCashFlows <- cf_new
+            } else {
+              object$CashFlows <- cf_new
+            }
           })
+
+#' @export
+setGeneric(name = "add.internalcashflow",
+           def = function(object, added_cf){
+             standardGeneric("add.internalcashflow")
+           })
+
+#' @export
+setMethod(f = "add.internalcashflow", signature = c("CurrentAccount", "data.frame"),
+          definition = function(object, added_cf){
+            add.cashflow(object, added_cf, type = "internal")
+          })
+
 
 #' @include Events.R
 #' @export
@@ -140,6 +167,7 @@ currentaccount.evs <- function(object, model, end_date, method, period){
   all_dates <- sort(unique(c(object$ContractDealDate,
                              interest_dates,
                              rownames(object$CashFlows),
+                             rownames(object$InternalCashFlows),
                              rownames(object$PercentageOutflows),
                              end_date)))
   if (min(c(all_dates,object$ContractDealDate)) < yc$ReferenceDate[1]) {
@@ -183,6 +211,14 @@ currentaccount.evs <- function(object, model, end_date, method, period){
                                     Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
                                     NominalAccrued=nominal_accrued))
       } 
+      if (all_dates[i] %in% rownames(object$InternalCashFlows)){
+        value <- object$InternalCashFlows[all_dates[i],]
+        nominal_value <- nominal_value + value
+        next_ev <- rbind(next_ev,
+                         data.frame(Date=all_dates[i], Value=value, Type="IAM", Level="P", Currency=ccy,
+                                    Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
+                                    NominalAccrued=nominal_accrued))
+      } 
       if (all_dates[i] %in% rownames(object$PercentageOutflows)) {
         value <- -nominal_value * object$PercentageOutflows[all_dates[i],]
         nominal_value <- nominal_value + value
@@ -218,6 +254,14 @@ currentaccount.evs <- function(object, model, end_date, method, period){
         nominal_value <- nominal_value + value
         next_ev <- rbind(next_ev,
                          data.frame(Date=all_dates[i], Value=value, Type="AM", Level="P", Currency=ccy,
+                                    Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
+                                    NominalAccrued=nominal_accrued))
+      } 
+      if (all_dates[i] %in% rownames(object$InternalCashFlows)) {
+        value <- object$InternalCashFlows[all_dates[i],]
+        nominal_value <- nominal_value + value
+        next_ev <- rbind(next_ev,
+                         data.frame(Date=all_dates[i], Value=value, Type="IAM", Level="P", Currency=ccy,
                                     Time=time, NominalValue=nominal_value, NominalRate=nominal_rate,
                                     NominalAccrued=nominal_accrued))
       } 
