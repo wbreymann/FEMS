@@ -223,6 +223,11 @@ as.data.frame(events(pam,ad))
 #' compute mark-to-model value
 value(pam,by="2013-01-02",type="markToModel", method=eng)
 
+#' Capitalized IP don't show up in liquidity
+by=c("2012-12-31","2013-06-30", "2013-12-31", "2014-03-30", "2014-12-31")
+tb = timeBuckets(by, c("2013.H1", "2013.H2", "2014.H1", "2014.H2"))
+liquidity(pam, by=tb, type="marginal")
+
 #' plot contract events
 plot(pam,ad)
 
