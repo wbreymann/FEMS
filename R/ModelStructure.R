@@ -29,14 +29,14 @@ setGeneric(name = "ModelStructure",
 
 #' @export
 setMethod(f = "ModelStructure", signature = c("character"),
-          definition = function(name){
+          definition = function(name, curAcc=CurrentAccount()){
             object <- Node$new(name)
             object$AddChild("Active")
             object$AddChild("Passive")
             object$AddChild("Operations")
             object$Active$AddChild("Treasury")
             # Create a contract of type "CurrentAccount" in account "Treasury"
-            object$Active$Treasury$contracts = list(currentAccount=CurrentAccount())
+            object$Active$Treasury$contracts = list(currentAccount=curAcc)
             return(object)
           })
 
@@ -73,101 +73,141 @@ setMethod(f = "addContracts", signature = c("list", "Node"),
             leaf$contracts = c(leaf$contracts,contracts)
           })
 
-##################################################################
-# Utility functions for working with data.tree type analysis structure
-# util function for tree aggregation
-# liqfun = function(node, portfolio, tb) {
-#   nams = node$ctNames
-#   res = sapply(
-#     X=nams,
-#     FUN = function(x) {
-#       liquidity(portfolio[[x]], tb)
-#     })
-#   liq = rowSums(res)
-#   print(liq)
-#   node$liquidity = liq
-# }
+####---------------------------------------------------------------
+## events methods
 
-# liqfun = function(node, ...) {
-#   pars = list(...)
-#   # print(pars)
-#   nams = node$ctNames
-#   res = sapply(
-#     X=nams,
-#     FUN = function(x, pars) {
-#       pars = list(...)
-#       object = pars[[1]][[x]]
-#       pars = pars[-1]
-#       do.call("liquidity", unlist(list(object, pars)))
-#     })
-#   liq = rowSums(res)
-#   # print(liq)
-#   node$liquidity = liq
-# }
-# 
+#' @include Events.R
+#' @rdname ev-methods
+#' @export
+setMethod(f = "events", signature = c("Node", "character", "RiskFactorConnector"),
+          definition = function(object, ad, model, end_date){
+            object$Do(fun=events.modelstructure, ad=ad, model=model, end_date=end_date)
+          })
 
-# aggregateLiquidity = function(node) {
-#   liq = sapply(
-#     node$children,
-#     function(child) {
-#       if (!is.null(child$liquidity)) {
-#         child$liquidity
-#       } else {
-#         aggregateLiquidity(child)
-#       }
-#     })
-#   if ( !is.null(dim(liq)) ) liq = rowSums(liq)
-#   node$liquidity = liq
-#   # print(liq)
-#   return(liq)
-# }
 
-# This function computes analytics individually for the leafs of a tree
-# The analytics to be computed must be passed as first argument.
-# This function thus subsumes the function of all three specialized 
-# functions above (which are commented out)
+#' @include CurrentAccount.R
+###' @export
+events.modelstructure = function(node, ..., filterFun=isLeaf) {
+  node$eventList <- NULL # cleanup old eventList
+  pars = list(...)
+  ctrs = node$contracts
+  res = sapply(
+    X=ctrs,
+    FUN = function(x, pars) {
+      # print(x$ContractID)
+      pars = c(object=x, pars)
+      if ( class(x)!="CurrentAccount") pars[["end_date"]] <- NULL
+      evs = do.call("events", pars)
+      if (!is.null(evs) ) {
+        if (is.null(node$eventList)) {
+          node$eventList <- eventList()
+        }
+        node$eventList[[x$ContractID]] <- evs
+      }
+    }, pars)
+}
+
+####---------------------------------------------------------------
+## liquidity methods
+
+#' @include Liquidity.R
+#' @rdname liq-methods
+#' @export
+setMethod(f = "liquidity", signature = c("Node", "timeBuckets", "character"),
+          definition = function(object, by, type){
+            # Compute liquidity for whole tree
+            clearAnalytics(Node, "liquidity")
+            object$Do(fun=fAnalytics, "liquidity", by=by, type=type, filterFun=isLeaf)
+            aggregateAnalytics(object, "liquidity")
+            liq = data.frame (t(object$Get("liquidity", format = function(x) ff(x,0))  ),
+                              check.names=FALSE, fix.empty.names=FALSE)
+            rownames(liq) = capture.output(print(object))[-1]
+            liq
+          })
+
+####---------------------------------------------------------------
+## value methods
+
+#' @include Value
+#' @rdname val-methods
+#' @export
+setMethod(f = "value", signature = c("Node", "timeBuckets", "character"),
+          definition = function(object, by, type){
+            # Compute value for whole tree
+            clearAnalytics(Node, "value")
+            object$Do(fun=fAnalytics, "value", by=by, type=type, filterFun=isLeaf)
+            aggregateAnalytics(object, "value")
+            liq = data.frame (t(object$Get("value", format = function(x) ff(x,0))  ),
+                              check.names=FALSE, fix.empty.names=FALSE)
+            rownames(liq) = capture.output(print(object))[-1]
+            liq
+          })
+
+
+
+
+##################################################
+#' general function for computing analytics on a data.tree structure of class Node
+#'
+#' This function computes analytics individually for the leafs of a tree
+#' The analytics to be computed must be passed as first argument.
+#' This function thus subsumes the function of all three specialized 
+#' functions above (which are commented out)
 fAnalytics = function(node, ...) {
   pars = list(...)
-  # print(pars)
-  # print(pars)
+  # clear analytics
+  node[[ pars[[1]] ]] <- NULL
+  
   ctrs = node$contracts
   res = sapply(
     X=ctrs,
     FUN = function(x, pars) {
       pars = list(...)
       fnam = pars[[1]] # the name of the analytics [liquidity|income|value]
-      # object = pars[[2]][[x]] # the contract
-      object = x # the contract
-      # print(x)
-      pars = pars[c(-1,-2)]
-      print("Pars:")
-    print(pars)
-    do.call(fnam, list(object=object, pars))
-    # do.call(fnam, unlist(list(object, pars)))
+      object = node$eventList[[x$ContractID]] # the eventSeries of the contract
+      pars = pars[c(-1)]
+    #   print("Pars:")
+    # print(pars)
+    do.call(fnam, c(object=object, pars))
     })
+  # print(node)
   if (!is.null(dim(res)) ) {
     res = rowSums(res)
+  } else if (length(res) == 0) {
+    res <- NULL
   }
-  # print(liq)
+  # print(res)
   node[[pars[[1]] ]] = res
 }
 
 # This function aggregates the results computed by fAnaytics
 aggregateAnalytics = function(node, analytics) {
+  # print("parents")
+  # print(node)
   res = sapply(
     node$children,
-    function(child, analytics) {
+    FUN=function(child, analytics) {
       x = analytics
       if (!is.null(child[[x]])) {
+        # print("child:")
+        # print(child)
+        # print("Child non-zero, copied")
+        # print(child[[x]])
         child[[x]]
-      } else {
+      } else if (!isLeaf(child)) {
+        # print("child:")
+        # print(child)
+        # print("Child zero, aggregate executed")
         aggregateAnalytics(child, analytics=x)
+        # print(child[[x]])
       }
-    }, analytics=analytics)
+    }, analytics=analytics, simplify=TRUE)
   if ( !is.null(dim(res)) ) res = rowSums(res)
+  # print("Final")
   node[[analytics]] = res
-  # print(res)
-  return(res)
+  # print(node)
+  # print(node[[analytics]])
+  # return(res)
 }
 
 # Clears previously computed the analytics "analytics" from the tree "node"
@@ -228,3 +268,52 @@ list.from.matrix = function(x, root, leafs)
   return(l)
 }
 
+
+##################################################################
+# Utility functions for working with data.tree type analysis structure
+# util function for tree aggregation
+# liqfun = function(node, portfolio, tb) {
+#   nams = node$ctNames
+#   res = sapply(
+#     X=nams,
+#     FUN = function(x) {
+#       liquidity(portfolio[[x]], tb)
+#     })
+#   liq = rowSums(res)
+#   print(liq)
+#   node$liquidity = liq
+# }
+
+# liqfun = function(node, ...) {
+#   pars = list(...)
+#   # print(pars)
+#   nams = node$ctNames
+#   res = sapply(
+#     X=nams,
+#     FUN = function(x, pars) {
+#       pars = list(...)
+#       object = pars[[1]][[x]]
+#       pars = pars[-1]
+#       do.call("liquidity", unlist(list(object, pars)))
+#     })
+#   liq = rowSums(res)
+#   # print(liq)
+#   node$liquidity = liq
+# }
+# 
+
+# aggregateLiquidity = function(node) {
+#   liq = sapply(
+#     node$children,
+#     function(child) {
+#       if (!is.null(child$liquidity)) {
+#         child$liquidity
+#       } else {
+#         aggregateLiquidity(child)
+#       }
+#     })
+#   if ( !is.null(dim(liq)) ) liq = rowSums(liq)
+#   node$liquidity = liq
+#   # print(liq)
+#   return(liq)
+# }

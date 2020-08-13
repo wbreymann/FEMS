@@ -2,11 +2,14 @@ Package: FEMS
 License: TBD
 Version: 0.1.0
 Date: 2020-08-08
-Author: Wolfgang Breymann <wolfgang.breymann@zhaw.ch>,
-    Christoph Auth <christoph.auth@zhaw.ch>
+Author: Christoph Auth <christoph.auth@zhaw.ch>,
+    Wolfgang Breymann <wolfgang.breymann@zhaw.ch>,
+    Nils Bund <nils.bundi@gmail.com>
 Maintainer: Christoph Auth <christoph.auth@zhaw.ch>
 Title: R Package for Financial Enterprise Modelling and Simulation
 Description: To be adapted
+    FEMS is a package for the financial modelling of financial and non-financial
+    institutions.
     Project ACTUS (Algorithmic Contract Types Unified Standards) is an
     open source project that develops a standardized language for the representation
     of financial instruments for the analytical use case. In a nutshell, the ACTUS
@@ -58,6 +61,7 @@ Collate:
     'CurrentAccount.R'
     'DataTreeFunctions.R'
     'ExoticLinearAmortizer.R'
+    'FinancialModel.R'
     'ForeignExchangeOutright.R'
     'ForeignExchangeRate.R'
     'Future.R'
