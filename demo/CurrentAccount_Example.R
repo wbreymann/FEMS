@@ -47,6 +47,13 @@ add.internalcashflow(curr_acc,
              data.frame(InternalCashFlows = 5000, row.names = "2019-06-30"))
 (evs.curr_acc_new <- events(curr_acc, "2012-12-31", rf, end_date="2019-06-30"))
 
+# check liquidity function...
+set(curr_acc, rf)
+by <- timeSequence(substring("2012-12-31",1,10), by = "1 year", length.out = 8)
+liquidity(curr_acc, by = by, type = "marginal")
+liquidity(curr_acc, by = by, type = "cumulative")
+
+
 # now add another...
 add.internalcashflow(curr_acc, 
                      data.frame(InternalCashFlows = -2000, row.names = "2019-12-31"))

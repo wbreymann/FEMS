@@ -22,7 +22,8 @@ setRefClass("CurrentAccount",
               Period = "character",
               StatusDate = "timeDate",
               NotionalPrincipal = "numeric",
-              AccruedInterest = "numeric"
+              AccruedInterest = "numeric",
+              rf_connector = "RiskFactorConnector"
             ))
 # Grundsätzliche Bemerkung:
 # Du benutzt für Zeitreihen einen "data.frame". Das ist ungünstig.
@@ -121,6 +122,12 @@ setMethod(f = "add.internalcashflow", signature = c("CurrentAccount", "data.fram
             add.cashflow(object, added_cf, type = "internal")
           })
 
+#' @include RiskFactorConnector.R
+#' @export
+setMethod(f = "set", signature = c("CurrentAccount", "RiskFactorConnector"),
+          definition = function(object, what){
+            object$rf_connector <- what
+          })
 
 #' @include Events.R
 #' @export
@@ -283,6 +290,49 @@ currentaccount.evs <- function(object, model, end_date, method, period){
     }
     return(ev_tbl)
 }
+
+################## Analysis functions ###################################################
+# Liquidity functions....
+
+#' @include Liquidity.R
+#' @export
+#' @rdname liq-methods
+setMethod(f = "liquidity", signature = c("CurrentAccount", "timeDate", "missing"),
+          definition = function(object, by, type, digits = 2) {
+            return(liquidity(object, by, type = "marginal", digits = digits))
+          })
+
+#' @include TimeBuckets.R Liquidity.R
+#' @export
+#' @rdname liq-methods
+setMethod(f = "liquidity", signature = c("CurrentAccount", "timeBuckets", "missing"),
+          definition = function(object, by, type, digits = 2) {
+            liq <- liquidity(object, as.timeDate(by), type = "marginal", digits = digits)
+            names(liq) <- by@bucketLabs
+            return(liq)
+          })
+
+#' @include TimeBuckets.R Liquidity.R
+#' @export
+#' @rdname liq-methods
+setMethod(f = "liquidity", signature = c("CurrentAccount", "timeBuckets", "character"),
+          definition = function(object, by, type, digits=2) {
+            liq <- liquidity(object, as.timeDate(by), type = type, digits = digits)
+            names(liq) <- by@bucketLabs
+            return(liq)
+          })
+
+#' @include Liquidity.R
+#' @export
+#' @rdname liq-methods
+setMethod(f = "liquidity", signature = c("CurrentAccount", "timeDate", "character"),
+          definition = function(object, by, type, digits = 2) {
+            evs <- events(object, as.character(by[1]), 
+                          object$rf_connector, end_date=as.character(by[length(by)]))
+            evs$evs <- evs$evs[!(evs$evs$Type == "IAM"),]
+            liq <- liquidity(evs, by, type, digits=digits)
+            return(liq)
+          })
 
 get.dates.from.cycle <- function(anchor_date, cycle, end_date){
   period <- substr(cycle, nchar(cycle)-1, nchar(cycle)-1)
