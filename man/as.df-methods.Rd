@@ -3,17 +3,7 @@
 \docType{methods}
 \name{as.data.frame.EventSeries}
 \alias{as.data.frame.EventSeries}
-\title{## @include 
-#' @export
-#' @docType methods
-#' @rdname subscript-methods
-setMethod("[<-", signature = c("EventSeries", "numeric", "numeric", "ANY"),
-          definition = function(x, i, j, y) {
-            x$evs[i,j] = y
-            x
-          }
-)
-\code{EventSeries}-to-data.frame method}
+\title{\code{EventSeries}-to-data.frame method}
 \usage{
 \method{as.data.frame}{EventSeries}(x)
 }

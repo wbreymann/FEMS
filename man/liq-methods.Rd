@@ -16,6 +16,11 @@
 \alias{liquidity,EventSeries,timeBuckets,missing-method}
 \alias{liquidity,EventSeries,timeDate,character-method}
 \alias{liquidity,EventSeries,timeBuckets,character-method}
+\alias{liquidity,eventList,timeDate,missing-method}
+\alias{liquidity,eventList,timeBuckets,missing-method}
+\alias{liquidity,eventList,timeDate,character-method}
+\alias{liquidity,eventList,timeBuckets,character-method}
+\alias{liquidity,data.frame,timeDate,character-method}
 \alias{liquidity,CurrentAccount,timeDate,missing-method}
 \alias{liquidity,CurrentAccount,timeBuckets,missing-method}
 \alias{liquidity,CurrentAccount,timeBuckets,character-method}
@@ -49,9 +54,25 @@ liquidity(object, by, type, ...)
 
 \S4method{liquidity}{EventSeries,timeBuckets,missing}(object, by, type, digits = 2)
 
-\S4method{liquidity}{EventSeries,timeDate,character}(object, by, type, digits = 2)
+\S4method{liquidity}{EventSeries,timeDate,character}(
+  object,
+  by,
+  type,
+  digits = 2,
+  filtered = c("DPR", "IAM", "RES", "IPIC")
+)
 
 \S4method{liquidity}{EventSeries,timeBuckets,character}(object, by, type, digits = 2)
+
+\S4method{liquidity}{eventList,timeDate,missing}(object, by, type, ...)
+
+\S4method{liquidity}{eventList,timeBuckets,missing}(object, by, type, ...)
+
+\S4method{liquidity}{eventList,timeDate,character}(object, by, type, ...)
+
+\S4method{liquidity}{eventList,timeBuckets,character}(object, by, type, ...)
+
+\S4method{liquidity}{data.frame,timeDate,character}(object, by, type, ...)
 
 \S4method{liquidity}{CurrentAccount,timeDate,missing}(object, by, type, digits = 2)
 

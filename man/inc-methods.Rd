@@ -35,6 +35,11 @@
 \alias{income,EventSeries,timeBuckets,missing,logical,ValuationEngine-method}
 \alias{income,EventSeries,timeDate,character,logical,ValuationEngine-method}
 \alias{income,EventSeries,timeBuckets,character,logical,ValuationEngine-method}
+\alias{income,eventList,timeDate,missing,ANY,ANY-method}
+\alias{income,eventList,timeDate,character,ANY,ANY-method}
+\alias{income,eventList,timeDate,character,logical,missing-method}
+\alias{income,data.frame,timeDate,character,ANY,ANY-method}
+\alias{income,data.frame,timeDate,character,logical,missing-method}
 \title{Derive the income-vector for \code{ContractType}}
 \usage{
 income(object, by, type, revaluation.gains, method, ...)
@@ -102,6 +107,16 @@ income(object, by, type, revaluation.gains, method, ...)
 \S4method{income}{EventSeries,timeDate,character,logical,ValuationEngine}(object, by, type, revaluation.gains, method, ...)
 
 \S4method{income}{EventSeries,timeBuckets,character,logical,ValuationEngine}(object, by, type, revaluation.gains, method, ...)
+
+\S4method{income}{eventList,timeDate,missing,ANY,ANY}(object, by, type, revaluation.gains, method, ...)
+
+\S4method{income}{eventList,timeDate,character,ANY,ANY}(object, by, type, revaluation.gains, method, ...)
+
+\S4method{income}{eventList,timeDate,character,logical,missing}(object, by, type, revaluation.gains, method, ...)
+
+\S4method{income}{data.frame,timeDate,character,ANY,ANY}(object, by, type, revaluation.gains, method, ...)
+
+\S4method{income}{data.frame,timeDate,character,logical,missing}(object, by, type, revaluation.gains, method, ...)
 }
 \arguments{
 \item{object}{The \code{ContractType} or \code{EventSeries}-object for which to derive the income-vector}

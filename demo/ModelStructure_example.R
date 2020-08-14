@@ -70,6 +70,7 @@ set(ops1, rf1)
 # Create model structure
 myModel = ModelStructure("Minimal Model", curAcc = curr_acc)
 myModel
+# The contract is there:
 myModel$Active$Treasury$contracts
 
 # add contract to account Operations
@@ -89,6 +90,7 @@ myModel
 
 # The whole model
 myModel$Do(fun=events.modelstructure, ad=ad0, model=rf1, end_date="2019-12-31")
+
 events(myModel, ad=ad0, model=rf1, end_date="2019-12-31")
 # Test that the events are there:
 myModel$Active$Treasury$eventList
@@ -108,6 +110,8 @@ value(evs.ca, by=tb, type="nominal")
 
 # Compute liquidity for whole model
 liquidity(myModel, by=tb, type="marginal")
+liquidity(myModel$Active, by=tb, type="marginal")
+liquidity(myModel$Active$Treasury, by=tb, type="marginal")  ## Error! Why?
 
 # Compute value for whole model
 # Nominal value:
@@ -118,6 +122,7 @@ eng <- DcEngine(RiskFactorObject=rf1[["YC_CH"]])  ## Error!
 # Barwert der (erwarteten) operativen Cashflows
 value(ops1, by=tb, type="markToModel", method=eng) ## Error
 
+#####################################################################
 # Income
 # Not yet implemented.
 income(ops1, by=tb, type="marginal")  ## Error

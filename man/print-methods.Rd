@@ -3,12 +3,12 @@
 \docType{methods}
 \name{print,EventSeries-method}
 \alias{print,EventSeries-method}
-\alias{print,eventList-method}
+\alias{[,eventList,ANY,missing-method}
 \title{\code{EventSeries}-print method}
 \usage{
 \S4method{print}{EventSeries}(x, type = "pretty", indices, ...)
 
-\S4method{print}{eventList}(x, type = "pretty", indices, ...)
+\S4method{[}{eventList,ANY,missing}(x, i)
 }
 \arguments{
 \item{x}{An object of class \code{EventSeries}}

@@ -64,6 +64,7 @@ Collate:
     'DataTreeFunctions.R'
     'ExoticLinearAmortizer.R'
     'FEMS.R'
+    'FinancialModel.R'
     'ForeignExchangeOutright.R'
     'ForeignExchangeRate.R'
     'Future.R'

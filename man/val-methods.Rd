@@ -15,7 +15,14 @@
 \alias{value,EventSeries,AD0,character,missing-method}
 \alias{value,EventSeries,timeBuckets,character,missing-method}
 \alias{value,EventSeries,timeBuckets,character,DiscountingEngine-method}
+\alias{value,eventList,timeDate,character,missing-method}
+\alias{value,eventList,timeBuckets,character,missing-method}
+\alias{value,eventList,timeDate,character,DiscountingEngine-method}
+\alias{value,eventList,timeBuckets,character,DiscountingEngine-method}
 \alias{value,EventSeries,character,character,missing-method}
+\alias{value,eventList,character,character,missing-method}
+\alias{value,eventList,character,character,DiscountingEngine-method}
+\alias{value,eventList,character,character,list-method}
 \alias{value,CurrentAccount,character,character,missing-method}
 \alias{value,CurrentAccount,character,character,ValuationEngine-method}
 \alias{value,Node,timeBuckets,character,ANY-method}
@@ -52,7 +59,21 @@ value(object, by, type, method, ...)
 
 \S4method{value}{EventSeries,timeBuckets,character,DiscountingEngine}(object, by, type, method, ...)
 
+\S4method{value}{eventList,timeDate,character,missing}(object, by, type, method, ...)
+
+\S4method{value}{eventList,timeBuckets,character,missing}(object, by, type, method, ...)
+
+\S4method{value}{eventList,timeDate,character,DiscountingEngine}(object, by, type, method, ...)
+
+\S4method{value}{eventList,timeBuckets,character,DiscountingEngine}(object, by, type, method, ...)
+
 \S4method{value}{EventSeries,character,character,missing}(object, by, type, digits = 2, ...)
+
+\S4method{value}{eventList,character,character,missing}(object, by, type, method, ...)
+
+\S4method{value}{eventList,character,character,DiscountingEngine}(object, by, type, method, ...)
+
+\S4method{value}{eventList,character,character,list}(object, by, type, method, ...)
 
 \S4method{value}{CurrentAccount,character,character,missing}(object, by, type, method, end_date, ...)
 

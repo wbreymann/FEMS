@@ -153,6 +153,7 @@ set(port, rf)
 # calculat events via API
 evs_port <- events(port, "2015-01-01")
 
+evs_port
 # calculate value of portfolio
 value(port, "2015-01-02", "markToModel", method = eng)
 value(port, "2015-01-02", type = "nominal")

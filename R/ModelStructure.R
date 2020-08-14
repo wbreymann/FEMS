@@ -142,9 +142,6 @@ setMethod(f = "value", signature = c("Node", "timeBuckets", "character"),
             liq
           })
 
-
-
-
 ##################################################
 #' general function for computing analytics on a data.tree structure of class Node
 #'
