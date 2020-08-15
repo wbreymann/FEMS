@@ -1,6 +1,6 @@
 # @include Portfolio.R RiskFactorConnector.R ModelStructure.R
 #' @export
-setRefClass("SimulationManager",
+setRefClass("FinancialModel",
             fields = list(ModelStructure = "Node",
                           RiskFactors = "RiskFactorConnector",
                           TimeBuckets = "timeBuckets",
@@ -9,15 +9,15 @@ setRefClass("SimulationManager",
                           Templates = "list"))
 
 #' @export
-setGeneric(name = "SimulationManager",
+setGeneric(name = "FinancialModel",
            def = function(...){
-             standardGeneric("SimulationManager")
+             standardGeneric("FinancialModel")
            })
 
 #' @export
-setMethod(f = "SimulationManager", signature = c(),
+setMethod(f = "FinancialModel", signature = c(),
           definition = function(...){
-            object <- new("SimulationManager")
+            object <- new("FinancialModel")
             pars = list(...)
             if ( length(pars)>0 ) {
               pars <- list(...)
@@ -27,7 +27,7 @@ setMethod(f = "SimulationManager", signature = c(),
           })
 
 #' @export
-setMethod(f = "set", signature = c("SimulationManager"),
+setMethod(f = "set", signature = c("FinancialModel"),
           definition = function(object, ...){
             for (i in names(what)) {
               if (is.valid.sm.field(i)) {
@@ -52,7 +52,7 @@ setMethod(f = "set", signature = c("SimulationManager"),
                          object$Templates <- value
                        })
               } else {
-                warning(paste("ErrorIn::SimulationManager:: Field ", i, " does not exist, cannot assign value!", sep = ""))
+                warning(paste("ErrorIn::FinancialModel:: Field ", i, " does not exist, cannot assign value!", sep = ""))
               }}
             return(object)
           })
@@ -68,7 +68,7 @@ setGeneric(name = "simulate",
 #' analytics.
 #' @export
 setMethod(f = "simulate", 
-          signature = c("SimulationManager", "timeDate", "timeDate", "character"),
+          signature = c("FinancialModel", "timeDate", "timeDate", "character"),
           definition = function(object, start, end, by, ...) {
           
           tSeq = timeSequence(from=start, to=end, by=by)
