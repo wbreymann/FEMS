@@ -136,12 +136,13 @@ setMethod(f = "value", signature = c("Node", "timeBuckets", "character"),
           definition = function(object, by, type){
             # Compute value for whole tree
             clearAnalytics(Node, "value")
-            object$Do(fun=fAnalytics, "value", by=by, type=type, filterFun=isLeaf)
+            object$Do(fun=fAnalytics, "value", by=as.character(by), type=type, filterFun=isLeaf)
             aggregateAnalytics(object, "value")
-            liq = data.frame (t(object$Get("value", format = function(x) ff(x,0))  ),
+            val <- data.frame (t(object$Get("value", format = function(x) ff(x,0))  ),
                               check.names=FALSE, fix.empty.names=FALSE)
-            rownames(liq) = capture.output(print(object))[-1]
-            liq
+            rownames(val) <- capture.output(print(object))[-1]
+            colnames(val) <- by@breakLabs
+            val
           })
 
 ##################################################
@@ -156,52 +157,49 @@ fAnalytics = function(node, ...) {
   # clear analytics
   node[[ pars[[1]] ]] <- NULL
   
-  ctrs = node$contracts
-  res = sapply(
-    X=ctrs,
-    FUN = function(x, pars) {
-      pars = list(...)
-      fnam = pars[[1]] # the name of the analytics [liquidity|income|value]
-      object = node$eventList[[x$ContractID]] # the eventSeries of the contract
-      pars = pars[c(-1)]
-    do.call(fnam, c(object=object, pars))
-    })
-  if (!is.null(dim(res)) ) {
-    res = rowSums(res)
-  } else if (length(res) == 0) {
-    res <- NULL
+  if ( is.null(node$eventList) || length(node$eventList)==0 ) {
+    node[[ pars[[1]] ]] <- rep(0, length(pars[["by"]]))
+    if ( is.null(names(pars[["by"]])) ) {
+      names(node[[pars[[1]] ]]) = as.character(pars[["by"]])
+    } else {
+      names(node[[pars[[1]] ]]) = names(pars[["by"]])
+    }
+  } else {
+    ctrs = node$contracts
+    res = sapply(
+      X=ctrs,
+      FUN = function(x, pars) {
+        pars = list(...)
+        fnam = pars[[1]] # the name of the analytics [liquidity|income|value]
+        object = node$eventList[[x$ContractID]] # the eventSeries of the contract
+        pars = pars[c(-1)]
+      do.call(fnam, c(object=object, pars))
+      })
+    if (!is.null(dim(res)) ) {
+      res = rowSums(res)
+    } else if (length(res) == 0) {
+      res <- NULL
+    }
+    node[[pars[[1]] ]] = res
   }
-  node[[pars[[1]] ]] = res
 }
 
 # This function aggregates the results computed by fAnaytics
 aggregateAnalytics = function(node, analytics) {
-  # print("parents")
-  # print(node)
-  res = sapply(
-    node$children,
-    FUN=function(child, analytics) {
-      x = analytics
-      if (!is.null(child[[x]])) {
-        # print("child:")
-        # print(child)
-        # print("Child non-zero, copied")
-        # print(child[[x]])
-        child[[x]]
-      } else if (!isLeaf(child)) {
-        # print("child:")
-        # print(child)
-        # print("Child zero, aggregate executed")
-        aggregateAnalytics(child, analytics=x)
-        # print(child[[x]])
-      }
-    }, analytics=analytics, simplify=TRUE)
-  if ( !is.null(dim(res)) ) res = rowSums(res)
-  # print("Final")
-  node[[analytics]] = res
-  # print(node)
-  # print(node[[analytics]])
-  # return(res)
+  if (!isLeaf(node)) {
+    res = sapply(
+      node$children,
+      FUN=function(child, analytics) {
+        x = analytics
+        if (!is.null(child[[x]])) {
+          child[[x]]
+        } else if (!isLeaf(child)) {
+          aggregateAnalytics(child, analytics=x)
+        }
+      }, analytics=analytics, simplify=TRUE)
+    if ( !is.null(dim(res)) ) res = rowSums(res)
+    node[[analytics]] = res
+  }
 }
 
 # Clears previously computed the analytics "analytics" from the tree "node"

@@ -106,16 +106,21 @@ FinancialModel$methods(
       iam <- data.frame(as.numeric(liquidity(mstructure, buckets, "marginal")[1,]),
                        row.names=as.character(buckets)[-1])
       names(iam) <- "InternalCashFlows"
+      iam <- iam[row.names(iam)<=as.character(tt),,drop=FALSE]
       print(iam)
       id <- mstructure$Active$Treasury$contracts$CurrAcc$ContractID
-      add.internalcashflow(myModel$Active$Treasury$contracts[[id]], iam)
+      mstructure$Active$Treasury$contracts[[id]]$InternalCashFlows <<- iam  ## Die add Methode liefert Unsinn
+
+      # print(mstructure$Active$Treasury$contracts$CurrAcc)
+      #  5.  Compute ContractEvents for current account
       evL <- eventList()
       evL[[id]] <- events(mstructure$Active$Treasury$contracts[[id]], ad0, rf, as.character(tt))
+      print(evL)
       mstructure$Active$Treasury$eventList <<- evL
+      liq <- liquidity(mstructure, buckets, type="marginal")
+      print(liq)
       val <- value(mstructure, buckets, type="nominal")
       print(val)
-      
-      #  5.  Compute ContractEvents for current account
     }
   }
 )

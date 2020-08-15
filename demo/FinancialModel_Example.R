@@ -9,7 +9,7 @@ ad0 = as.character(timeDate(t0) - 1*24*3600)
 ad0
 
 # Define risk factor environment
-(yc.flat <- FlatCurve2(0.03, t0))
+(yc.flat <- FlatCurve2(0.03, ad0))
 yc.flat$MarketObjectCode <- "YC_CH"
 
 rf1 = RFConn(list(yc.flat))
@@ -17,44 +17,41 @@ rf1
 
 # Initialize current account
 CurrAcc.balance = 150000
-cashflows_dt <- c("2016-12-31","2017-12-31","2018-12-31")
-(cashflows <- data.frame(CashFlows = c(1000,-1000,2000), row.names = cashflows_dt))
+# cashflows_dt <- c("2016-12-31","2017-12-31","2018-12-31")
+# (cashflows <- data.frame(CashFlows = c(1000,-1000,2000), row.names = cashflows_dt))
 
 curr_acc <- CurrentAccount(ContractID = "CurrAcc",
-                           ContractDealDate = t0,
+                           ContractDealDate = ad0,
                            Currency = "CHF",
                            NotionalPrincipal = CurrAcc.balance,
-                           CashFlows = cashflows,
-                           CycleAnchorDateOfInterestPayment = t0,
+                           # CashFlows = cashflows,
+                           CycleAnchorDateOfInterestPayment = ad0,
                            CycleOfInterestPayment = "1Y-",
                            MarketObjectCodeRateReset = "YC_CH")
 curr_acc
 
 
 # Add Operations account
-(times = timeSequence(from=timeDate(substring(t0, 1, 10)), by="1 years", 
-                      length.out=5))
+(t1 = timeDate(t0)+24*3600)
+(times = timeSequence(from=t1, by="1 years", length.out=4))
 # Expenses for the daughter's studies:
 # 4% of the current wealth
-initialWealth <- 150000
-ops.expenses = function(model, params) { 
+# initialWealth <- 150000
+
+ops.expenses <- function(model, tb, percentage) { 
   # For the example of the father who is paying for his daughter's studies,
   # we need here something that extracts the nominal value of the total 
   # wealth at the given dates.
   # I just put the initial value as dummy
-  timeSeries(rep(-initialWealth * 0.04, length(times)), times)
+  val <- value(model, tb, "nominal")[1,]
+  timeSeries(-as.numeric(val) * percentage, names(val))
 }
 
-#-----------------------------------------------------------------------------
-# Modelling the expenses
-# create Operations contract with "CashFlowPattern"
-ops1 = Ops(ContractID="Ops001",
-           Currency="CHF",
-           CashFlowPattern = ops.expenses)
+(tb0 <- timeBuckets(timeSequence(ad0, by="year", length.out=5), bucketLabs=2016:2019))
 
-ops.expenses(rf1, "YC_CH")
+
+ops.expenses(myModel, tb0, 0.04)
 # link Operations contract with market environment
-set(ops1, rf1)
 
 ##########################################
 # Create model structure
@@ -63,6 +60,15 @@ myModel
 # The contract is there:
 myModel$Active$Treasury$contracts
 
+#-----------------------------------------------------------------------------
+# Modelling the expenses
+# create Operations contract with "CashFlowPattern"
+ops1 = Ops(ContractID="Ops001",
+           Currency="CHF",
+           CashFlowPattern = ops.expenses,
+           CashFlowParams = list(model=myModel, tb=tb0, percentage=0.04))
+
+set(ops1, rf1)
 # add contract to account Operations
 addContracts(list(ops1), FindNode(myModel, "Operations"))
 length(myModel$Operations$contracts)

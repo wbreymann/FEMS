@@ -8,18 +8,8 @@ t0="2016-01-01"
 ad0 = as.character(timeDate(t0) - 1*24*3600)
 ad0
 
-# Define risk factor environment
-# This defines the yield curve observed at the analysis date. 
-# ERROR: Time dependent yield curve doesn't work.
-# yc.tnr <- c("3M", "1Y", "2Y", "5Y", "7Y", "10Y")
-# yc.rts <- c(-0.28, -0.26, -0.21, 0.03, 0.20, 0.42)/100
-# yc.ch <- YieldCurve(MarketObjectCode = "YC_CH", ReferenceDate = t0, 
-#                     Tenors = yc.tnr, Rates = yc.rts)
-# plot(yc.ch)
-
 (yc.flat <- FlatCurve2(0.03, t0))
 yc.flat$MarketObjectCode <- "YC_CH"
-# plot(yc.flat)
 
 rf1 = RFConn(list(yc.flat))
 rf1
@@ -77,9 +67,6 @@ myModel$Active$Treasury$contracts
 addContracts(list(ops1), FindNode(myModel, "Operations"))
 length(myModel$Operations$contracts)
 myModel$Operations$contracts[[1]]
-# Prune empty branches
-# Otherwise analytics will not work properly
-Prune(myModel, function(x) (!isLeaf(x) || !is.null(x$contracts) ) )
 myModel
 
 ##########################
@@ -89,7 +76,7 @@ myModel
 (evs.ops <- events(ops1, ad0, rf1))
 
 # The whole model
-myModel$Do(fun=events.modelstructure, ad=ad0, model=rf1, end_date="2019-12-31")
+# myModel$Do(fun=events.modelstructure, ad=ad0, model=rf1, end_date="2019-12-31")
 
 events(myModel, ad=ad0, model=rf1, end_date="2019-12-31")
 # Test that the events are there:
@@ -111,11 +98,13 @@ value(evs.ca, by=tb, type="nominal")
 # Compute liquidity for whole model
 liquidity(myModel, by=tb, type="marginal")
 liquidity(myModel$Active, by=tb, type="marginal")
-liquidity(myModel$Active$Treasury, by=tb, type="marginal")  ## Error! Why?
+liquidity(myModel$Active$Treasury, by=tb, type="marginal")  
 
 # Compute value for whole model
 # Nominal value:
 value(myModel, by=tb, type="nominal")
+value(myModel$Active, by=tb, type="nominal")
+value(myModel$Active$Treasury, by=tb, type="nominal")
 
 # Discount-Engine für die Barwertberechnung:
 eng <- DcEngine(RiskFactorObject=rf1[["YC_CH"]])  ## Error!
