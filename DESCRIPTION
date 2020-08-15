@@ -36,6 +36,7 @@ Imports:
     timeSeries (>= 3012.99),
 SystemRequirements: R (>= 3.5.0) 
 Encoding: UTF-8
+RoxygenNote: 7.1.1
 Collate: 
     'ContractModel.R'
     'RiskFactor.R'
@@ -64,13 +65,13 @@ Collate:
     'DataTreeFunctions.R'
     'ExoticLinearAmortizer.R'
     'FEMS.R'
+    'ModelStructure.R'
     'FinancialModel.R'
     'ForeignExchangeOutright.R'
     'ForeignExchangeRate.R'
     'Future.R'
     'Income.R'
     'LinearAmortizer.R'
-    'ModelStructure.R'
     'MultiCurrencyDiscountingEngine.R'
     'NegativeAmortizer.R'
     'Operations.R'
@@ -80,7 +81,6 @@ Collate:
     'ReferenceIndex.R'
     'RiskFactorPlots.R'
     'Sensitivity.R'
-    'SimulationManager.R'
     'Stock.R'
     'Swap.R'
     'defaults.R'
@@ -91,4 +91,3 @@ Collate:
     'solve.R'
     'testClosure.R'
     'yearFraction.R'
-RoxygenNote: 7.1.1

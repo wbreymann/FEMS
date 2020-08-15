@@ -94,16 +94,12 @@ tb
 
 ##############################
 # create the simulation manager
-FM <- FinancialModel(ModelStructure = myModel,
-                        RiskFactors = rf1,
-                        TimeBuckets = tb,
-                        SimulationSteps = as.character(tb)
-                        # Strategy = strategie,
-                        # Templates = templates
-                        )
+FM <- FinancialModel(mstructure = myModel, ad0=ad0, rf = rf1, buckets = tb, steps = as.character(tb)
+                        # Strategy = strategie, Templates = templates
+                     )
 
 # simulate the strategy
-simulate(sim.manager, start_date = "2012-12-31", end_date = "2020-12-31")
+FM$simulate(start = "2015-12-31", end = "2020-12-31", by="1 year")
 
 
 ##########################

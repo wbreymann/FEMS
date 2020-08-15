@@ -36,7 +36,9 @@ setMethod(f = "ModelStructure", signature = c("character"),
             object$AddChild("Operations")
             object$Active$AddChild("Treasury")
             # Create a contract of type "CurrentAccount" in account "Treasury"
-            object$Active$Treasury$contracts = list(currentAccount=curAcc)
+            ll = list()
+            ll[[curAcc$ContractID]] <- curAcc
+            object$Active$Treasury$contracts <- ll
             return(object)
           })
 
