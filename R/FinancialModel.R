@@ -1,9 +1,10 @@
 # @include Portfolio.R RiskFactorConnector.R ModelStructure.R
 #' @export
 setRefClass("SimulationManager",
-            fields = list(ModelStructure = "environment",
+            fields = list(ModelStructure = "Node",
                           RiskFactors = "RiskFactorConnector",
                           TimeBuckets = "timeBuckets",
+                          SimulationSteps = "character",
                           Strategy = "matrix",
                           Templates = "list"))
 
@@ -17,16 +18,17 @@ setGeneric(name = "SimulationManager",
 setMethod(f = "SimulationManager", signature = c(),
           definition = function(...){
             object <- new("SimulationManager")
-            pars <- list(...)
-            set(object, pars)
-            return(object)
+            pars = list(...)
+            if ( length(pars)>0 ) {
+              pars <- list(...)
+              set(object, what=pars)
+            }
+             return(object)
           })
 
 #' @export
 setMethod(f = "set", signature = c("SimulationManager"),
           definition = function(object, ...){
-            object <- new("SimulationManager")
-            what <- pars(...)
             for (i in names(what)) {
               if (is.valid.sm.field(i)) {
                 value <- what[[i]]
@@ -39,6 +41,9 @@ setMethod(f = "set", signature = c("SimulationManager"),
                        },
                        TimeBuckets = {
                          object$TimeBuckets <- value
+                       },
+                       SimulationSteps = {
+                         object$SimulationSteps <- value
                        },
                        Strategy = {
                          object$Strategy <- value
@@ -87,7 +92,8 @@ setMethod(f = "simulate",
 
 # check if fields are valid
 is.valid.sm.field <- function(x) {
-  valid <- c("Portfolio", "TreeStructure","RiskFactors","TimeBuckets","Strategy","Templates")
+  valid <- c("ModelStructure", "RiskFactors","TimeBuckets", "SimulationSteps", 
+             "Strategy","Templates")
   return(x %in% valid)
 }
 
