@@ -23,22 +23,26 @@ setOldClass("Node")
 ## Das Problem hier ist, dass man dann nicht mehr auf die Methoden von "Node"
 ## zugreifen kann, weil die offenbar private sind.
 setGeneric(name = "ModelStructure",
-           def = function(name, ...){
+           def = function(name, type, ...){
              standardGeneric("ModelStructure")
            })
 
 #' @export
-setMethod(f = "ModelStructure", signature = c("character"),
-          definition = function(name, curAcc=CurrentAccount()){
+setMethod(f = "ModelStructure", signature = c("character", "character"),
+          definition = function(name, type="institution", curAcc=CurrentAccount()){
             object <- Node$new(name)
-            object$AddChild("Active")
-            object$AddChild("Passive")
-            object$AddChild("Operations")
-            object$Active$AddChild("Treasury")
-            # Create a contract of type "CurrentAccount" in account "Treasury"
-            ll = list()
-            ll[[curAcc$ContractID]] <- curAcc
-            object$Active$Treasury$contracts <- ll
+            if (type=="institution") {
+              object$AddChild("Active")
+              object$AddChild("Passive")
+              object$AddChild("Operations")
+              object$Active$AddChild("Treasury")
+              # Create a contract of type "CurrentAccount" in account "Treasury"
+              ll = list()
+              ll[[curAcc$ContractID]] <- curAcc
+              object$Active$Treasury$contracts <- ll
+            } else if (!type=="portfolio") {
+              stop("type must be 'institution' or 'portfolio'")
+            }
             return(object)
           })
 
@@ -93,11 +97,16 @@ events.modelstructure = function(node, ..., filterFun=isLeaf) {
   node$eventList <- NULL # cleanup old eventList
   pars = list(...)
   ctrs = node$contracts
+  # print(paste("Klasse", class(ctrs[[1]])))
+  
   res = sapply(
     X=ctrs,
     FUN = function(x, pars) {
       pars = c(object=x, pars)
       if ( class(x)!="CurrentAccount") { pars[["end_date"]] <- NULL }
+      # print(paste("Parameter: Anzahl", length(pars)))
+      # print(class(x))
+      # print(pars)
       evs = do.call("events", pars)
       if (!is.null(evs) ) {
         if (is.null(node$eventList)) {
@@ -209,6 +218,20 @@ clearAnalytics = function(node, analytics) {
     n[[analytics]] = NULL
   }
 }
+
+# Clears previously computed the analytics "analytics" from the tree "node"
+clearAnalytics = function(node, analytics) {
+  nodes = Traverse(node, traversal="pre-order")
+  for (n in nodes) {
+    n[[analytics]] = NULL
+  }
+}
+
+# Clears previously computed the analytics "analytics" from the tree "node"
+clearEvents = function(node) {
+  clearAnalytics(node, "eventList")
+}
+
 
 # Formatting function.
 # Notice that the 'ifelse' command doesn't return the rigth result.

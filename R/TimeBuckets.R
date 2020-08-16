@@ -108,9 +108,46 @@ setMethod("names", signature="timeBuckets",
 setMethod("length", signature="timeBuckets",
           function(x) {length(x@Data)-1})
 
+### @include 
+##' @import timeDate
+##' @export
+##' @docType methods
+##' @rdname subscript-methods
+# setMethod("window", signature = c("timeBuckets"),
+#           definition = function(x, start, end, ...) {
+#             tt <- timeDate:::window.timeDate(as.timeDate(x), as.character(start), as.character(end), ...)
+#             y@breakLabs = as.character(y@Data)
+#             return(y)
+#           }
+# )
+
+## @include
+#' Subscript method for class timeBuckets.
+#'  
+#' Since class timeBuckets provides a partition of a time interval, the value 
+#' returned is the sequences of timeBuckets for the minimal enclosing set
+#' of indices.
+#' @import timeDate
+#' @export
+#' @docType methods
+#' @rdname subscript-methods
+setMethod("[", signature = c("timeBuckets", "numeric", "missing"),
+          definition = function(x, i, j, ...) {
+            buLabs <- x@bucketLabs
+            rr <- range(i)
+            if (rr[1]<1 || rr[2]>length(x))
+              stop("Subscript out of range")
+            i <- rr[1]:(rr[2]+1)
+            x@Data <- callGeneric(x@Data, i)
+            x@breakLabs = as.character(x)
+            x
+          }
+)
+
+
 #' S4 class containing cash flows.
 #' 
-#' S4 class that contains cash flows occuring during the time intervals defined
+#' S4 class that contains cash flows occuring durring the time intervals defined
 #' by an \code{timeBuckets} object.
 #' 
 #' This class extend \code{data.frame}.
