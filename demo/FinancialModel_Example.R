@@ -109,9 +109,12 @@ clearEvents(Father)
 
 ##############################
 # create the simulation manager
+
+(tb0 = timeBuckets(timeSequence("2013-12-31", "2018-12-31", "year"), bucketLabs=2014:2018))
+
 FM <- FinancialModel(
   mstructure = Father, treasury= FindNode(Father, "Wealth"), curr_acc=curr_acc, 
-  ad0="2013-12-31", rf = rf1, buckets = tb.cfs, steps = as.character(tb)
+  ad0="2013-12-31", rf = rf1, buckets = tb0, steps = as.character(tb)
   # Strategy = strategie, Templates = templates
 )
 
@@ -120,8 +123,8 @@ FM <- FinancialModel(
 Father$Wealth$contracts[[1]]$InternalCashFlows <- data.frame()
 FM$simulate(t.start = t.start, t.end = t.end, by="1 year")
 
-liquidity(Father, tb, "marginal", digits=0)
-value(Father, tb, "nominal", digits=0)
+liquidity(Father, tb, "marginal")
+value(Father, tb, "nominal")
 
 ##########################
 # Compute contract events
