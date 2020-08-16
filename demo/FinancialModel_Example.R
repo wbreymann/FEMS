@@ -1,123 +1,138 @@
 # Example for FinancialModel
 
+# Preparation -------------------------------------------
 rm(list=ls())
 devtools::load_all()
 
-# Define analysis time
-t0="2016-01-01"
-ad0 = as.character(timeDate(t0) - 1*24*3600)
-ad0
+# Define model structure -------------------------------------------------------
+Father <- Node$new("Father")
+Father$AddChild("Wealth")
+Father$AddChild("Expenses")
+Father
 
-# Define risk factor environment
-(yc.flat <- FlatCurve2(0.03, ad0))
-yc.flat$MarketObjectCode <- "YC_CH"
+# Set times --------------------------------------------------------------------
+(t.start <- "2014-01-01")
+(tb <- timeBuckets(timeSequence(t.start, by="year", length.out=6), bucketLabs=2014:2018))
+(t.end <- "2019-01-01")
 
-rf1 = RFConn(list(yc.flat))
-rf1
+# (t0="2016-01-01")
+# (ad0 = as.character(timeDate(t0) - 1*24*3600))
 
+# Cash flows and value of the empty model---------------------------------------
+liquidity(Father, tb, "marginal")
+value(Father, tb, "nominal")
+
+# Define current account -------------------------------------------------------
+# The current account keeps track of father's wealth
 # Initialize current account
 CurrAcc.balance = 150000
-# cashflows_dt <- c("2016-12-31","2017-12-31","2018-12-31")
-# (cashflows <- data.frame(CashFlows = c(1000,-1000,2000), row.names = cashflows_dt))
-
 curr_acc <- CurrentAccount(ContractID = "CurrAcc",
-                           ContractDealDate = ad0,
+                           ContractDealDate = "2013-12-31",
                            Currency = "CHF",
                            NotionalPrincipal = CurrAcc.balance,
                            # CashFlows = cashflows,
-                           CycleAnchorDateOfInterestPayment = ad0,
+                           CycleAnchorDateOfInterestPayment = t.start,
                            CycleOfInterestPayment = "1Y-",
                            MarketObjectCodeRateReset = "YC_CH")
 curr_acc
 
+# Add contract(s) to account Wealth
+addContracts(list(CurrAcc=curr_acc), FindNode(Father, "Wealth"))
+length(Father$Wealth$contracts)
+Father$Wealth$contracts 
 
-# Add Operations account
-(t1 = timeDate(t0)+24*3600)
-(times = timeSequence(from=t1, by="1 years", length.out=4))
+# Define risk factor environment -----------------------------------------------
+(yc.flat <- FlatCurve2(0.03, "2013-12-31"))
+yc.flat$MarketObjectCode <- "YC_CH"
+(rf1 = RFConn(list(yc.flat)))
+
+# Wealth evolution without expenses --------------------------------------------
+events(Father, t.start, rf1, end_date=t.end)
+Father$Wealth$eventList
+liquidity(Father, tb, "marginal")
+value(Father, tb, "nominal")
+
+# Modelling the expenses -------------------------------------------------------
 # Expenses for the daughter's studies:
 # 4% of the current wealth
 # initialWealth <- 150000
 
-ops.expenses <- function(model, tb, percentage) { 
+# function for expense cash flow pattern
+# The valiue of the cashflow depends on the nominal value of the Wealth at 
+# the end of the previous year.
+# Therefore, the value method must be evaluated accordingly.
+t.cfs <- timeSequence("2013-12-31", "2017-12-31", "year")
+(tb.cfs <- timeBuckets(t.cfs, bucketLabs = 2014:2017))
+expenses4daughter <- function(modelName, tb, percentage) { 
   # For the example of the father who is paying for his daughter's studies,
   # we need here something that extracts the nominal value of the total 
   # wealth at the given dates.
   # I just put the initial value as dummy
+  model <- eval(as.name(modelName))
   val <- value(model, tb, "nominal")[1,]
-  timeSeries(-as.numeric(val) * percentage, names(val))
+  # print("Expenses4daughter: value")
+  # print(val)
+  timeSeries(-as.numeric(val) * percentage, as.timeDate(tb) + 24*3600)
 }
 
-(tb0 <- timeBuckets(timeSequence(ad0, by="year", length.out=5), bucketLabs=2016:2019))
+expenses4daughter("Father", tb.cfs, 0.04)
 
-
-ops.expenses(myModel, tb0, 0.04)
-# link Operations contract with market environment
-
-##########################################
-# Create model structure
-myModel = ModelStructure("Minimal Model", curAcc = curr_acc)
-myModel
-# The contract is there:
-myModel$Active$Treasury$contracts
-
-#-----------------------------------------------------------------------------
-# Modelling the expenses
-# create Operations contract with "CashFlowPattern"
-ops1 = Ops(ContractID="Ops001",
+# create Operations contract Expenses with expense cash flow pattern
+Expenses = Ops(ContractID="Ops001",
            Currency="CHF",
-           CashFlowPattern = ops.expenses,
-           CashFlowParams = list(model=myModel, tb=tb0, percentage=0.04))
+           CashFlowPattern = expenses4daughter,
+           CashFlowParams = list(modelName="Father", tb=tb.cfs, percentage=0.04))
+# link Expense contract with market environment
+set(Expenses, rf1)  # Erforderlich?
 
-set(ops1, rf1)
-# add contract to account Operations
-addContracts(list(ops1), FindNode(myModel, "Operations"))
-length(myModel$Operations$contracts)
-myModel$Operations$contracts[[1]]
-# Prune empty branches
-# Otherwise analytics will not work properly
-Prune(myModel, function(x) (!isLeaf(x) || !is.null(x$contracts) ) )
-myModel
+# Add contract for expenses to account Expenses
+addContracts(list(Expenses), FindNode(Father, "Expenses"))
 
+# Wealth evolution without dynamic simulation ----------------------------------
+# events(Expenses, ad=t.start, model=rf1)
+# events(curr_acc, t.start, model=rf1, end_date=t.end)
+# events(Father, ad=t.start, model=rf1, end_date=t.end)
+events(Father, ad="2013-12-31", model=rf1, end_date=t.end)
+Father$Expenses$eventList
+Father$Wealth$eventList
+liquidity(Father, tb, "marginal")
+value(Father, tb, "nominal")
+expenses4daughter("Father", tb.cfs, 0.04)
+clearEvents(Father)
+# events(Father$Wealth, ad=t.start, model=rf1, end_date=t.end)
+# events(Father$Expenses, ad=t.start, model=rf1, end_date=t.end)
+# Father$Expenses$contracts
+# Father$Wealth$eventList
+# Father$Expenses$eventList
 
-# # define the strategy
-# strategie = diag(c(1.05, 1.05, 1.05, 1.05))
-# colnames(strategie) = c("Kundenkonten", "Interbank", "FixeDarlehen", "VariableDarlehen")
-# rownames(strategie) = colnames(strategie)
-# 
-# 
-# # define templates 
-# templates = list(
-#   Kundenkonten=get(ptf[[Bilanz$leafs$Kundenkonten[1]]],"all"),
-#   Interbank= get(get(ptf,as.character(Bilanz$leafs$Interbank[1])),"all"),
-#   FixeDarlehen=get(get(ptf,as.character(Bilanz$leafs$FixeDarlehen[1])),"all"),
-#   VariableDarlehen=get(get(ptf,as.character(Bilanz$leafs$VariableDarlehen[1])),"all")
-# )
-
-by <- times[1:5]- 1*24*3600
-tb <- timeBuckets(by, bucketLabs=2016:2019)
-tb
-
+# Notice that the account Welath doesn't take into account the outflows.
 
 ##############################
 # create the simulation manager
-FM <- FinancialModel(mstructure = myModel, ad0=ad0, rf = rf1, buckets = tb, steps = as.character(tb)
-                        # Strategy = strategie, Templates = templates
-                     )
+FM <- FinancialModel(
+  mstructure = Father, treasury= FindNode(Father, "Wealth"), curr_acc=curr_acc, 
+  ad0="2013-12-31", rf = rf1, buckets = tb.cfs, steps = as.character(tb)
+  # Strategy = strategie, Templates = templates
+)
 
 # simulate the strategy
-FM$simulate(start = "2015-12-31", end = "2020-12-31", by="1 year")
+# FM$simulate(start = "2015-12-31", end = "2020-12-31", by="1 year")
+Father$Wealth$contracts[[1]]$InternalCashFlows <- data.frame()
+FM$simulate(t.start = t.start, t.end = t.end, by="1 year")
 
+liquidity(Father, tb, "marginal", digits=0)
+value(Father, tb, "nominal", digits=0)
 
 ##########################
 # Compute contract events
 # single contrats
-(evs.ca <- events(curr_acc, ad0, rf1, end_date="2019-12-31"))
-(evs.ops <- events(ops1, ad0, rf1))
+(evs.ca <- events(curr_acc, t.start, rf1, end_date="2019-12-31"))
+(evs.ops <- events(ops1, t.start, rf1))
 
 # The whole model
-myModel$Do(fun=events.modelstructure, ad=ad0, model=rf1, end_date="2019-12-31")
+myModel$Do(fun=events.modelstructure, ad=t.start, model=rf1, end_date="2019-12-31")
 
-events(myModel, ad=ad0, model=rf1, end_date="2019-12-31")
+events(myModel, ad=t.start, model=rf1, end_date="2019-12-31")
 # Test that the events are there:
 myModel$Active$Treasury$eventList
 myModel$Operations$eventList
