@@ -142,6 +142,20 @@ setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character",
             return(val)
           })
 
+#' @include ContractType.R
+#' @include TimeBuckets.R
+#' @export
+#' @rdname val-methods
+setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character", "YieldCurve"),
+          definition = function(object, by, type, method, spread = 0, ...){
+            eng <- DcEngine()
+            set(eng, what = list(DiscountingSpread = spread,
+                                 RiskFactorObject = method))
+            val <- FEMS::value(object, as.character(by), type, method=eng)
+            names(val) <- by@breakLabs
+            return(val)
+          })
+
 
 #' @include ContractType.R
 #' @export

@@ -94,6 +94,23 @@ setMethod("plot", signature("ContractType", "character"),
             }
           })
 
+#' @include ContractType.R
+#' @include EventSeries.R
+#' @export
+#' @docType methods
+#' @rdname plt-methods
+setMethod("plot", signature("ContractType", "character"),
+          definition = function(x, y, yc, ...){
+            if (is(yc,"YieldCurve")){
+              rf_con <- RFConn(yc)
+              set(x, rf_con)
+              plot(x, y, ...)
+            } else {
+              plot(x, y, ...)
+            }
+          })
+
+
 # -----------------------------------------------------------
 # private helper method (accessed through method 'plot')
 contractPlot <- function(x, ...){
