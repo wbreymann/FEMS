@@ -4,7 +4,7 @@
 \alias{ModelStructure}
 \title{Class that contains the whole model of an enterprise or institution.}
 \usage{
-ModelStructure(name, ...)
+ModelStructure(name, type, ...)
 }
 \description{
 The class is implemented as a data.tree structure. 

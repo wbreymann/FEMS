@@ -56,7 +56,7 @@ Object of class \code{timeBuckets}.
 \code{timeDate} object.
 }
 \description{
-S4 class that contains cash flows occuring during the time intervals defined
+S4 class that contains cash flows occuring durring the time intervals defined
 by an \code{timeBuckets} object.
 
 The labels have the form "from%sep%to".
