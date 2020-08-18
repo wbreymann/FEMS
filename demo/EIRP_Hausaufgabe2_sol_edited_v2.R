@@ -125,7 +125,7 @@ inv.func <- function(model, params) {
 }
 
 # Definiere Investitions-Kontrakt
-inv <- Ops(ContractID="Invest01", Currency="EUR", InvestPattern=inv.func)
+inv <- Operations(ContractID="Invest01", Currency="EUR", InvestPattern=inv.func)
 
 # Definiere Gas-Einkaufs-Pattern
 gas.func <- function(model,params) {
@@ -134,7 +134,7 @@ gas.func <- function(model,params) {
              ops.times)
 }
 # Definiere Operations-Kontrakt mit CashFlowPattern
-gas <- Ops(ContractID="Gas01", Currency="EUR", CashFlowPattern=gas.func)
+gas <- Operations(ContractID="Gas01", Currency="EUR", CashFlowPattern=gas.func)
 # Definiere Gas-Einkaufs-Pattern
 el.func <- function(model,params) {
   timeSeries(24*300*100*1000*
@@ -142,7 +142,7 @@ el.func <- function(model,params) {
              ops.times)
 }
 # Definiere Investitions-Kontrakt
-el <- Ops(ContractID="El01", Currency="EUR", CashFlowPattern=el.func)
+el <- Operations(ContractID="El01", Currency="EUR", CashFlowPattern=el.func)
 # Erstelle Portfolio
 ptf <- Portfolio()
 add(ptf, list(Kredit, gas, el, inv))
