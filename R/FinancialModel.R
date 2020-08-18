@@ -1,6 +1,7 @@
 
 #' @include Portfolio.R RiskFactorConnector.R ModelStructure.R
-#' @export
+#' @export FinancialModel
+#' @exportClass FinancialModel
 #' @rdname ctm-classes
 FinancialModel <- setRefClass("FinancialModel",
                           fields = list(
@@ -77,7 +78,7 @@ FinancialModel <- setRefClass("FinancialModel",
 # #' @export
 
 #' Simulate method
-#' @export
+#' @export simulate
 FinancialModel$methods(
   simulate = function(t.start, t.end, by, ...) {
 ## 'Executes the simulation of a financial model.'
