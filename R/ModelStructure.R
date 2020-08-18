@@ -225,7 +225,8 @@ clearAnalytics = function(node, analytics) {
   }
 }
 
-# Clears previously computed the analytics "analytics" from the tree "node"
+#' Clears previously computed the analytics "analytics" from the tree "node"
+#' @export
 clearEvents = function(node) {
   clearAnalytics(node, "eventList")
 }
