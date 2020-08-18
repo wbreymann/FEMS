@@ -204,11 +204,11 @@ setMethod(f = "value", signature = c("EventSeries", "AD0", "character", "missing
 
 
 
+#' The value is computed from an \code{EventSeries}, 
+#' and discounting is carried out by explicitly calling the discouting engine.
 #' @include EventSeries.R
 #' @export
 #' @rdname val-methods
-#' The value is computed from an \code{EventSeries}, 
-#' and discounting is carried out by explicitly calling the discouting engine.
 setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "missing"),
           definition = function(object, by, type, ...){
             return(FEMS::value(object, as.character(by), type, ...) )
@@ -226,11 +226,11 @@ setMethod(f = "value", signature = c("EventSeries", "timeBuckets", "character", 
           })
 
 
+#' The value is computed from an \code{EventSeries}, 
+#' and discounting is carried out by explicitly calling the discouting engine.
 #' @include EventSeries.R
 #' @export
 #' @rdname val-methods
-#' The value is computed from an \code{EventSeries}, 
-#' and discounting is carried out by explicitly calling the discouting engine.
 setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "DiscountingEngine"),
           definition = function(object, by, type, method, ...){
             return(FEMS::value(object, as.character(by), type, method, ...) )
@@ -294,11 +294,11 @@ setMethod("value",
           })
 
 
+#' The value is computed from an \code{EventSeries}, 
+#' and discounting is carried out by explicitly calling the discouting engine.
 #' @include EventSeries.R
 #' @export
 #' @rdname val-methods
-#' The value is computed from an \code{EventSeries}, 
-#' and discounting is carried out by explicitly calling the discouting engine.
 setMethod(f = "value", signature = c("EventSeries", "character", "character", "DiscountingEngine"),
           definition = function(object, by, type, method, digits = 2, ...){
             

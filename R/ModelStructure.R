@@ -15,10 +15,8 @@ setOldClass("Node")
 #' The upper level is predefined with the nodes "Active", "Passive" and
 #' "Operations".
 #' 
-#' @include 
 #' @export
 #' @rdname modelstructure
-
 #' @export
 ## Das Problem hier ist, dass man dann nicht mehr auf die Methoden von "Node"
 ## zugreifen kann, weil die offenbar private sind.
