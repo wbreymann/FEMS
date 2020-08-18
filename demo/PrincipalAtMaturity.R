@@ -126,7 +126,8 @@ set(pam, what = list(
          StatusDate       = "2012-12-31",     # on this day we analyse our PAM.
          InitialExchangeDate = "2013-01-01",  # here start the contract work
          MaturityDate = "2014-12-31",         # the day of the repayment
-         NominalInterestRate = 0.05    ))        # nominal Interest rate
+         NominalInterestRate = 0.05,          # nominal Interest rate
+         CycleAnchorDateOfInterestPayment = "2014-12-31"))        
 
 #' generate contract events
 as.data.frame(events(pam,ad))
@@ -172,7 +173,7 @@ set(pam, what = list(ContractRole = "RPA"))
 #' steady interest rate of 5% p.a. and contract term with 2 years
 set(pam, what = list(
          CycleAnchorDateOfInterestPayment = "2013-01-01",  # start of the coupon payment
-         CycleOfInterestPayment = "P6ML0"))                      # was "6M-" not sure what the L0 does?
+         CycleOfInterestPayment = "P6ML1"))                
 
 #' generate contract events
 as.data.frame(events(pam,ad)) 
@@ -194,7 +195,7 @@ plot(pam,ad)
 ## ---------------------------------------------------------------
 ## 5. An another way to handle the last (short) coupon payment
 ## ---------------------------------------------------------------
-set(pam, what = list(CycleOfInterestPayment = "P6ML1")) # was "6M+" not sure what the L1 does?
+set(pam, what = list(CycleOfInterestPayment = "P6ML0")) # was "6M+" not sure what the L1 does?
 
 #' generate contract events
 as.data.frame(events(pam,ad))
@@ -208,7 +209,7 @@ plot(pam,ad)
 # Summary of the Plot
 # the coupon payment leading to a short last coupon period has been
 # ... suppressed. Thus, a long last coupon period results.
-set(pam, what = list(CycleOfInterestPayment = "P6ML0")) # was "6M-" not sure what the L0 does?
+set(pam, what = list(CycleOfInterestPayment = "P6ML1"))
 
 ## ---------------------------------------------------------------
 ## 6. add capitalisation of interest payments
@@ -245,7 +246,7 @@ plot(pam,ad)
 #' we use the last contract and reset the rates yearly
 set(object = pam, what = list(
                   CycleAnchorDateOfRateReset = "2014-01-01",
-                  CycleOfRateReset = "P1YL0", # was "1Y-"
+                  CycleOfRateReset = "P1YL1", # was "1Y-"
                   MarketObjectCodeOfRateReset = "YC_Prim"))
 
 #' generate contract events
@@ -271,7 +272,7 @@ plot(pam,ad)
 #' we also use the last contract but reset the interest rate bi-annually
 set(object = pam, what = list(
                   CycleAnchorDateOfRateReset = "2013-07-01",
-                  CycleOfRateReset = "P3ML0")) # was "3M-"
+                  CycleOfRateReset = "P3ML1")) # was "3M-"
 
 #' generate contract events
 as.data.frame(events(pam,ad))
