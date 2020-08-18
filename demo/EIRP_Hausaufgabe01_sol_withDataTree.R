@@ -2,9 +2,9 @@
 # Deaktiviere Warnungen temporär
 options(warn=-1)
 # Lade nötige Pakete
-library(rActus)
-library(rflPortfolio)
-library(rflSimulation)
+#library(rActus)
+#library(rflPortfolio)
+#library(rflSimulation)
 # Definieren vom Analysezeitpunkt
 t0 = "2016-01-02T00"	
 # Importieren des Portfolios

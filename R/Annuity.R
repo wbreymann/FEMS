@@ -27,9 +27,9 @@ setMethod(
   signature = c(),
   definition = function(ContractID = "001",
                         ContractRole = "RPA",
-                        StatusDate = "0000-01-01T00",
+                        StatusDate = "0000-01-01",
                         PremiumDiscountAtIED = 0,
-                        DayCountConvention = "30E/360",
+                        DayCountConvention = "30E360",
                         ...) {
     
     pars <- list(...,

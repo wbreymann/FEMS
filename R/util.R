@@ -273,4 +273,27 @@ longName <- function(name) {
 }
 
 
+couponsPerYear <- function(x, isContract=TRUE) {
+
+  couponFreq <- x
+  if(isContract) {
+    if(class(x)=="PrincipalAtMaturity") {
+      couponFreq <- FEMS:::get(x,"CycleOfInterestPayment")
+    } else {
+      couponFreq <- FEMS:::get(x,"CycleOfPrincipalRedemption")
+    }
+  }
+  x <- substring(couponFreq, 3, 3)
+  
+  m <- switch(x,
+           Y=1/as.numeric(gsub("([0-9]*).*","\\1",substring(couponFreq, 2, 3))),
+           Q=4/as.numeric(gsub("([0-9]*).*","\\1",substring(couponFreq, 2, 3))),
+           M=12/as.numeric(gsub("([0-9]*).*","\\1",substring(couponFreq, 2, 3))),
+           W=52/as.numeric(gsub("([0-9]*).*","\\1",substring(couponFreq, 2, 3))),
+           D=365/as.numeric(gsub("([0-9]*).*","\\1",substring(couponFreq, 2, 3))),
+           1)
+  return(m)
+}
+
+
 
