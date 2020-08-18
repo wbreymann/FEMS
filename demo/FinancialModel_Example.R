@@ -75,7 +75,7 @@ expenses4daughter <- function(modelName, tb, percentage) {
 expenses4daughter("Father", tb.cfs, 0.04)
 
 # create Operations contract Expenses with expense cash flow pattern
-Expenses = Ops(ContractID="Ops001",
+Expenses = Operations(ContractID="Ops001",
            Currency="CHF",
            CashFlowPattern = expenses4daughter,
            CashFlowParams = list(modelName="Father", tb=tb.cfs, percentage=0.04))
@@ -95,7 +95,7 @@ Father$Wealth$eventList
 liquidity(Father, tb, "marginal")
 value(Father, tb, "nominal")
 expenses4daughter("Father", tb.cfs, 0.04)
-clearEvents(Father)
+FEMS:::clearEvents(Father)
 # events(Father$Wealth, ad=t.start, model=rf1, end_date=t.end)
 # events(Father$Expenses, ad=t.start, model=rf1, end_date=t.end)
 # Father$Expenses$contracts

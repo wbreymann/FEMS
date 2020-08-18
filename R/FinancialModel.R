@@ -1,4 +1,7 @@
 
+##############################################################
+#' A Reference Class that contains a financial model of an institution 
+#' 
 #' @include Portfolio.R RiskFactorConnector.R ModelStructure.R
 #' @export FinancialModel
 #' @exportClass FinancialModel

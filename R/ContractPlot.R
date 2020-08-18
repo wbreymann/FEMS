@@ -54,7 +54,7 @@
 #' @export
 #' @docType methods
 #' @rdname plt-methods
-##  if (!isGeneric("plot"))
+if (!isGeneric("plot"))
 setGeneric(name = "plot", 
            def = function(x, y, ...) {
              standardGeneric("plot")

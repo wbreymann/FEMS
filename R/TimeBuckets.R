@@ -108,11 +108,11 @@ setMethod("names", signature="timeBuckets",
 setMethod("length", signature="timeBuckets",
           function(x) {length(x@Data)-1})
 
-### @include 
-##' @import timeDate
-##' @export
-##' @docType methods
-##' @rdname subscript-methods
+# ## @include 
+# #' @import timeDate
+# #' @export
+# #' @docType methods
+# #' @rdname subscript-methods
 # setMethod("window", signature = c("timeBuckets"),
 #           definition = function(x, start, end, ...) {
 #             tt <- timeDate:::window.timeDate(as.timeDate(x), as.character(start), as.character(end), ...)

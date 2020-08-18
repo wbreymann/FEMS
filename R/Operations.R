@@ -66,8 +66,9 @@ setRefClass("Operations",
             ))
 
 ## -----------------------------------------------------------------
-## Operations Contract constructor definition
-## @include
+#'
+#'  Operations Contract constructor definition
+# #' @include
 #' @export
 #' @rdname ops-methods
 setGeneric(name = "Operations",
