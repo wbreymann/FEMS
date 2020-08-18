@@ -180,12 +180,14 @@ setMethod(f = "liquidity", signature = c("EventSeries", "timeBuckets", "missing"
 #' @rdname liq-methods
 setMethod(f = "liquidity", signature = c("EventSeries", "timeDate", "character"),
           definition = function(object, by, type, digits = 2) {
-          # definition = function(object, by, type, digits = 2, filtered=c("DPR", "IAM","RES","IPIC")){
-          # object$evs <- object$evs[!is.element(object$evs$Type,filtered),] # VORSICHT: Das Objekt wird nicht kopiert !!!!!
+          # definition = function(object, by, type, digits = 2, filtered=c("DPR", "IAM","RES","IPCI")){
+          # cf.raw <- object$evs[!is.element(object$evs$Type,filtered),] 
             if (type == "marginal") {
               liq <- timeSeries(rep(0, length(by)), charvec = by)
               cf.raw <- timeSeries(get(object,"evs")$Value,
                                  charvec = substring(get(object,"evs")$Date, 1, 10))
+              # cf.raw <- timeSeries(cf.raw$Value,
+              #                      charvec = substring(cf.raw$Date, 1, 10))
               # cf.aggr = .aggregate.timeSeries(cf.raw, by, FUN=sum)
               cf.aggr <- aggregate(cf.raw, by, FUN = sum)
               
