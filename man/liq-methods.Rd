@@ -54,13 +54,7 @@ liquidity(object, by, type, ...)
 
 \S4method{liquidity}{EventSeries,timeBuckets,missing}(object, by, type, digits = 2)
 
-\S4method{liquidity}{EventSeries,timeDate,character}(
-  object,
-  by,
-  type,
-  digits = 2,
-  filtered = c("DPR", "IAM", "RES", "IPIC")
-)
+\S4method{liquidity}{EventSeries,timeDate,character}(object, by, type, digits = 2)
 
 \S4method{liquidity}{EventSeries,timeBuckets,character}(object, by, type, digits = 2)
 
