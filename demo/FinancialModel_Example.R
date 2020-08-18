@@ -15,9 +15,6 @@ Father
 (tb <- timeBuckets(timeSequence(t.start, by="year", length.out=6), bucketLabs=2014:2018))
 (t.end <- "2019-01-01")
 
-# (t0="2016-01-01")
-# (ad0 = as.character(timeDate(t0) - 1*24*3600))
-
 # Cash flows and value of the empty model---------------------------------------
 liquidity(Father, tb, "marginal")
 value(Father, tb, "nominal")
@@ -31,7 +28,7 @@ curr_acc <- CurrentAccount(ContractID = "CurrAcc",
                            Currency = "CHF",
                            NotionalPrincipal = CurrAcc.balance,
                            # CashFlows = cashflows,
-                           CycleAnchorDateOfInterestPayment = t.start,
+                           CycleAnchorDateOfInterestPayment = "2013-12-31",
                            CycleOfInterestPayment = "1Y-",
                            MarketObjectCodeRateReset = "YC_CH")
 curr_acc
@@ -107,8 +104,7 @@ clearEvents(Father)
 
 # Notice that the account Welath doesn't take into account the outflows.
 
-##############################
-# create the simulation manager
+# Create Financial model ------------------------------
 
 (tb0 = timeBuckets(timeSequence("2013-12-31", "2018-12-31", "year"), bucketLabs=2014:2018))
 
@@ -118,13 +114,16 @@ FM <- FinancialModel(
   # Strategy = strategie, Templates = templates
 )
 
-# simulate the strategy
+# Simulate the strategy --------------------------------
 # FM$simulate(start = "2015-12-31", end = "2020-12-31", by="1 year")
 Father$Wealth$contracts[[1]]$InternalCashFlows <- data.frame()
 FM$simulate(t.start = t.start, t.end = t.end, by="1 year")
 
 liquidity(Father, tb, "marginal")
 value(Father, tb, "nominal")
+liquidity(Father, tb0, "marginal")
+value(Father, tb0, "nominal")
+
 
 ##########################
 # Compute contract events
