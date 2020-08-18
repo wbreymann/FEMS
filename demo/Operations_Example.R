@@ -41,7 +41,7 @@ ops.profit = function(model, params) {
 # the same as the one of an object available in the session, this on gets allocated
 # and will produce an error.
 # 
-ops1 = Ops(ContractID="Ops001",
+ops1 = Operations(ContractID="Ops001",
            Currency="CHF",
            CashFlowPattern = ops.profit,
            CashFlowParams = list(model=rf1, params="GAS"))
@@ -100,7 +100,7 @@ ops.invest <- function(model, params) {
   timeSeries(seq(1000, 0, length.out=24), times)
 }
 
-ops2 <- Ops(ContractID = "Ops002", Currency = "CHF", InvestPattern = ops.invest)
+ops2 <- Operations(ContractID = "Ops002", Currency = "CHF", InvestPattern = ops.invest)
 
 # link Operations contract with market environment
 set(ops2, rf)

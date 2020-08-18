@@ -71,15 +71,15 @@ setRefClass("Operations",
 # #' @include
 #' @export
 #' @rdname ops-methods
-setGeneric(name = "Ops",
+setGeneric(name = "Operations",
            def = function(...){
-             standardGeneric("Ops")
+             standardGeneric("Operations")
            })
 
 ## @include
 #' @export
 #' @rdname ct-methods
-setMethod(f = "Ops",signature = c(),
+setMethod(f = "Operations",signature = c(),
           definition = function(...){
               object = new("Operations")
               pars = list(...)

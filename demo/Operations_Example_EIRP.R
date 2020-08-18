@@ -47,7 +47,7 @@ plot(ops.profit(rf1, "GAS"))
 #-----------------------------------------------------------------------------
 # Modelling of operational revenues and expenses (Betriebskosten und -erträge)
 # create Operations contract with "CashFlowPattern"
-ops1 = Ops(ContractID="Ops001",
+ops1 = Operations(ContractID="Ops001",
            Currency="CHF",
            CashFlowPattern = ops.profit,
            CashFlowParams = list(model=rf1, params="GAS"))
@@ -99,7 +99,7 @@ ops.invest <- function(model, params) {
   timeSeries(seq(1000, 0, length.out=24), times)
 }
 
-ops2 <- Ops(ContractID = "Ops002", Currency = "CHF", InvestPattern = ops.invest)
+ops2 <- Operations(ContractID = "Ops002", Currency = "CHF", InvestPattern = ops.invest)
 
 # link Operations contract with market environment
 set(ops2, rf1)
@@ -134,7 +134,7 @@ ops.reserve <- function(model,params) {
   timeSeries(seq(0, 1000, length.out=24), times)
 }
 
-ops3 <- Ops(ContractID="Ops003", Currency="CHF", ReservePattern=ops.reserve)
+ops3 <- Operations(ContractID="Ops003", Currency="CHF", ReservePattern=ops.reserve)
 
 # link Operations contract with market environment
 set(ops3, rf1)
