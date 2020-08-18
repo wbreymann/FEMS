@@ -87,6 +87,7 @@ Collate:
     'bond.R'
     'cashFlows.R'
     'convexity.R'
+    'credit.R'
     'defaults.R'
     'duration.R'
     'export.R'
