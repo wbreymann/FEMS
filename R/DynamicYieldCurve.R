@@ -19,7 +19,7 @@
 #' @seealso \code{\link{RiskFactor, ReferenceIndex, ForeignExchangeRate}}
 #'
 #' @examples
-#' yc <- YieldCurve2()
+#' yc <- DynamicYieldCurve()
 #' tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
 #' rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
 #' set(yc, what = list(MarketObjectCode = "YC_Prim",
@@ -30,10 +30,10 @@
 #' get(yc, "Tenors")
 #' get(yc, "Rates")
 #' 
-#' @include RiskFactor.R
+#' @include RiskFactor.R YieldCurve.R
 #' @export
 #' @rdname ind-classes
-setRefClass("YieldCurve2", 
+setRefClass("DynamicYieldCurve", 
             contains = "RiskFactor",
             fields = list(ReferenceDate = "character",
                           Tenors = "character",
@@ -44,15 +44,15 @@ setRefClass("YieldCurve2",
 
 
 ##############################################################
-#' \code{YieldCurve2}-class constructor
+#' \code{DynamicYieldCurve}-class constructor
 #'
-#' Create an instance of \code{YieldCurve2} class. The 
+#' Create an instance of \code{DynamicYieldCurve} class. The 
 #' constructor will also create an instance of the respective
 #' Java class in the running JVM.
 #' 
 #' @param ...
 #'
-#' @return An object of class \code{YieldCurve2} 
+#' @return An object of class \code{DynamicYieldCurve} 
 #'          containing the reference to the Java object
 #' 
 #' @seealso \code{\link{ReferenceIndex, ForeignExchangeRate}}
@@ -61,17 +61,17 @@ setRefClass("YieldCurve2",
 #' @export
 #' @docType methods
 #' @rdname yc-methods
-#' @aliases YieldCurve2-method
-setGeneric(name = "YieldCurve2",
+#' @aliases DynamicYieldCurve-method
+setGeneric(name = "DynamicYieldCurve",
            def = function(...){
-             standardGeneric("YieldCurve2")
+             standardGeneric("DynamicYieldCurve")
            })
 
 ## @include
 #' @export
 #' @rdname yc-methods
 ## @aliases 
-setMethod(f = "YieldCurve2",signature = c(),
+setMethod(f = "DynamicYieldCurve",signature = c(),
           definition = function(...){
             
             pars <- list(...)
@@ -85,23 +85,20 @@ setMethod(f = "YieldCurve2",signature = c(),
             fill_fields$Tenors <- "0M"
             fill_fields$Rates <- setNames(data.frame(NA), fill_fields$Tenors)
             rownames(fill_fields$Rates) <- fill_fields$ReferenceDate
-            fill_fields$DayCountConvention <- "30E/360"
+            fill_fields$DayCountConvention <- "30E360"
             
             if (length(names(pars)) != 0) {
               
               # check if some fields are incorrectly specified!
-              all_fields <- names(getRefClass("YieldCurve2")$fields())
+              all_fields <- names(getRefClass("DynamicYieldCurve")$fields())
               pars_names <- names(pars)
               test_pars_names <- pars_names %in% all_fields
               if (!all(test_pars_names)) {
-                stop(paste("ErrorInYieldCurve2:: Yield Curve has no field called: ", 
+                stop(paste("ErrorInDynamicYieldCurve:: Yield Curve has no field called: ", 
                            pars_names[!test_pars_names], "!!!"))
               }
               
               if (is.data.frame(pars$Rates)) {
-                #fill_fields$ReferenceDate <- dimnames(pars$Rates)[[2]]
-                #fill_fields$Tenors <- dimnames(pars$Rates)[[1]]
-                #fill_fields$Rates <- pars$Rates
                 ill_fields$ReferenceDate <- rownames(pars$Rates)
                 fill_fields$Tenors <- colnames(pars$Rates)
                 fill_fields$Rates <- pars$Rates
@@ -109,7 +106,7 @@ setMethod(f = "YieldCurve2",signature = c(),
                 # check if necessary fields are missing and set the provide field names
                 if (!all(c("ReferenceDate","Tenors","Rates") %in% names(pars))) {
                   stop(paste(
-                    "ErrorInYieldCurve2:: If any, all of the following fields have to be provided: "
+                    "ErrorInDynamicYieldCurve:: If any, all of the following fields have to be provided: "
                     , paste(c("ReferenceDate","Tenors","Rates"),collapse = ", "), "!!!"))
                 } else {
                   fill_fields$ReferenceDate <- pars$ReferenceDate
@@ -128,7 +125,7 @@ setMethod(f = "YieldCurve2",signature = c(),
               }
             }
             
-            yc <- new("YieldCurve2")
+            yc <- new("DynamicYieldCurve")
             for (nms in names(fill_fields)) {
               yc[[nms]] <- fill_fields[[nms]]
             }
@@ -138,32 +135,12 @@ setMethod(f = "YieldCurve2",signature = c(),
             return(yc)
           })
 
-#' @export
-setGeneric(name = "FlatCurve2",
-           def = function(rate, ref_date){
-             standardGeneric("FlatCurve2")
-           })
-
-#' @export
-setMethod(f = "FlatCurve2", signature = c("numeric","character"),
-          definition = function(rate, ref_date){
-            yc <- YieldCurve2()
-            tenors <- c("1W", "6M", "1Y", "5Y", "10Y", "50Y", "100Y")
-            rates <- setNames(data.frame(t(rep(1, length(tenors)))* rate),tenors)
-            rownames(rates) <- ref_date
-            
-            set(yc, what = list(
-              MarketObjectCode = "YC_Flat",
-              Rates = rates))
-            return(yc)
-          })
-
 ## @include
 #' @export
 #' @rdname set-methods
 #' @aliases set,ForeignExchangeRate,list-method
 #' @aliases set,ReferenceIndex,list-method
-setMethod(f = "set", signature = c("YieldCurve2", "list"),
+setMethod(f = "set", signature = c("DynamicYieldCurve", "list"),
           definition = function(object, what, ...){
             
             par.names <- names(what)
@@ -173,7 +150,7 @@ setMethod(f = "set", signature = c("YieldCurve2", "list"),
                 switch(i,
                        ReferenceDate = {
                          if (length(object$ReferenceDate) != length(value)) {
-                           stop("ErrorIn::YieldCurve2::set:: Field is not allowed to change dimensions !!!")
+                           stop("ErrorIn::DynamicYieldCurve::set:: Field is not allowed to change dimensions !!!")
                          }
                          object$ReferenceDate <- value
                          object$TenorDates <- computeTenorDates(object$ReferenceDate,object$Tenors,frame=TRUE)
@@ -191,18 +168,18 @@ setMethod(f = "set", signature = c("YieldCurve2", "list"),
                          # here it would be necessary to also compute the rates again if I allow to change this!
                        },
                        DayCountConvention = {
-                         object$DayCountConvention <- tolower(value)
+                         object$DayCountConvention <- value
                        },
                        MarketObjectCode = {
                          object$MarketObjectCode <- value
                        }
                 )
               } else {
-                warning(paste("ErrorInYieldCurve2:: Field ", i, " does not exist, cannot assign value!", sep = ""))
+                warning(paste("ErrorInDynamicYieldCurve:: Field ", i, " does not exist, cannot assign value!", sep = ""))
               }
             }
             if (length(object$Tenors) != length(object$Rates)) {
-              stop("ErrorInYieldCurve2::set:: Rates must have same length as Tenors")
+              stop("ErrorInDynamicYieldCurve::set:: Rates must have same length as Tenors")
             }
           })
 
@@ -213,7 +190,7 @@ setMethod(f = "set", signature = c("YieldCurve2", "list"),
 #' @aliases get,RiskFactorConnector,character-method
 #' @aliases get,ForeignExchangeRate,character-method
 #' @aliases get,ReferenceIndex,character-method
-setMethod(f = "get", signature = c("YieldCurve2", "character"),
+setMethod(f = "get", signature = c("DynamicYieldCurve", "character"),
           definition = function(object, what, ...){
             out <- list()
             if (length(what) == 1 && tolower(what) == "all") {
@@ -230,7 +207,7 @@ setMethod(f = "get", signature = c("YieldCurve2", "character"),
                                    TenorDates = object$TenorDates
                 )
               } else {
-                warning(paste("ErrorInYieldCurve2::get:: Field ", i, " does not exist, cannot get value!", sep=""))
+                warning(paste("ErrorInDynamicYieldCurve::get:: Field ", i, " does not exist, cannot get value!", sep=""))
               }
             }
             if (length(out) == 1) {
@@ -241,10 +218,10 @@ setMethod(f = "get", signature = c("YieldCurve2", "character"),
 
 
 #' @export
-setMethod(f = "add", signature = c("YieldCurve2", "data.frame"),
+setMethod(f = "add", signature = c("DynamicYieldCurve", "data.frame"),
           definition = function(object, what, ...){
             if (!identical(object$Tenors, colnames(object$Rates))) {
-              stop("ErrorIn::YieldCurve2::add:: Tenors of rates added must match the existing YieldCurve's Tenors")
+              stop("ErrorIn::DynamicYieldCurve::add:: Tenors of rates added must match the existing YieldCurve's Tenors")
             }
             # add new row
             object$Rates <- rbind(object$Rates, what)
@@ -255,46 +232,68 @@ setMethod(f = "add", signature = c("YieldCurve2", "data.frame"),
           })
 
 #' @export
-setMethod(f = "add", signature = c("YieldCurve2", "YieldCurve2"),
+setMethod(f = "add", signature = c("DynamicYieldCurve", "DynamicYieldCurve"),
           definition = function(object, what, ...){
 
             if (!identical(object$Tenors, what$Tenors)) {
-              stop("ErrorIn::YieldCurve2::add:: Tenors of rates added must match the existing YieldCurve's Tenors")
+              stop("ErrorIn::DynamicYieldCurve::add:: Tenors of rates added must match the existing YieldCurve's Tenors")
             }
 
             if (!identical(object$DayCountConvention, what$DayCountConvention)) {
-              stop("ErrorIn::YieldCurve2::add:: DayCountConvention of rates added must match the existing YieldCurve")
+              stop("ErrorIn::DynamicYieldCurve::add:: DayCountConvention of rates added must match the existing YieldCurve")
             }
             
-            yc <- YieldCurve2()
+            yc <- DynamicYieldCurve()
             set(yc, what=list(Rates=rbind(object$Rates, what$Rates)))
             return(yc)
           })
 
+#' @export
+setMethod(f = "add", signature = c("YieldCurve", "YieldCurve"),
+          definition = function(object, what, ...){
+            return(add(to.dynamic(object),to.dynamic(what)))
+          })
+
+#' @export
+setMethod(f = "add", signature = c("YieldCurve", "data.frame"),
+          definition = function(object, what, ...){
+            return(add(to.dynamic(object),what))
+          })
+
+#' @export
+setMethod(f = "add", signature = c("DynamicYieldCurve", "YieldCurve"),
+          definition = function(object, what, ...){
+            return(add(object,to.dynamic(what)))
+          })
 
 #########################################################################################
 #' Computes the forward rate from time t1 to time t2.
 #' 
-#' Q bwlf:
-#' Is this a helper method or do we need a help text?
-#' A auth:
 #' This function still needs documentation, yes.
 #' 
 #' @export
-setGeneric(name = "getRateAt2",
+setGeneric(name = "getRateAt",
            def = function(object, from, to, ...){
-             standardGeneric("getRateAt2")
+             standardGeneric("getRateAt")
            })
+
+#' @export
+setMethod(f = "getRateAt",
+          signature = c("YieldCurve", "character", "character"),
+          definition = function(object, from, to, method = "continuous", period = "Y", ...){
+            # convert YieldCurve to dynamic first...
+            return(getRateAt(to.dynamic(object), from, to, method = method, period = period, ...))
+          })
 
 #########################################################################################
 #' @export
-setMethod(f = "getRateAt2",
-          signature = c("YieldCurve2", "character", "character"),
+setMethod(f = "getRateAt",
+          signature = c("DynamicYieldCurve", "character", "character"),
           definition = function(object, from, to, method = "continuous", period = "Y", ...){
             
             if (length(from)>1 && length(to)>1) {
               if (length(from)!=length(to)){
-                stop("ErrorIn::YieldCurve2::getRateAt2:: from and to dates must have same length !!! ")
+                stop("ErrorIn::DynamicYieldCurve::getRateAt:: 'from' and 'to' dates do not have valid length !!! ")
               }
             }
             if (length(from)< length(to)){
@@ -306,7 +305,7 @@ setMethod(f = "getRateAt2",
             
             for (i in 1:length(from)) {
               if (as.Date(from[i])<object$ReferenceDate[1] || as.Date(to[i])<object$ReferenceDate[1]) {
-                stop("ErrorIn::YieldCurve2::getRateAt2:: No Yields can be calculated before ReferenceDate of the YieldCurve2!!!")
+                stop("ErrorIn::DynamicYieldCurve::getRateAt:: No Yields can be calculated before ReferenceDate of the DynamicYieldCurve!!!")
               }
               if (from[i]>to[i]) {
                 helper_to <- to[i]
@@ -340,7 +339,7 @@ setMethod(f = "getRateAt2",
                 } else if (method == "continuous") {
                   out[i] <- (t2*s2 - t1*s1)/(t2 - t1)
                 } else {
-                  stop(paste("ErrorIn::YieldCurve2::getRateAt2:: Method ", method, " not supported !!!"))
+                  stop(paste("ErrorIn::DynamicYieldCurve::getRateAt2:: Method ", method, " not supported !!!"))
                 }
                 
               } else {
@@ -348,7 +347,7 @@ setMethod(f = "getRateAt2",
                 # pre-allocate memory for necessary rates and time deltas
                 rates <- rep(NA, ref_idx_to-ref_idx_from+1)
                 dt <- rep(NA, ref_idx_to-ref_idx_from+1)
-                rates[1] <- getRateAt2(object,from[i],object$ReferenceDate[ref_idx_from+1], method = method, period = period)
+                rates[1] <- getRateAt(object,from[i],object$ReferenceDate[ref_idx_from+1], method = method, period = period)
                 dt[1] <- yearFraction(from[i], object$ReferenceDate[ref_idx_from+1], object$DayCountConvention)
                 
                 # prepare the while loop
@@ -380,7 +379,7 @@ setMethod(f = "getRateAt2",
                 } else if (method == "continuous") {
                   out[i] <- sum( rates * dt )/T
                 } else {
-                  stop(paste("ErrorIn::YieldCurve2::getRateAt2:: Method ", method, " not supported !!!"))
+                  stop(paste("ErrorIn::DynamicYieldCurve::getRateAt:: Method ", method, " not supported !!!"))
                 }
               }
             }
@@ -390,41 +389,18 @@ setMethod(f = "getRateAt2",
           })
 
 
-#' @export
-setGeneric(name = "setTimeSeries2",
-           def = function(object, startdate, enddate, ...){
-             standardGeneric("setTimeSeries2")
-           })
-
-# Q bwlf:
-# Wo wird diese Methode gebraucht?
-# A auth:
-# wird gebraucht um Zeitreihe von rates zu berechnen, welche an die 
-# API geschickt wird. (siehe auch YieldCurve_Example.R)
-
-
-
-#' @export
-setMethod(f = "setTimeSeries2",
-          signature = c("YieldCurve2", "character", "character"),
-          definition = function(
-            object, startdate, enddate, frequency = "month", forward = "1M", ...){
-            object$Data <- getRateSeries2(object, startdate, enddate, 
-                                         frequency = frequency, forward = forward)
-          })
-
 ##############################################################
 #' Generic method to retrieve the rate(s) for a specific
-#' tenor(s) from a \code{\link{YieldCurve2}} object
+#' tenor(s) from a \code{\link{DynamicYieldCurve}} object
 #'
 #' A yield curve is a time-structure of yields, i.e. for
 #' different future points in time (tenors) a yield is 
 #' extracted from observed instrument prices. The 
-#' \code{\link{YieldCurve2}} object contains these tenors with
+#' \code{\link{DynamicYieldCurve}} object contains these tenors with
 #' associated yields and allows to retrieve yields for any
 #' tenor by inter-/extrapolation.
 #' 
-#' @param object An object of class \code{YieldCurve2} for 
+#' @param object An object of class \code{DynamicYieldCurve} for 
 #'        which to return the yield for a given tenor
 #'        
 #' @param termEnd The tenor for which to return its yield. 
@@ -452,7 +428,7 @@ setMethod(f = "setTimeSeries2",
 #' @seealso \code{\link{discountFactors}}
 #' 
 #' @examples
-#' yc <- YieldCurve2()
+#' yc <- DynamicYieldCurve()
 #' tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
 #' rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
 #' set(yc, what = list(MarketObjectCode = "YC_Prim",
@@ -466,19 +442,40 @@ setMethod(f = "setTimeSeries2",
 #' @export
 #' @docType methods
 #' @rdname rts-methods
-#' @aliases rates, YieldCurve2, charachter, missing-method
-#' @aliases rates, YieldCurve2, character, character-method
-setGeneric(name = "rates2",
+#' @aliases rates, DynamicYieldCurve, charachter, missing-method
+#' @aliases rates, DynamicYieldCurve, character, character-method
+setGeneric(name = "rates",
            def = function(object, termEnd, termStart, ...){
-             standardGeneric("rates2")
+             standardGeneric("rates")
            })
+
+#' @export
+#' @rdname rts-methods
+#' @aliases rates, YieldCurve, character, missing-method
+setMethod(f = "rates",
+          signature = c("YieldCurve", "character", "missing"),
+          definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
+            out <- rates(to.dynamic(object), termEnd, termStart, isDateEnd = isDateEnd, ...)
+            return(out)
+          })
+
+#' @export
+#' @rdname rts-methods
+#' @aliases rates, YieldCurve, character, missing-method
+setMethod(f = "rates",
+          signature = c("YieldCurve", "character", "character"),
+          definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
+            out <- rates(to.dynamic(object), termEnd, termStart, isDateEnd = isDateEnd, ...)
+            return(out)
+          })
+
 
 ## @include
 #' @export
 #' @rdname rts-methods
-#' @aliases rates, YieldCurve2, character, missing-method
-setMethod(f = "rates2",
-          signature = c("YieldCurve2", "character", "missing"),
+#' @aliases rates, DynamicYieldCurve, character, missing-method
+setMethod(f = "rates",
+          signature = c("DynamicYieldCurve", "character", "missing"),
           definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
             if (!isDateEnd) {
               # endDate <- computeTenorDates(object$ReferenceDate, termEnd)
@@ -487,7 +484,7 @@ setMethod(f = "rates2",
               endDate <- termEnd
             }
             test.dates(endDate)
-            out <- getRateAt2(object, object$ReferenceDate, endDate)
+            out <- getRateAt(object, object$ReferenceDate, endDate)
             return(out)
             
           })
@@ -495,9 +492,9 @@ setMethod(f = "rates2",
 ## @include
 #' @export
 #' @rdname rts-methods
-#' @aliases rates, YieldCurve2, character, character-method
-setMethod(f = "rates2",
-          signature = c("YieldCurve2", "character", "character"),
+#' @aliases rates, DynamicYieldCurve, character, character-method
+setMethod(f = "rates",
+          signature = c("DynamicYieldCurve", "character", "character"),
           definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
             
             if (!isDateEnd) {
@@ -508,16 +505,16 @@ setMethod(f = "rates2",
             }
             test.dates(termStart)
             test.dates(endDate)
-            out <- getRateAt2(object, termStart, endDate)
+            out <- getRateAt(object, termStart, endDate)
             return(out)
           })
 
 ##############################################################
 #' Generic method to retrieve discount factors for specific
-#' tenor(s) from a \code{\link{YieldCurve2}} object
+#' tenor(s) from a \code{\link{DynamicYieldCurve}} object
 #'
 #' Discount factors for \code{t2}-tenors are extracted from a 
-#' \code{\link{YieldCurve2}} object according to 
+#' \code{\link{DynamicYieldCurve}} object according to 
 #' \code{df(t0,t1,t2)=exp(-yf(t1,t2)*yield(t1,t2))} where
 #' \itemize{
 #'  \item{"t0"}{is the 'ReferenceDate' of the yield curve}
@@ -532,7 +529,7 @@ setMethod(f = "rates2",
 #'                    rate/yield if t1>t0)}
 #' }
 #' 
-#' @param object An object of class \code{YieldCurve2} from 
+#' @param object An object of class \code{DynamicYieldCurve} from 
 #'        which to extract the discount factors
 #'        
 #' @param termEnd The discounting period end date (t2) 
@@ -559,7 +556,7 @@ setMethod(f = "rates2",
 #' @seealso \code{\link{rates}}
 #' 
 #' @examples
-#' yc <- YieldCurve2()
+#' yc <- DynamicYieldCurve()
 #' tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
 #' rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
 #' set(yc, what = list(MarketObjectCode = "YC_Prim",
@@ -574,29 +571,49 @@ setMethod(f = "rates2",
 #' @docType methods
 #' @rdname dfs-methods
 ## @aliases
-setGeneric(name = "discountFactorsv2",
+setGeneric(name = "discountFactors",
            def = function(object, termEnd, termStart, ...){
-             standardGeneric("discountFactorsv2")
+             standardGeneric("discountFactors")
            })
+
+#' @export
+#' @rdname dfs-methods
+#' @aliases discountFactors, YieldCurve, character, character-method
+setMethod(f = "discountFactors",
+          signature = c("YieldCurve", "character", "missing"),
+          definition = function(object, termEnd, termStart, method = "continuous", period = "Y", ...) {
+            return(discountFactors(to.dynamic(object), termEnd, 
+                                   method = method, period = period, ...))
+          })
+
+#' @export
+#' @rdname dfs-methods
+#' @aliases discountFactors, YieldCurve, character, character-method
+setMethod(f = "discountFactors",
+          signature = c("YieldCurve", "character", "character"),
+          definition = function(object, termEnd, termStart, method = "continuous", period = "Y", ...) {
+            return(discountFactors(to.dynamic(object), termEnd, termStart, 
+                                   method = method, period = period, ...))
+          })
 
 ## @include
 #' @export
 #' @rdname dfs-methods
-#' @aliases discountFactors, YieldCurve2, character, character-method
-setMethod(f = "discountFactorsv2",
-          signature = c("YieldCurve2", "character", "missing"),
+#' @aliases discountFactors, DynamicYieldCurve, character, character-method
+setMethod(f = "discountFactors",
+          signature = c("DynamicYieldCurve", "character", "missing"),
           definition = function(object, termEnd, termStart, method = "continuous", period = "Y", ...) {
             termStart <- object$ReferenceDate
-            return(discountFactorsv2(object, termEnd, termStart, method, period, ...))
+            return(discountFactors(object, termEnd, termStart, method, period, ...))
           })
 
 
 ## @include
 #' @export
 #' @rdname dfs-methods
-#' @aliases discountFactors, YieldCurve2, character, missing-method
-setMethod(f = "discountFactorsv2",
-          signature = c("YieldCurve2", "character", "character"),
+#' @aliases discountFactors, DynamicYieldCurve, character, missing-method
+setMethod(f = "discountFactors",
+          signature = c("DynamicYieldCurve", "character", "character"),
           definition = function(object, termEnd, termStart,
                                 method = "continuous", period = "Y", ...){
             # To consider: Implementierung von Unterjährigen Zinsen bei Bruchteilen von Perioden
@@ -614,7 +631,7 @@ setMethod(f = "discountFactorsv2",
             yearFraction <- yearFraction(termStart, endDate, object$DayCountConvention)
             
             # get the required rate from the yield curve
-            rates <- getRateAt2(object, termStart, endDate, method = method, period = period)
+            rates <- getRateAt(object, termStart, endDate, method = method, period = period)
             
             # return requested discount factors
             if (method == "linear") {
@@ -625,19 +642,49 @@ setMethod(f = "discountFactorsv2",
             } else if (method == "continuous") {
               return(exp(-yearFraction * rates))
             } else {
-              stop(paste("ErrorIn::discountFactorsv2:: Method ", method, " not supported !!!"))
+              stop(paste("ErrorIn::discountFactors:: Method ", method, " not supported !!!"))
             }
           })
 
 
 #' @export
-setGeneric(name = "getRateSeries2",
+setGeneric(name = "setTimeSeries",
            def = function(object, startdate, enddate, ...){
-             standardGeneric("getRateSeries2")
+             standardGeneric("setTimeSeries")
+           })
+
+# Q bwlf:
+# Wo wird diese Methode gebraucht?
+# A auth:
+# wird gebraucht um Zeitreihe von rates zu berechnen, welche an die 
+# API geschickt wird. (siehe auch YieldCurve_Example.R)
+#' @export
+setMethod(f = "setTimeSeries",
+          signature = c("YieldCurve", "character", "character"),
+          definition = function(
+            object, startdate, enddate, frequency = "month", forward = "1M", ...){
+            setTimeSeries(to.dynamic(object), startdate, enddate, 
+                          frequency = frequency, forward = forward)
+          })
+
+
+#' @export
+setMethod(f = "setTimeSeries",
+          signature = c("DynamicYieldCurve", "character", "character"),
+          definition = function(
+            object, startdate, enddate, frequency = "month", forward = "1M", ...){
+            object$Data <- getRateSeries(object, startdate, enddate, 
+                                         frequency = frequency, forward = forward)
+          })
+
+#' @export
+setGeneric(name = "getRateSeries",
+           def = function(object, startdate, enddate, ...){
+             standardGeneric("getRateSeries")
            })
 #' @export
-setMethod(f = "getRateSeries2",
-          signature = c("YieldCurve2", "character", "character"),
+setMethod(f = "getRateSeries",
+          signature = c("DynamicYieldCurve", "character", "character"),
           definition = function(
             object, startdate, enddate, frequency = "week", forward = "1M", ...){
             
@@ -645,7 +692,7 @@ setMethod(f = "getRateSeries2",
             test.dates(startdate)
             test.dates(enddate)
             if (!frequency %in% c("day", "week", "month", "quarter", "year")) {
-              stop("ErrorIn::YieldCurve2::getRateSeries2:: Frequency must be one of 'day',
+              stop("ErrorIn::DynamicYieldCurve::getRateSeries:: Frequency must be one of 'day',
                    'week', 'month', 'quarter' or 'year' !!!")
             }
             
@@ -654,7 +701,7 @@ setMethod(f = "getRateSeries2",
                                             as.Date(enddate), by = frequency) - 1)
             
             # calculate forward rates with forward time defined
-            rates_seq <- rates2(object, forward, dt_seq)
+            rates_seq <- rates(object, forward, dt_seq)
             
             # output in a data.frame
             ts <- data.frame(Dates = dt_seq,
@@ -666,10 +713,9 @@ setMethod(f = "getRateSeries2",
 
 ## @include
 #' @export
-setMethod(f = "show", signature = c("YieldCurve2"),
+setMethod(f = "show", signature = c("DynamicYieldCurve"),
           definition = function(object){
             cat(paste0("MarketObjectCode: ", object$MarketObjectCode,"\n"))
-            # cat(paste0("ReferenceDate: ", object$ReferenceDate,"\n"))
             cat(paste0("DayCountConvention: ", object$DayCountConvention,"\n"))
             curve <- object$Rates
             print("Curve:")
@@ -678,7 +724,7 @@ setMethod(f = "show", signature = c("YieldCurve2"),
 
 ## @include
 #' @export
-setMethod(f = "names", signature = c("YieldCurve2"),
+setMethod(f = "names", signature = c("DynamicYieldCurve"),
           definition = function(x){
             return(names(x$getRefClass()$fields()))
           })
@@ -687,7 +733,7 @@ setMethod(f = "names", signature = c("YieldCurve2"),
 # WHAT are these two for???
 ## @include
 ## @export
-# setMethod("[[", signature = c("YieldCurve2", "ANY"),
+# setMethod("[[", signature = c("DynamicYieldCurve", "ANY"),
 #           definition = function(x, i) {
 #             l <- x
 #             names(l[["Rates"]]) = l[["Tenors"]]
@@ -697,7 +743,7 @@ setMethod(f = "names", signature = c("YieldCurve2"),
 
 ## @include
 ## @export
-# setMethod("[[<-", signature = c("YieldCurve2", "ANY"),
+# setMethod("[[<-", signature = c("DynamicYieldCurve", "ANY"),
 #           definition = function(x, i, value) {
 #             y <- x
 #             y[[i]] <- value
@@ -732,12 +778,12 @@ Interpolator <- setRefClass("Interpolator",
                                 test_pars_names <- pars_names %in% all_fields
                                 if (!all(test_pars_names)) {
                                   stop(paste(
-                                    "ErrorInYieldCurve2::Interpolator:: Interpolator has no field called: ", 
+                                    "ErrorInDynamicYieldCurve::Interpolator:: Interpolator has no field called: ", 
                                     pars_names[!test_pars_names], "!!!"))
                                 }
                                 
                                 if (length(pars$xValues) != length(pars$yValues)) {
-                                  stop("ErrorInYieldCurve2::Interpolator:: xValues and yValues must have same length !!!")
+                                  stop("ErrorInDynamicYieldCurve::Interpolator:: xValues and yValues must have same length !!!")
                                 }
                                 .self$xValues <- pars$xValues
                                 .self$yValues <- pars$yValues
@@ -749,43 +795,10 @@ Interpolator <- setRefClass("Interpolator",
                             ))
 
 
-#' @export
-setGeneric(name = "wealth",
-           def = function(yc, capital, dates, ...){
-             standardGeneric("wealth")
-           })
-
-#' @export
-setMethod(f = "wealth", signature = c("YieldCurve2","numeric","character"),
-          definition = function(yc, capital, dates, compound = "continuous", period="Y", take_out=0, ...){
-            
-            if (length(capital)!=1){
-              stop("ErrorIn::YieldCurve2::cashflows:: Capital must have one value only !!! ")
-            }
-            if (min(dates) < yc$ReferenceDate[1]){
-              stop("ErrorIn::YieldCurve2::cashflows:: Dates must all lay after first ReferenceDate of YieldCurve !!! ")
-            }
-            dates <- dates[order(dates)]
-            dates <- dates[dates!=yc$ReferenceDate[1]]
-            wealth <- c(capital)
-            
-            for (i in 1:length(dates)) {
-              if (i==1){
-                df_s <- discountFactorsv2(yc, yc$ReferenceDate[1], dates[i], method=compound, period=period)
-              } else {
-                df_s <- discountFactorsv2(yc, dates[i-1], dates[i], method=compound, period=period)
-              }
-              wealth <- c(wealth,df_s*wealth[i] - df_s*wealth[i]*take_out)
-            }
-            wealth <- data.frame(Wealth = wealth)
-            rownames(wealth) <- c(yc$ReferenceDate[1],dates)
-            return(wealth)
-          })
-
 
 ## -----------------------------------------------------------------
 ## helper methods
-# existing fields in the YieldCurve2 class
+# existing fields in the DynamicYieldCurve class
 validYieldCurveFields <- function() {
   return(c("Rates", "Tenors", "ReferenceDate", "MarketObjectCode", 
            "DayCountConvention", "TenorDates"))
@@ -874,7 +887,7 @@ test.dates <- function(date) {
   tryCatch({
     as.Date(date)
   }, error = function(e) {
-    stop("ErrorIn::YieldCurve2 Dates are not valid !!!")
+    stop("ErrorIn::DynamicYieldCurve Dates are not valid !!!")
   })
 }
 
@@ -886,7 +899,20 @@ convert.rate.period <- function(period) {
   if(period %in% names(allowed_periods)) {
     period_num <- allowed_periods[[period]]
   } else {
-    stop(paste("ErrorIn::discountFactorsv2:: ", period, " is not a valid interest rate period !!!", sep=" "))
+    stop(paste("ErrorIn::discountFactors:: ", period, " is not a valid interest rate period !!!", sep=" "))
   }
   return(period_num)
+}
+
+
+to.dynamic <- function(yc){
+  dyn_yc <- DynamicYieldCurve()
+  rts <- setNames(data.frame(t(yc$Rates)),yc$Tenors)
+  rownames(rts) <- yc$ReferenceDate
+  attributes <- list(MarketObjectCode = yc$MarketObjectCode,
+                     ReferenceDate = yc$ReferenceDate,
+                     Rates = rts,
+                     DayCountConvention = yc$DayCountConvention)
+  set(dyn_yc, attributes)
+  return(dyn_yc)
 }
