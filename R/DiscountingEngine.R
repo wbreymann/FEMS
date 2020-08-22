@@ -20,14 +20,14 @@
 #'
 ## @examples
 #' 
-#' @include ValuationEngine.R
+#' @include ValuationEngine.R RiskFactor.R
 #' @include YieldCurve.R
 #' @export 
 #' @rdname dcv-classes
 setRefClass("DiscountingEngine",
             contains = c("ValuationEngine"),
             fields = list(DiscountingSpread = "numeric",
-                          RiskFactorObject = "YieldCurve"
+                          RiskFactorObject = "RiskFactor"
             ))
 
 ## @include 
@@ -124,11 +124,12 @@ setMethod(f = "set",
           signature = c("DiscountingEngine","RiskFactorConnector"),
           definition = function(object, what) {
             # get the yield curve out and give an error if more than one yield curve is defined
-            is_yc <- unlist(lapply(rf$riskfactors, function(x) class(x) == "YieldCurve"))
+            is_yc <- unlist(lapply(what$riskfactors, 
+                                   function(x) ((class(x) == "YieldCurve") || (class(x) == "DynamicYieldCurve"))))
             if (sum(as.numeric(is_yc)) > 1) {
               stop("ErrorIn::DiscountingEngine:: Only one YieldCurve can be defined in RiskFactorConnector for DCEngine !!!")
             }
-            object$RiskFactorObject <- rf$riskfactors[[is_yc[is_yc==TRUE]]]
+            object$RiskFactorObject <- what$riskfactors[[is_yc[is_yc==TRUE]]]
           })
 
 ## -----------------------------------------------------------------
