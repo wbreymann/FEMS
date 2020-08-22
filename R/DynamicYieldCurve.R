@@ -291,33 +291,43 @@ setMethod(f = "getRateAt",
           signature = c("DynamicYieldCurve", "character", "character"),
           definition = function(object, from, to, method = "continuous", period = "Y", ...){
             
+            # check that 'from' and 'to' have same length if both have length > 1
             if (length(from)>1 && length(to)>1) {
               if (length(from)!=length(to)){
                 stop("ErrorIn::DynamicYieldCurve::getRateAt:: 'from' and 'to' dates do not have valid length !!! ")
               }
             }
+            
+            # expand necessary dates
             if (length(from)< length(to)){
               from <- rep(from, length(to))
             } else if (length(to)< length(from)) {
               to <- rep(to, length(from))
             }
+            
+            # pre-allocate output vector
             out <- rep(NA, length(from))
             
+            # loop through each date
             for (i in 1:length(from)) {
+              
+              # check if any of the dates are before first reference date of yield curve
               if (as.Date(from[i])<object$ReferenceDate[1] || as.Date(to[i])<object$ReferenceDate[1]) {
                 stop("ErrorIn::DynamicYieldCurve::getRateAt:: No Yields can be calculated before ReferenceDate of the DynamicYieldCurve!!!")
               }
+              
+              # due to discountfactor, from > to is also allowed, but values should be the same, so switch
               if (from[i]>to[i]) {
                 helper_to <- to[i]
                 to[i] <- from[i]
                 from[i] <- helper_to
               }
               
-              # set the interpolator with year fractions and rates
+              # get relevant reference date which is earlier than from & to
               ref_idx_from <- max(cumsum(object$ReferenceDate <= from[i]))
               ref_idx_to <- max(cumsum(object$ReferenceDate < to[i]))
               
-              if (ref_idx_from == ref_idx_to) {
+              if (ref_idx_from >= ref_idx_to) {
                 t1 <- yearFraction(object$ReferenceDate[ref_idx_from], from[i], object$DayCountConvention)
                 t2 <- yearFraction(object$ReferenceDate[ref_idx_from], to[i], object$DayCountConvention)
                 
@@ -347,6 +357,7 @@ setMethod(f = "getRateAt",
                 # pre-allocate memory for necessary rates and time deltas
                 rates <- rep(NA, ref_idx_to-ref_idx_from+1)
                 dt <- rep(NA, ref_idx_to-ref_idx_from+1)
+
                 rates[1] <- getRateAt(object,from[i],object$ReferenceDate[ref_idx_from+1], method = method, period = period)
                 dt[1] <- yearFraction(from[i], object$ReferenceDate[ref_idx_from+1], object$DayCountConvention)
                 
@@ -455,7 +466,7 @@ setGeneric(name = "rates",
 setMethod(f = "rates",
           signature = c("YieldCurve", "character", "missing"),
           definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
-            out <- rates(to.dynamic(object), termEnd, termStart, isDateEnd = isDateEnd, ...)
+            out <- rates(to.dynamic(object), termEnd=termEnd, isDateEnd = isDateEnd, ...)
             return(out)
           })
 
@@ -477,6 +488,7 @@ setMethod(f = "rates",
 setMethod(f = "rates",
           signature = c("DynamicYieldCurve", "character", "missing"),
           definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
+
             if (!isDateEnd) {
               # endDate <- computeTenorDates(object$ReferenceDate, termEnd)
               endDate <- shiftDates(object$ReferenceDate, termEnd)
@@ -663,8 +675,8 @@ setMethod(f = "setTimeSeries",
           signature = c("YieldCurve", "character", "character"),
           definition = function(
             object, startdate, enddate, frequency = "month", forward = "1M", ...){
-            setTimeSeries(to.dynamic(object), startdate, enddate, 
-                          frequency = frequency, forward = forward)
+            object$Data <- getRateSeries(object, startdate, enddate, 
+                                         frequency = frequency, forward = forward)
           })
 
 
@@ -684,7 +696,7 @@ setGeneric(name = "getRateSeries",
            })
 #' @export
 setMethod(f = "getRateSeries",
-          signature = c("DynamicYieldCurve", "character", "character"),
+          signature = c("RiskFactor", "character", "character"),
           definition = function(
             object, startdate, enddate, frequency = "week", forward = "1M", ...){
             
