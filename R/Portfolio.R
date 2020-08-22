@@ -102,13 +102,10 @@ setMethod("generateEvents", signature = c("Portfolio", "AD0"),
             
             ## create body for contracts
             contracts <- list()
-# Bemerkung:
-# Hier muss man zwischen Actus-Kontrakten und FEMS Kontrakten unterscheiden.
-# Wenn wir entsprechende Zwischenplassen ActusContract u. FEMSContract haben,
-# dann kann man die Abfrage "inherits(i, "ActusContract") machen.
-# Oder man müsste sie gleich im Portfolio-Objekt gruppieren.
-            
+            rf_conn <- RFConn()
+
             for (i in 1:length(object$contracts)) {
+              
               ContractTerms <- object$contracts[[i]]$ContractTerms
               
               # erase NULL elements & convert dates in character formats
@@ -126,17 +123,33 @@ setMethod("generateEvents", signature = c("Portfolio", "AD0"),
                 } else {x}
               })
               
+              # check if rate reset is given
+              if (!is.null(contract_list$MarketObjectCodeOfRateReset)){
+                temp_rf <- get(object$rf_connector,contract_list$MarketObjectCodeOfRateReset)
+                sim.data.rf(object$contracts[[i]], temp_rf)
+                tst_rf <- is.rf.in.rf_conn(temp_rf, rf_conn)
+                if (!tst_rf[[1]]){
+                    # set the name here of this as well as in the contract_list object
+                    temp_rf$MarketObjectCode <- paste0("MarketObject_",i)
+                    contract_list$MarketObjectCodeOfRateReset <- paste0("MarketObject_",i)
+                    add(rf_conn, temp_rf)
+                } else {
+                  contract_list$MarketObjectCodeOfRateReset <- tst_rf[[2]]
+                }
+              }
+              
               # re-format names to lower case (first letter only)
               names(contract_list) <- paste(tolower(substring(names(contract_list), 1,1)), 
                                             substring(names(contract_list), 2),sep = "")
+              
               contracts[[i]] <- contract_list
             }
             
             # create body for risk factors
             riskFactors <- list()
-            if (length(object$rf_connector$riskfactors) > 0) {
-              for (i in 1:length(object$rf_connector$riskfactors)) {
-                factor <- object$rf_connector$riskfactors[[i]]
+            if (length(rf_conn$riskfactors) > 0) {
+              for (i in 1:length(rf_conn$riskfactors)) {
+                factor <- rf_conn$riskfactors[[i]]
                 temp_list <- list(marketObjectCode = factor$MarketObjectCode)
                 if (is(factor, "YieldCurve")) {
                   temp_list$base <- 1
@@ -154,6 +167,8 @@ setMethod("generateEvents", signature = c("Portfolio", "AD0"),
 
             # combine the two and create final request body in json format
             request_body <- toJSON(fin_list, pretty = TRUE, auto_unbox = TRUE)
+            #print(request_body)
+            #browser()
             response_events <- POST(paste0(actusURL, "eventsBatch"), 
                                     body = request_body, 
                                     content_type_json())
@@ -738,3 +753,61 @@ setMethod(f = "ids", signature = c("Portfolio"),
             }
             ids
           })
+
+
+is.rf.in.rf_conn <- function(temp_rf, rf_conn) {
+
+  # checks if data is already included in the risk factor connector and retuns TRUE if identical, 
+  # FALSE if not
+  if (length(rf_conn$riskfactors)>0) {
+    for (i in 1:length(rf_conn$riskfactors)){
+      rfac <- rf_conn$riskfactors[[i]]
+      if (identical(temp_rf$Data, rfac$Data)){
+        return(list(TRUE, rfac$MarketObjectCode))
+      }
+    }
+  }
+  return(list(FALSE,""))
+}
+
+sim.data.rf <- function(contract, rfac){
+
+  # check if its a YieldCurve first... if not, skip it...
+  if (is(rfac,"YieldCurve") || is(rfac,"DynamicYieldCurve")){
+    anchor_dt <- contract$ContractTerms$CycleAnchorDateOfRateReset
+    cycle <- contract$ContractTerms$CycleOfRateReset
+    mat <- contract$ContractTerms$MaturityDate
+    sim.data.rate.reset(rfac, anchor_dt, cycle, mat)
+  }
+
+}
+
+sim.data.rate.reset <-  function(yc, anchor_dt, cycle, end_dt){
+
+  times <- as.character(timeSequence(from = anchor_dt, 
+                        to = timeSequence(end_dt, 
+                                          convert.ISODuration(cycle), 
+                                          length.out =2)[2],
+                        by = convert.ISODuration(cycle)))
+  data <- getRateAt(yc, times[2:length(times)], times[1:length(times)-1])
+  yc$Data <- data.frame(Dates=times[1:length(times)-1],
+                        Values=data)
+  
+}
+
+convert.ISODuration <- function(duration) {
+
+  # currently, just take the 2nd and 3rd element
+  n_units <- substr(duration, 2, 2)
+  units <- substr(duration, 3, 3)
+  
+  conv_units <- switch(units, "Y" = "years", 
+                "Q" = "quarter", 
+                "M" = "months", 
+                "D" = "days")
+  return(paste(n_units,conv_units))
+}
+
+
+
+
