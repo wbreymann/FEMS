@@ -125,7 +125,22 @@ setMethod("generateEvents", signature = c("Portfolio", "AD0"),
               
               # check if rate reset is given
               if (!is.null(contract_list$MarketObjectCodeOfRateReset)){
-                temp_rf <- get(object$rf_connector,contract_list$MarketObjectCodeOfRateReset)
+                temp_yc <- get(object$rf_connector,contract_list$MarketObjectCodeOfRateReset)
+                if (is(temp_yc,"DynamicYieldCurve")){
+                  temp_rf <- DynamicYieldCurve(
+                    Rates = temp_yc$Rates,
+                    DayCountConvention = temp_yc$DayCountConvention,
+                    MarketObjectCode = temp_yc$MarketObjectCode
+                  )
+                } else {
+                  temp_rf <- YieldCurve(
+                    ReferenceDate=temp_yc$ReferenceDate, 
+                    Tenors=temp_yc$Tenors, 
+                    Rates=temp_yc$Rates, 
+                    MarketObjectCode = temp_yc$MarketObjectCode,
+                    DayCountConvention = temp_yc$DayCountConvention)
+                }
+                
                 sim.data.rf(object$contracts[[i]], temp_rf)
                 tst_rf <- is.rf.in.rf_conn(temp_rf, rf_conn)
                 if (!tst_rf[[1]]){
