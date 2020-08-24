@@ -94,7 +94,14 @@ Futur(...)
 
 Lam(...)
 
-\S4method{Lam}{ANY}(...)
+\S4method{Lam}{ANY}(
+  ContractID = "001",
+  ContractRole = "RPA",
+  StatusDate = "0000-01-01",
+  PremiumDiscountAtIED = 0,
+  DayCountConvention = "30E360",
+  ...
+)
 
 LinearAmortizer(...)
 

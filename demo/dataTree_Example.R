@@ -60,7 +60,8 @@ yc_flat
 
 tt = "2018-12-31"
 # And now for value:
-clearAnalytics(BS, "value")
+### The following does not longer work.
+clearAnalytics(BS, "value")   ## function not found
 BS$Do(fun=fAnalytics, "value", ptf, by=tt, curve=yc_flat, compound="compound", 
       filterFun=isLeaf)
 aggregateAnalytics(BS, "value")
