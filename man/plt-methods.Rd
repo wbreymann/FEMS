@@ -7,7 +7,9 @@
 \alias{plot,RiskFactor,ANY-method}
 \title{Plot a \link{YieldCurve}}
 \usage{
-\S4method{plot}{ContractType,character}(x, y, ...)
+\S4method{plot}{ContractType,character}(x, y, yc, ...)
+
+\S4method{plot}{ContractType,character}(x, y, yc, ...)
 
 \S4method{plot}{YieldCurve,missing}(x, y, ...)
 

@@ -95,7 +95,7 @@ Father$Wealth$eventList
 liquidity(Father, tb, "marginal")
 value(Father, tb, "nominal")
 expenses4daughter("Father", tb.cfs, 0.04)
-FEMS:::clearEvents(Father)
+clearEvents(Father)
 # events(Father$Wealth, ad=t.start, model=rf1, end_date=t.end)
 # events(Father$Expenses, ad=t.start, model=rf1, end_date=t.end)
 # Father$Expenses$contracts

@@ -8,6 +8,7 @@
 \alias{value,ContractType,AD0,character,missing-method}
 \alias{value,ContractType,timeDate,character,missing-method}
 \alias{value,ContractType,timeBuckets,character,missing-method}
+\alias{value,ContractType,timeBuckets,character,YieldCurve-method}
 \alias{value,ContractType,character,character,ValuationEngine-method}
 \alias{value,ContractType,timeDate,character,ValuationEngine-method}
 \alias{value,ContractType,timeBuckets,character,ValuationEngine-method}
@@ -47,6 +48,8 @@ value(object, by, type, method, ...)
 \S4method{value}{ContractType,timeDate,character,missing}(object, by, type, method, ...)
 
 \S4method{value}{ContractType,timeBuckets,character,missing}(object, by, type, method, ...)
+
+\S4method{value}{ContractType,timeBuckets,character,YieldCurve}(object, by, type, method, spread = 0, ...)
 
 \S4method{value}{ContractType,character,character,ValuationEngine}(object, by, type, method, ...)
 
