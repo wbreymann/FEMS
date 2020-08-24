@@ -30,7 +30,7 @@
 #' get(yc, "Tenors")
 #' get(yc, "Rates")
 #' 
-#' @include RiskFactor.R
+#' @include RiskFactor.R 
 #' @export
 #' @rdname ind-classes
 setRefClass("YieldCurve", 
@@ -84,7 +84,7 @@ setMethod(f = "YieldCurve",signature = c(),
             fill_fields$ReferenceDate <- as.character(today())
             fill_fields$Tenors <- "0M"
             fill_fields$Rates <- Inf
-            fill_fields$DayCountConvention <- "30E/360"
+            fill_fields$DayCountConvention <- "30E360"
             
             if (length(names(pars)) != 0) {
               
@@ -138,7 +138,6 @@ setGeneric(name = "FlatCurve",
 #' @export
 setMethod(f = "FlatCurve", signature = c("numeric","character"),
           definition = function(rate, ref_date){
-            
             yc <- YieldCurve()
             tenors <- c("1W", "6M", "1Y", "5Y", "10Y", "50Y", "100Y")
             rates <- rep(1, length(tenors)) * rate
@@ -222,55 +221,55 @@ setMethod(f = "get", signature = c("YieldCurve", "character"),
             return(out)
           })
 
-#########################################################################################
-#' Computes the forward rate from time t1 to time t2.
-#' 
-#' Q bwlf:
-#' Is this a helper method or do we need a help text?
-#' A auth:
-#' This function still needs documentation, yes.
-#' 
-#' @export
-setGeneric(name = "getRateAt",
-           def = function(object, from, to){
-             standardGeneric("getRateAt")
-           })
+#' #########################################################################################
+#' #' Computes the forward rate from time t1 to time t2.
+#' #' 
+#' #' Q bwlf:
+#' #' Is this a helper method or do we need a help text?
+#' #' A auth:
+#' #' This function still needs documentation, yes.
+#' #' 
+#' #' @export
+#' setGeneric(name = "getRateAt",
+#'            def = function(object, from, to){
+#'              standardGeneric("getRateAt")
+#'            })
 
-#########################################################################################
-#' @export
-setMethod(f = "getRateAt",
-          signature = c("YieldCurve", "character", "character"),
-          definition = function(object, from, to){
-            
-            if (as.Date(from)<object$ReferenceDate || as.Date(to)<object$ReferenceDate) {
-              stop("ErrorIn::YieldCurve::getRateAt:: No Yields can be calculated before ReferenceDate of the YieldCurve!!!")
-            }
-            
-            # set the interpolator with year fractions and rates
-            t1 <- yearFraction(object$ReferenceDate, from, object$DayCountConvention)
-            t2 <- yearFraction(object$ReferenceDate, to, object$DayCountConvention)
-            
-            interpolator <- Interpolator(xValues = yearFraction(object$ReferenceDate, 
-                                                                object$TenorDates, 
-                                                                object$DayCountConvention), 
-                                         yValues = object$Rates)
-            
-            # get rates from interpolation
-            s1 <- interpolator$getValueAt(t1)
-            s2 <- interpolator$getValueAt(t2)
-            
-            # calculate forward rate
-            f12 <- (t2*s2 - t1*s1)/(t2 - t1)
-            f12[is.na(f12)] <- 0
-            return(f12)
-          })
+#' #########################################################################################
+#' #' @export
+#' setMethod(f = "getRateAt",
+#'           signature = c("YieldCurve", "character", "character"),
+#'           definition = function(object, from, to){
+#'             
+#'             if (as.Date(from)<object$ReferenceDate || as.Date(to)<object$ReferenceDate) {
+#'               stop("ErrorIn::YieldCurve::getRateAt:: No Yields can be calculated before ReferenceDate of the YieldCurve!!!")
+#'             }
+#'             
+#'             # set the interpolator with year fractions and rates
+#'             t1 <- yearFraction(object$ReferenceDate, from, object$DayCountConvention)
+#'             t2 <- yearFraction(object$ReferenceDate, to, object$DayCountConvention)
+#'             
+#'             interpolator <- Interpolator(xValues = yearFraction(object$ReferenceDate, 
+#'                                                                 object$TenorDates, 
+#'                                                                 object$DayCountConvention), 
+#'                                          yValues = object$Rates)
+#'             
+#'             # get rates from interpolation
+#'             s1 <- interpolator$getValueAt(t1)
+#'             s2 <- interpolator$getValueAt(t2)
+#'             
+#'             # calculate forward rate
+#'             f12 <- (t2*s2 - t1*s1)/(t2 - t1)
+#'             f12[is.na(f12)] <- 0
+#'             return(f12)
+#'           })
 
 
-#' @export
-setGeneric(name = "setTimeSeries",
-           def = function(object, startdate, enddate, ...){
-             standardGeneric("setTimeSeries")
-           })
+#' #' @export
+#' setGeneric(name = "setTimeSeries",
+#'            def = function(object, startdate, enddate, ...){
+#'              standardGeneric("setTimeSeries")
+#'            })
 
 # Q bwlf:
 # Wo wird diese Methode gebraucht?
@@ -280,254 +279,254 @@ setGeneric(name = "setTimeSeries",
  
 
 
-#' @export
-setMethod(f = "setTimeSeries",
-          signature = c("YieldCurve", "character", "character"),
-          definition = function(
-            object, startdate, enddate, frequency = "month", forward = "1M", ...){
-            object$Data <- getRateSeries(object, startdate, enddate, 
-                                               frequency = frequency, forward = forward)
-          })
+#' #' @export
+#' setMethod(f = "setTimeSeries",
+#'           signature = c("YieldCurve", "character", "character"),
+#'           definition = function(
+#'             object, startdate, enddate, frequency = "month", forward = "1M", ...){
+#'             object$Data <- getRateSeries(object, startdate, enddate, 
+#'                                                frequency = frequency, forward = forward)
+#'           })
 
-##############################################################
-#' Generic method to retrieve the rate(s) for a specific
-#' tenor(s) from a \code{\link{YieldCurve}} object
-#'
-#' A yield curve is a time-structure of yields, i.e. for
-#' different future points in time (tenors) a yield is 
-#' extracted from observed instrument prices. The 
-#' \code{\link{YieldCurve}} object contains these tenors with
-#' associated yields and allows to retrieve yields for any
-#' tenor by inter-/extrapolation.
+#' ##############################################################
+#' #' Generic method to retrieve the rate(s) for a specific
+#' #' tenor(s) from a \code{\link{YieldCurve}} object
+#' #'
+#' #' A yield curve is a time-structure of yields, i.e. for
+#' #' different future points in time (tenors) a yield is 
+#' #' extracted from observed instrument prices. The 
+#' #' \code{\link{YieldCurve}} object contains these tenors with
+#' #' associated yields and allows to retrieve yields for any
+#' #' tenor by inter-/extrapolation.
+#' #' 
+#' #' @param object An object of class \code{YieldCurve} for 
+#' #'        which to return the yield for a given tenor
+#' #'        
+#' #' @param termEnd The tenor for which to return its yield. 
+#' #'        Can be a single value or a vector of tenors.
+#' #' 
+#' #' @param termStart (optional) For the forward rate at t0 
+#' #'        between times t1 and t2, termEnd refers to t2 and
+#' #'        termStart to t1. Is a single value. If combined 
+#' #'        with a vector for termEnd, then termStart remains
+#' #'        the same for all t2 defined in termEnd.
+#' #' 
+#' #' @param ... Additional parameters:
+#' #' \itemize{
+#' #'  \item{"isDateEnd"}{logical indicating whether termEnd is 
+#' #'        of date (TRUE) or term (FALSE) format. Date format is
+#' #'        'YYYY-MM-DDTXX' with 'XX'=00 for beginning of day, or
+#' #'        24 for end of day, and term format is 'IP' with 'I' 
+#' #'        an integer and 'P' indicating the period (D=days, 
+#' #'        W=weeks, M=months, Q=quarters, H=halfyears, Y=years).
+#' #'        Default is isDateEnd=FALSE.}
+#' #' }
+#' #'
+#' #' @return numeric The yield for the defined tenor
+#' #' 
+#' #' @seealso \code{\link{discountFactors}}
+#' #' 
+#' #' @examples
+#' #' yc <- YieldCurve()
+#' #' tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
+#' #' rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
+#' #' set(yc, what = list(MarketObjectCode = "YC_Prim",
+#' #'   Nodes = list(ReferenceDate = "2015-01-01T00", Tenors = tenors, Rates = rates)))
+#' #' 
+#' #' rates(yc, "1Y")  # 1-year spot rate
+#' #' rates(yc, "2016-01-01T00", isDateEnd=TRUE) # again, 1-year spot rate
+#' #' rates(yc, "1Y", "2015-07-01T00")  # 1-year forward rate at 2015-07-01T00
+#' #'
+#' ## @include
+#' #' @export
+#' #' @docType methods
+#' #' @rdname rts-methods
+#' #' @aliases rates, YieldCurve, charachter, missing-method
+#' #' @aliases rates, YieldCurve, character, character-method
+#' setGeneric(name = "rates",
+#'            def = function(object, termEnd, termStart, ...){
+#'              standardGeneric("rates")
+#'            })
 #' 
-#' @param object An object of class \code{YieldCurve} for 
-#'        which to return the yield for a given tenor
-#'        
-#' @param termEnd The tenor for which to return its yield. 
-#'        Can be a single value or a vector of tenors.
+#' ## @include
+#' #' @export
+#' #' @rdname rts-methods
+#' #' @aliases rates, YieldCurve, character, missing-method
+#' setMethod(f = "rates",
+#'           signature = c("YieldCurve", "character", "missing"),
+#'           definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
+#'             if (!isDateEnd) {
+#'               # endDate <- computeTenorDates(object$ReferenceDate, termEnd)
+#'               endDate <- shiftDates(object$ReferenceDate, termEnd)
+#'             } else {
+#'               endDate <- termEnd
+#'             }
+#'             test.dates(endDate)
+#'             out <- getRateAt(object, object$ReferenceDate, endDate)
+#'             return(out)
+#'             
+#'           })
 #' 
-#' @param termStart (optional) For the forward rate at t0 
-#'        between times t1 and t2, termEnd refers to t2 and
-#'        termStart to t1. Is a single value. If combined 
-#'        with a vector for termEnd, then termStart remains
-#'        the same for all t2 defined in termEnd.
+#' ## @include
+#' #' @export
+#' #' @rdname rts-methods
+#' #' @aliases rates, YieldCurve, character, character-method
+#' setMethod(f = "rates",
+#'           signature = c("YieldCurve", "character", "character"),
+#'           definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
 #' 
-#' @param ... Additional parameters:
-#' \itemize{
-#'  \item{"isDateEnd"}{logical indicating whether termEnd is 
-#'        of date (TRUE) or term (FALSE) format. Date format is
-#'        'YYYY-MM-DDTXX' with 'XX'=00 for beginning of day, or
-#'        24 for end of day, and term format is 'IP' with 'I' 
-#'        an integer and 'P' indicating the period (D=days, 
-#'        W=weeks, M=months, Q=quarters, H=halfyears, Y=years).
-#'        Default is isDateEnd=FALSE.}
-#' }
-#'
-#' @return numeric The yield for the defined tenor
-#' 
-#' @seealso \code{\link{discountFactors}}
-#' 
-#' @examples
-#' yc <- YieldCurve()
-#' tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
-#' rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
-#' set(yc, what = list(MarketObjectCode = "YC_Prim",
-#'   Nodes = list(ReferenceDate = "2015-01-01T00", Tenors = tenors, Rates = rates)))
-#' 
-#' rates(yc, "1Y")  # 1-year spot rate
-#' rates(yc, "2016-01-01T00", isDateEnd=TRUE) # again, 1-year spot rate
-#' rates(yc, "1Y", "2015-07-01T00")  # 1-year forward rate at 2015-07-01T00
-#'
-## @include
-#' @export
-#' @docType methods
-#' @rdname rts-methods
-#' @aliases rates, YieldCurve, charachter, missing-method
-#' @aliases rates, YieldCurve, character, character-method
-setGeneric(name = "rates",
-           def = function(object, termEnd, termStart, ...){
-             standardGeneric("rates")
-           })
+#'             if (!isDateEnd) {
+#'               # endDate <- computeTenorDates(termStart, termEnd)
+#'               endDate <- shiftDates(termStart, termEnd)
+#'             } else {
+#'               endDate <- termEnd
+#'             }
+#'             test.dates(termStart)
+#'             test.dates(endDate)
+#'             out <- getRateAt(object, termStart, endDate)
+#'             return(out)
+#'           })
 
-## @include
-#' @export
-#' @rdname rts-methods
-#' @aliases rates, YieldCurve, character, missing-method
-setMethod(f = "rates",
-          signature = c("YieldCurve", "character", "missing"),
-          definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
-            if (!isDateEnd) {
-              # endDate <- computeTenorDates(object$ReferenceDate, termEnd)
-              endDate <- shiftDates(object$ReferenceDate, termEnd)
-            } else {
-              endDate <- termEnd
-            }
-            test.dates(endDate)
-            out <- getRateAt(object, object$ReferenceDate, endDate)
-            return(out)
-            
-          })
-
-## @include
-#' @export
-#' @rdname rts-methods
-#' @aliases rates, YieldCurve, character, character-method
-setMethod(f = "rates",
-          signature = c("YieldCurve", "character", "character"),
-          definition = function(object, termEnd, termStart, isDateEnd = FALSE, ...){
-
-            if (!isDateEnd) {
-              # endDate <- computeTenorDates(termStart, termEnd)
-              endDate <- shiftDates(termStart, termEnd)
-            } else {
-              endDate <- termEnd
-            }
-            test.dates(termStart)
-            test.dates(endDate)
-            out <- getRateAt(object, termStart, endDate)
-            return(out)
-          })
-
-##############################################################
-#' Generic method to retrieve discount factors for specific
-#' tenor(s) from a \code{\link{YieldCurve}} object
-#'
-#' Discount factors for \code{t2}-tenors are extracted from a 
-#' \code{\link{YieldCurve}} object according to 
-#' \code{df(t0,t1,t2)=exp(-yf(t1,t2)*yield(t1,t2))} where
-#' \itemize{
-#'  \item{"t0"}{is the 'ReferenceDate' of the yield curve}
-#'  \item{"t1"}{marks the discounting period start. If t1>t0, 
-#'              we are in a forward-mode (default: t0=t1, i.e. 
-#'              non-forward)}
-#'  \item{"t2"}{marks the discounting period end}
-#'  \item{"yf(t1,t2)"}{indicates the the year fraction using 
-#'                    Actual/Actual between times t1 and t2}
-#'  \item{"yield(t1,t2)"}{refers to the yield from t1 to t2 
-#'                    implied by the yield curve (forward 
-#'                    rate/yield if t1>t0)}
-#' }
+#' ##############################################################
+#' #' Generic method to retrieve discount factors for specific
+#' #' tenor(s) from a \code{\link{YieldCurve}} object
+#' #'
+#' #' Discount factors for \code{t2}-tenors are extracted from a 
+#' #' \code{\link{YieldCurve}} object according to 
+#' #' \code{df(t0,t1,t2)=exp(-yf(t1,t2)*yield(t1,t2))} where
+#' #' \itemize{
+#' #'  \item{"t0"}{is the 'ReferenceDate' of the yield curve}
+#' #'  \item{"t1"}{marks the discounting period start. If t1>t0, 
+#' #'              we are in a forward-mode (default: t0=t1, i.e. 
+#' #'              non-forward)}
+#' #'  \item{"t2"}{marks the discounting period end}
+#' #'  \item{"yf(t1,t2)"}{indicates the the year fraction using 
+#' #'                    Actual/Actual between times t1 and t2}
+#' #'  \item{"yield(t1,t2)"}{refers to the yield from t1 to t2 
+#' #'                    implied by the yield curve (forward 
+#' #'                    rate/yield if t1>t0)}
+#' #' }
+#' #' 
+#' #' @param object An object of class \code{YieldCurve} from 
+#' #'        which to extract the discount factors
+#' #'        
+#' #' @param termEnd The discounting period end date (t2) 
+#' #'        Can be a single value or a vector of tenors.
+#' #' 
+#' #' @param termStart (optional) The discounting period start
+#' #'        date (t1). Is a single value. If combined 
+#' #'        with a vector for termEnd, then termStart remains
+#' #'        the same for all t2 defined in termEnd.
+#' #' 
+#' #' @param ... Additional parameters:
+#' #' \itemize{
+#' #'  \item{"isDateEnd"}{logical indicating whether termEnd is 
+#' #'        of date (TRUE) or term (FALSE) format. Date format is
+#' #'        'YYYY-MM-DDTXX' with 'XX'=00 for beginning of day, or
+#' #'        24 for end of day, and term format is 'IP' with 'I' 
+#' #'        an integer and 'P' indicating the period (D=days, 
+#' #'        W=weeks, M=months, Q=quarters, H=halfyears, Y=years).
+#' #'        Default is isDateEnd=FALSE.}
+#' #' }
+#' #' 
+#' #' @return numeric The discount factor for the defined period
+#' #' 
+#' #' @seealso \code{\link{rates}}
+#' #' 
+#' #' @examples
+#' #' yc <- YieldCurve()
+#' #' tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
+#' #' rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
+#' #' set(yc, what = list(MarketObjectCode = "YC_Prim",
+#' #'   Nodes = list(ReferenceDate = "2015-01-01T00", Tenors = tenors, Rates = rates)))
+#' #' 
+#' #' discountFactors(yc, "1Y")
+#' #' discountFactors(yc, "2016-01-01T00", isDateEnd=TRUE)
+#' #' discountFactors(yc, "1Y", "2015-07-01T00")
+#' #'
+#' ## @include
+#' #' @export
+#' #' @docType methods
+#' #' @rdname dfs-methods
+#' ## @aliases
+#' setGeneric(name = "discountFactors",
+#'            def = function(object, termEnd, termStart, ...){
+#'              standardGeneric("discountFactors")
+#'            })
 #' 
-#' @param object An object of class \code{YieldCurve} from 
-#'        which to extract the discount factors
-#'        
-#' @param termEnd The discounting period end date (t2) 
-#'        Can be a single value or a vector of tenors.
+#' ## @include
+#' #' @export
+#' #' @rdname dfs-methods
+#' #' @aliases discountFactors, YieldCurve, character, character-method
+#' setMethod(f = "discountFactors",
+#'           signature = c("YieldCurve", "character", "missing"),
+#'           definition = function(object, termEnd, termStart, isDateEnd = FALSE, spread = 0.0, ...) {
+#'             if (!isDateEnd) {
+#'               endDate <- computeTenorDates(object$ReferenceDate, termEnd)
+#'               # endDate <- shiftDates(object$ReferenceDate, termEnd)
+#'             } else {
+#'               endDate <- termEnd
+#'             }
+#'             yearFraction <- yearFraction(object$ReferenceDate, endDate, object$DayCountConvention)
+#'             test.dates(endDate)
+#'             rate <- getRateAt(object, object$ReferenceDate, endDate)
+#'             return(exp(-yearFraction * rate))
+#'           })
 #' 
-#' @param termStart (optional) The discounting period start
-#'        date (t1). Is a single value. If combined 
-#'        with a vector for termEnd, then termStart remains
-#'        the same for all t2 defined in termEnd.
-#' 
-#' @param ... Additional parameters:
-#' \itemize{
-#'  \item{"isDateEnd"}{logical indicating whether termEnd is 
-#'        of date (TRUE) or term (FALSE) format. Date format is
-#'        'YYYY-MM-DDTXX' with 'XX'=00 for beginning of day, or
-#'        24 for end of day, and term format is 'IP' with 'I' 
-#'        an integer and 'P' indicating the period (D=days, 
-#'        W=weeks, M=months, Q=quarters, H=halfyears, Y=years).
-#'        Default is isDateEnd=FALSE.}
-#' }
-#' 
-#' @return numeric The discount factor for the defined period
-#' 
-#' @seealso \code{\link{rates}}
-#' 
-#' @examples
-#' yc <- YieldCurve()
-#' tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
-#' rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
-#' set(yc, what = list(MarketObjectCode = "YC_Prim",
-#'   Nodes = list(ReferenceDate = "2015-01-01T00", Tenors = tenors, Rates = rates)))
-#' 
-#' discountFactors(yc, "1Y")
-#' discountFactors(yc, "2016-01-01T00", isDateEnd=TRUE)
-#' discountFactors(yc, "1Y", "2015-07-01T00")
-#'
-## @include
-#' @export
-#' @docType methods
-#' @rdname dfs-methods
-## @aliases
-setGeneric(name = "discountFactors",
-           def = function(object, termEnd, termStart, ...){
-             standardGeneric("discountFactors")
-           })
-
-## @include
-#' @export
-#' @rdname dfs-methods
-#' @aliases discountFactors, YieldCurve, character, character-method
-setMethod(f = "discountFactors",
-          signature = c("YieldCurve", "character", "missing"),
-          definition = function(object, termEnd, termStart, isDateEnd = FALSE, spread = 0.0, ...) {
-            if (!isDateEnd) {
-              endDate <- computeTenorDates(object$ReferenceDate, termEnd)
-              # endDate <- shiftDates(object$ReferenceDate, termEnd)
-            } else {
-              endDate <- termEnd
-            }
-            yearFraction <- yearFraction(object$ReferenceDate, endDate, object$DayCountConvention)
-            test.dates(endDate)
-            rate <- getRateAt(object, object$ReferenceDate, endDate)
-            return(exp(-yearFraction * rate))
-          })
-
-## @include
-#' @export
-#' @rdname dfs-methods
-#' @aliases discountFactors, YieldCurve, character, missing-method
-setMethod(f = "discountFactors",
-          signature = c("YieldCurve", "character", "character"),
-          definition = function(object, termEnd, termStart,
-                                isDateEnd = FALSE, spread = 0.0, ...){
-            if (!isDateEnd) {
-              endDate <- computeTenorDates(termStart, termEnd)
-              # endDate <- shiftDates(termStart, termEnd)
-            } else {
-              endDate <- termEnd
-            }
-            yearFraction <- yearFraction(termStart, endDate, object$DayCountConvention)
-            test.dates(termStart)
-            test.dates(endDate)
-            rate <- getRateAt(object, termStart, endDate)
-            return(exp(-yearFraction * rate))
-          })
+#' ## @include
+#' #' @export
+#' #' @rdname dfs-methods
+#' #' @aliases discountFactors, YieldCurve, character, missing-method
+#' setMethod(f = "discountFactors",
+#'           signature = c("YieldCurve", "character", "character"),
+#'           definition = function(object, termEnd, termStart,
+#'                                 isDateEnd = FALSE, spread = 0.0, ...){
+#'             if (!isDateEnd) {
+#'               endDate <- computeTenorDates(termStart, termEnd)
+#'               # endDate <- shiftDates(termStart, termEnd)
+#'             } else {
+#'               endDate <- termEnd
+#'             }
+#'             yearFraction <- yearFraction(termStart, endDate, object$DayCountConvention)
+#'             test.dates(termStart)
+#'             test.dates(endDate)
+#'             rate <- getRateAt(object, termStart, endDate)
+#'             return(exp(-yearFraction * rate))
+#'           })
 
 
-#' @export
-setGeneric(name = "getRateSeries",
-           def = function(object, startdate, enddate, ...){
-             standardGeneric("getRateSeries")
-           })
-#' @export
-setMethod(f = "getRateSeries",
-          signature = c("YieldCurve", "character", "character"),
-          definition = function(
-            object, startdate, enddate, frequency = "week", forward = "1M", ...){
-            
-            # check freq inputs are valid
-            test.dates(startdate)
-            test.dates(enddate)
-            if (!frequency %in% c("day", "week", "month", "quarter", "year")) {
-              stop("ErrorIn::YieldCurve::getRateSeries:: Frequency must be one of 'day',
-                   'week', 'month', 'quarter' or 'year' !!!")
-            }
-            
-            # create date vector with frequency defined
-            dt_seq <- as.character(seq.Date(as.Date(startdate) + 1, 
-                                            as.Date(enddate), by = frequency) - 1)
-            
-            # calculate forward rates with forward time defined
-            rates_seq <- rates(object, forward, dt_seq)
-            
-            # output in a data.frame
-            ts <- data.frame(Dates = dt_seq,
-                          Values = as.numeric(rates_seq),
-                          stringsAsFactors = FALSE)
-            return(ts)
-          })
+#' #' @export
+#' setGeneric(name = "getRateSeries",
+#'            def = function(object, startdate, enddate, ...){
+#'              standardGeneric("getRateSeries")
+#'            })
+#' #' @export
+#' setMethod(f = "getRateSeries",
+#'           signature = c("YieldCurve", "character", "character"),
+#'           definition = function(
+#'             object, startdate, enddate, frequency = "week", forward = "1M", ...){
+#'             
+#'             # check freq inputs are valid
+#'             test.dates(startdate)
+#'             test.dates(enddate)
+#'             if (!frequency %in% c("day", "week", "month", "quarter", "year")) {
+#'               stop("ErrorIn::YieldCurve::getRateSeries:: Frequency must be one of 'day',
+#'                    'week', 'month', 'quarter' or 'year' !!!")
+#'             }
+#'             
+#'             # create date vector with frequency defined
+#'             dt_seq <- as.character(seq.Date(as.Date(startdate) + 1, 
+#'                                             as.Date(enddate), by = frequency) - 1)
+#'             
+#'             # calculate forward rates with forward time defined
+#'             rates_seq <- rates(object, forward, dt_seq)
+#'             
+#'             # output in a data.frame
+#'             ts <- data.frame(Dates = dt_seq,
+#'                           Values = as.numeric(rates_seq),
+#'                           stringsAsFactors = FALSE)
+#'             return(ts)
+#'           })
 
 
 ## @include
@@ -616,6 +615,38 @@ Interpolator <- setRefClass("Interpolator",
               }
             ))
 
+#' @export
+setGeneric(name = "wealth",
+           def = function(yc, capital, dates, ...){
+             standardGeneric("wealth")
+           })
+
+#' @export
+setMethod(f = "wealth", signature = c("YieldCurve","numeric","character"),
+          definition = function(yc, capital, dates, compound = "continuous", period="Y", take_out=0, ...){
+            
+            if (length(capital)!=1){
+              stop("ErrorIn::YieldCurve::cashflows:: Capital must have one value only !!! ")
+            }
+            if (min(dates) < yc$ReferenceDate[1]){
+              stop("ErrorIn::YieldCurve::cashflows:: Dates must all lay after first ReferenceDate of YieldCurve !!! ")
+            }
+            dates <- dates[order(dates)]
+            dates <- dates[dates!=yc$ReferenceDate[1]]
+            wealth <- c(capital)
+            
+            for (i in 1:length(dates)) {
+              if (i==1){
+                df_s <- discountFactors(yc, yc$ReferenceDate[1], dates[i], method=compound, period=period)
+              } else {
+                df_s <- discountFactors(yc, dates[i-1], dates[i], method=compound, period=period)
+              }
+              wealth <- c(wealth,df_s*wealth[i] - df_s*wealth[i]*take_out)
+            }
+            wealth <- data.frame(Wealth = wealth)
+            rownames(wealth) <- c(yc$ReferenceDate[1],dates)
+            return(wealth)
+          })
 
 ## -----------------------------------------------------------------
 ## helper methods

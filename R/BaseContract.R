@@ -28,12 +28,11 @@ setMethod(f = "BaseContract", signature = c(),
             return(object)
           })
 
-#' @include YieldCurve2.R Value.R
+#' @include YieldCurve.R Value.R
 #' @export
 setMethod("value", signature = c("BaseContract","character","missing","missing"),
-          definition = function(object, by, compound = "continuous", period="Y", curve=YieldCurve2(), ...){
-            
-            df_s <- discountFactorsv2(curve, object$Dates, by, method=compound, period=period)
+          definition = function(object, by, compound = "continuous", period="Y", curve=YieldCurve(), ...){
+            df_s <- discountFactors(curve, object$Dates, by, method=compound, period=period)
             # df <- data.frame(Date = by, Value = sum(object$CashFlows * df_s))
             Value = sum(object$CashFlows * df_s)
             dim (Value) = c(1, length(Value))

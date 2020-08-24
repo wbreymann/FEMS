@@ -66,7 +66,11 @@ setGeneric(name = "plot",
 #' @docType methods
 #' @rdname plt-methods
 setMethod("plot", signature("ContractType", "character"),
-          definition = function(x, y, ...){
+          definition = function(x, y, yc=NULL, ...){
+            if (is(yc,"YieldCurve")){
+              rf_con <- RFConn(yc)
+              set(x, rf_con)
+            }
             
             # extract event series as data.frame
             evs=EventSeries(x,y)
@@ -94,21 +98,18 @@ setMethod("plot", signature("ContractType", "character"),
             }
           })
 
-#' @include ContractType.R
-#' @include EventSeries.R
-#' @export
-#' @docType methods
-#' @rdname plt-methods
-setMethod("plot", signature("ContractType", "character"),
-          definition = function(x, y, yc, ...){
-            if (is(yc,"YieldCurve")){
-              rf_con <- RFConn(yc)
-              set(x, rf_con)
-              plot(x, y, ...)
-            } else {
-              plot(x, y, ...)
-            }
-          })
+
+# setMethod("plot", signature("ContractType", "character"),
+#           definition = function(x, y, yc=NULL, ...){
+#             browser()
+#             if (is(yc,"YieldCurve")){
+#               rf_con <- RFConn(yc)
+#               set(x, rf_con)
+#               plot(x, y, ...)
+#             } else {
+#               plot(x, y, ...)
+#             }
+#           })
 
 
 # -----------------------------------------------------------

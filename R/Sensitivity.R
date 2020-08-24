@@ -329,6 +329,7 @@ setMethod(f="sensitivity",
             # set default type
             type = "fisherweil"
             
+            
             if (type=="macaulay") {
               
               D = sensitivity(object, by, type, method)
@@ -355,7 +356,7 @@ setMethod(
   f = "sensitivity", 
   signature = c("EventSeries", "character", "character", "ValuationEngine", "missing"), 
   definition = function(object, by, type, method, scenarios) {
-
+    
     if (type=="macaulay") {
               
       ## cash flow data
@@ -372,12 +373,12 @@ setMethod(
       D <- as.numeric(( t * cfs ) %*% dfs * ( 1 / cfs %*% dfs ))
               
     } else if (type=="fisherweil") {
-              
+
       ## cash flow data
       dates <- get(object, "evs")$Date
       t <- get(object, "evs")$Time
       cfs <- get(object, "evs")$Value
-              
+
       ## discount factors
       ad0 <- by[1]
       yc <- get(method,"RiskFactorObject")
@@ -435,7 +436,7 @@ setMethod(
 setMethod(f = "sensitivity", 
           signature = c("EventSeries", "character", "character", "ValuationEngine", "list"), 
           definition = function(object, by, type, method, scenarios) {
-            
+           
             if (type=="macaulay") {
               
               D = sensitivity(object, by, type, method)
@@ -450,7 +451,7 @@ setMethod(f = "sensitivity",
               dates <- get(object, "evs")$Date
               cfs <- get(object, "evs")$Value
               ad0 <- by[1]
-              yc.nme = get(method, "RiskFactorObjectLink")
+              yc.nme = get(method,"RiskFactorObject")$MarketObjectCode
               yc <- FEMS:::get(scenarios[[1]], yc.nme)
               dfs <- discountFactors(yc, dates, ad0, isDateEnd=TRUE)
               V.0 = as.numeric(cfs%*%dfs)

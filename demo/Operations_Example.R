@@ -82,7 +82,7 @@ liquidity(ops1, by=tb, type="marginal")
 value(ops1, by=by, type="nominal")
 
 # Discount-Engine für die Barwertberechnung:
-eng <- DcEngine(RiskFactorObject=rf[["YC_CH"]])
+eng <- DcEngine(RiskFactorObject=rf1[["YC_CH"]])
 #set(eng, rf)
 
 # Barwert der (erwarteten) operativen Cashflows
@@ -103,10 +103,10 @@ ops.invest <- function(model, params) {
 ops2 <- Operations(ContractID = "Ops002", Currency = "CHF", InvestPattern = ops.invest)
 
 # link Operations contract with market environment
-set(ops2, rf)
+set(ops2, rf1)
 
 # Test der Funktion
-ops.invest(rf)
+ops.invest(rf1)
 
 # Analyse
 

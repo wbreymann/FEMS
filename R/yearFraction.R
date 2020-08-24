@@ -38,7 +38,7 @@ setGeneric(name = "yearFraction",
 
 #' @export
 setMethod(f = "yearFraction", signature = c("character", "character"),
-          definition = function(start_dates, end_dates, convention = "30E/360", ...){
+          definition = function(start_dates, end_dates, convention = "30E360", ...){
             
             # test if date inputs are of valid format
             test.dates.yearFraction(start_dates, end_dates)
@@ -94,7 +94,7 @@ map.conventions.yearFraction <- function(actus_conv) {
   
   # Note: ACTUS convention B/252 and <wildcard> is not supported !!!
   allowed_convs <- c("30e/360", "30e/360isda", "act/360", "act/365","act/actisda")
-  names(allowed_convs) <- c("30E/360", "30E/360ISDA", "A/360", "A/365", "A/AISDA")
+  names(allowed_convs) <- c("30E360", "30E360ISDA", "A360", "A365", "AA")
   
   # all possible values in the function year_frac are the following:
   # "30/360", "30/360us", "30e/360", "30e/360isda", "30e+/360", 

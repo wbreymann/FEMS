@@ -26,10 +26,26 @@ setGeneric(name = "Lam",
 setMethod(
   f = "Lam",
   signature = c(),
-  definition = function(...) {
-    pars <- list(...)$what
+  definition = function(ContractID = "001",
+                        ContractRole = "RPA",
+                        StatusDate = "0000-01-01",
+                        PremiumDiscountAtIED = 0,
+                        DayCountConvention = "30E360",
+                        ...) {
+    pars <- list(...,
+                 ContractID = ContractID,
+                 ContractRole = ContractRole,
+                 StatusDate = StatusDate,
+                 PremiumDiscountAtIED = PremiumDiscountAtIED,
+                 DayCountConvention = DayCountConvention)
     pars$ContractType <- "LAM"
     object <- new("LinearAmortizer")
+    if (is.list(pars[[1]])) {
+      stop("ErrorIn::LinearAmortizer:: List as input deprecated !!!")
+    }
+    if (is.null(pars$ContractDealDate)) {
+      pars$ContractDealDate = pars$InitialExchangeDate
+    }
     set(object = object, what = pars)
     return(object)
   }

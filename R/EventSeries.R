@@ -136,7 +136,7 @@ setMethod(f = "EventSeries", signature = c("ContractType", "character"),
 #' @aliases EventSeries, missing-method
 setMethod(f = "EventSeries", signature = c("Portfolio", "AD0"),
           definition = function(object, ad, ...){
-
+            
             # compute events
             evs_raw <- generateEvents(object, ad)
             evs_list <- list()
@@ -153,7 +153,7 @@ setMethod(f = "EventSeries", signature = c("Portfolio", "AD0"),
                 Value = payoff,
                 Type = types,
                 Currency = getEventAttributes(evs_raw[[i]]$events, "currency"),
-                Time = yearFraction(substring(time[1], 1, 10), substring(time, 1, 10), convention = "30E/360"),
+                Time = yearFraction(substring(time[1], 1, 10), substring(time, 1, 10), convention = "30E360"),
                 NominalValue = getEventAttributes(evs_raw[[i]]$events, "nominalValue"),
                 NominalRate = getEventAttributes(evs_raw[[i]]$events, "nominalRate"),
                 NominalAccrued = getEventAttributes(evs_raw[[i]]$events, "nominalAccrued"))

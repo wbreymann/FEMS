@@ -81,7 +81,7 @@ FinancialModel <- setRefClass("FinancialModel",
 # #' @export
 
 #' Simulate method
-#' @export simulate
+# #' @export
 FinancialModel$methods(
   simulate = function(t.start, t.end, by, ...) {
 ## 'Executes the simulation of a financial model.'

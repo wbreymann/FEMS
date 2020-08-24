@@ -3,7 +3,7 @@ rm(list=ls())
 
 
 t <- "2012-12-31"
-yc <- YieldCurve2()
+yc <- DynamicYieldCurve()
 rates <- setNames(data.frame(t(c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03))),
                   c("1W", "1M", "6M", "1Y", "2Y", "5Y"))
 rownames(rates) <- t

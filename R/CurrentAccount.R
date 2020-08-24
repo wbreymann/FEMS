@@ -205,9 +205,9 @@ currentaccount.evs <- function(object, model, end_date, method, period){
     if (i==1){
       if (all_dates[i] %in% interest_dates) {
         tryCatch({
-          nominal_rate <- rates2(yc, interest_dates[rate_count+1], interest_dates[rate_count], isDateEnd=TRUE)
+          nominal_rate <- rates(yc, interest_dates[rate_count+1], interest_dates[rate_count], isDateEnd=TRUE)
         }, error = function(e) {
-          nominal_rate <- rates2(yc, next_rate_dt, interest_dates[rate_count], isDateEnd=TRUE)
+          nominal_rate <- rates(yc, next_rate_dt, interest_dates[rate_count], isDateEnd=TRUE)
         })
         rate_count <- rate_count + 1
       }
@@ -246,14 +246,14 @@ currentaccount.evs <- function(object, model, end_date, method, period){
     } else {
       if (all_dates[i] %in% interest_dates) {
         tryCatch({
-          nominal_rate <- rates2(yc, interest_dates[rate_count+1], interest_dates[rate_count], isDateEnd=TRUE)
+          nominal_rate <- rates(yc, interest_dates[rate_count+1], interest_dates[rate_count], isDateEnd=TRUE)
         }, error = function(e) {
-          nominal_rate <- rates2(yc, next_rate_dt, interest_dates[rate_count], isDateEnd=TRUE)
+          nominal_rate <- rates(yc, next_rate_dt, interest_dates[rate_count], isDateEnd=TRUE)
         })
         rate_count <- rate_count + 1
       }
       time <- as.numeric((as.timeDate(all_dates[i])-as.timeDate(all_dates[1]))/365)
-      df_s <- discountFactorsv2(yc, all_dates[i-1], all_dates[i], method=method, period=period)
+      df_s <- discountFactors(yc, all_dates[i-1], all_dates[i], method=method, period=period)
       nominal_accrued <- nominal_accrued + (df_s-1) * nominal_value
       
       if (all_dates[i] %in% interest_dates) {

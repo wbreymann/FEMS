@@ -39,7 +39,7 @@ length(Father$Wealth$contracts)
 Father$Wealth$contracts 
 
 # Define risk factor environment -----------------------------------------------
-(yc.flat <- FlatCurve2(0.03, "2013-12-31"))
+(yc.flat <- FlatCurve(0.03, "2013-12-31"))
 yc.flat$MarketObjectCode <- "YC_CH"
 (rf1 = RFConn(list(yc.flat)))
 
