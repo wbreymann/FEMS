@@ -91,7 +91,7 @@ value(ops1, by=tb, type="markToModel", method=eng)
 #-----------------------------------------------------------------------------
 # Investition mit linearer Abschreibung
 
-tb <- timeBuckets(ad, by="1 years", length.out=3, bucketLabs=c("2016", "2017"))
+tb <- timeBuckets(ad, by="1 years", length.out=3, bucketLabs=c("2016", "2017"))  ## Error!!
 tb
 # Discount-Engine für die Barwertberechnung:
 eng <- DcEngine(RiskFactorObject=yc.ch)

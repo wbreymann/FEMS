@@ -58,7 +58,7 @@ set(ops1, rf1)
 
 ##########################################
 # Create model structure
-myModel = ModelStructure("Minimal Model", curAcc = curr_acc)
+myModel = ModelStructure("Minimal Model", curAcc = curr_acc) ## Error!!
 myModel
 # The contract is there:
 myModel$Active$Treasury$contracts

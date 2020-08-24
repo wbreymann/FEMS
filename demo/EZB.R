@@ -127,7 +127,7 @@ f = function(tt) {
   by = as.Date("2020-01-01") + tt*365
   value(bc8.1, by=as.character(by), curve=yc_flat, compound="compound")[[1,1]] - 1500
 }
-solve2(object=f, method="uniroot", lower=1, upper=20)
+solve2(object=f, method="uniroot", lower=1, upper=20)   ## Error!!
 
 value(bc8.1, by=as.character(as.Date("2020-01-01")+12.8488*365), curve=yc_flat, compound="compound")
 value(bc8.1, by="2032-11-02", curve=yc_flat, compound="compound")

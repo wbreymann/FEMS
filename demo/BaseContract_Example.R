@@ -16,7 +16,7 @@ as.Date(bc2$Dates)
 # Since the variable cannot be transformed into a "Date", we get "NA"
 # which can be used to extract the variable:
 bc2$Dates[is.na(as.Date(bc2$Dates))]
-eval(as.name(bc2$Dates[is.na(as.Date(bc2$Dates))]))
+eval(as.name(bc2$Dates[is.na(as.Date(bc2$Dates))]))  ## Error!!
 
 ###########################################################
 # test the implementation of the discountFactorsv2
