@@ -27,7 +27,7 @@ setGeneric(name = "ModelStructure",
 
 #' @export
 setMethod(f = "ModelStructure", signature = c("character", "character"),
-          definition = function(name, type="institution", curAcc=CurrentAccount()){
+          definition = function(name, type, curAcc=CurrentAccount()){
             object <- Node$new(name)
             if (type=="institution") {
               object$AddChild("Active")
@@ -44,6 +44,11 @@ setMethod(f = "ModelStructure", signature = c("character", "character"),
             return(object)
           })
 
+#' @export
+setMethod(f = "ModelStructure", signature = c("character", "missing"),
+          definition = function(name, type, curAcc=CurrentAccount()){
+            return(ModelStructure(name, type="institution", curAcc = curAcc))
+          })
 
 ## Add Accounts
 ## This can be done by hand (easy to implement) or from a flat file
