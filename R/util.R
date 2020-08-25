@@ -209,46 +209,6 @@ get.summary.fields <- function(contract = "NULL"){
 }
 
 
-# util function for tree aggregation
-aggregate.leafs=function(leafs,branches,col.names) {
-  out=leafs
-  if(length(branches)>0) {
-    treemap=unlist(branches)
-    names(treemap)=unlist(sapply(names(branches),FUN=function(x) paste(x,1:length(branches[[x]]),sep=".")))
-    child=leafs
-    idx=treemap%in%names(child)
-    namesmap=unlist(lapply(strsplit(names(treemap),".",fixed=TRUE),function(x)x[1]))
-    names(namesmap)=treemap
-    names(out)=paste(namesmap[names(out)],names(out),sep=":")
-    while(sum(idx)>0) {
-      parent=as.list(unique(unlist(lapply(strsplit(names(treemap)[idx],".",fixed=TRUE),FUN=function(x)x[1]))))
-      temp=lapply(parent,FUN=function(x) {
-        apply(as.data.frame(child[treemap[grep(x,names(treemap))]]),1,sum)
-      })
-      names(temp)=unlist(parent)
-      out=c(temp,out)
-      treemap=treemap[!idx]
-      child=temp
-      idx=treemap%in%names(child)
-      if(sum(idx)>0) {
-        namesmap=unlist(lapply(strsplit(names(treemap),".",fixed=TRUE),function(x)x[1]))
-        names(namesmap)=treemap
-        names(out)=paste(namesmap[unlist(lapply(strsplit(names(out),":",fixed=TRUE),function(x)x[1]))],names(out),sep=":")
-      }
-    }
-  }
-  out=rflPortfolio:::format.tree.results(out,col.names)
-  return(out)
-}
-
-# util function for tree formatting
-format.tree.results=function(x, col.names) {
-  out=t(as.data.frame(x))
-  out=as.data.frame(out[sort(rownames(out)),])
-  colnames(out)=as.character(col.names[-1])
-  return(out)
-}
-
 ## -----------------------------------------------------------------
 ## private util methods
 ## get long name for ContractType from short
