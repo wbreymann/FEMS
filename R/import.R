@@ -116,7 +116,7 @@ setGeneric(name = "import",
 #' @aliases import,Portfolio,character-method
 setMethod(f = "import", signature = c("Portfolio", "data.frame"),
           definition = function(object, source, ...) {
-            browser()
+
             temp.file <- tempfile(pattern = "", fileext = ".csv")
             temp.sep <- ";"
             write.table(source, file=temp.file, sep=temp.sep, row.names=FALSE,
@@ -135,13 +135,12 @@ setMethod(f = "import", signature = c("Portfolio", "data.frame"),
 
 setMethod(f = "import", signature = c("Portfolio", "character"),
           definition = function(object, source, ...) {
-            # browser()
+
             pars <- list(...)
             splitfile <- strsplit(source, ".", fixed=TRUE)[[1]]
             extension <- splitfile[length(splitfile)]
             
             if (extension == "xls") {
-              browser()
               port_data  <- loadFromExcel(source, pars)
               ex <- "loaded from Excel file"
             } else if(extension%in%c("txt", "csv")) {
@@ -152,18 +151,28 @@ setMethod(f = "import", signature = c("Portfolio", "character"),
             }
             
             port_data[is.na(port_data)] <- "NULL"
-            port_data <- port_data[, -grep("_", colnames(port_data))]
+            #port_data <- port_data[, -grep("_", colnames(port_data))]
+            port_data <- port_data[,-which(names(port_data) %in% "X")]
             
             ## get loaded IDs
             ctIDs <- port_data$ContractType
             
             ## add contracts to the portfolio
             for (i in 1:length(ctIDs)) {
+
               long_name <- longName(tolower(ctIDs[i]))
               contract <- CT(long_name)
               ContractTerms <- as.list(t(port_data[i,]))
               names(ContractTerms) <- colnames(port_data)
+              
+              # also drop everything that is not part of the model...
+              contract_model <- CTM(long_name)
+              idx_notvalid <- !(names(ContractTerms) %in% names(contract_model$allowed))
+              ContractTerms <- ContractTerms[!idx_notvalid]
+              
+              # drop all NULL elements...
               ContractTerms <- ContractTerms[rapply(ContractTerms, function(x) length(grep("^NULL$",x)) == 0)]
+              
               set(object = contract, what = ContractTerms)
               add(object, contract)
             }
