@@ -195,7 +195,7 @@ aggregate.leafs=function(leafs,branches,col.names) {
       }
     }
   }
-  out=rflPortfolio:::format.tree.results(out,col.names)
+  out=FEMS:::format.tree.results(out,col.names)
   return(out)
 }
 
