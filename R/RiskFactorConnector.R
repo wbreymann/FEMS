@@ -454,11 +454,11 @@ setMethod("[[", signature = c("RiskFactorConnector", "character"),
 #' @export
 setMethod("[[<-", signature = c("RiskFactorConnector", "ANY"),
           definition = function(x, i, value) {
-            # if (containsID (x, i)) {
-            #   remove(x, i)
-            # }
-            # add (x, value)
-            # x
-            stop("Method '[[<-' not available for object of class RiskFactorConnector")
+            if (containsID (x, i)) {
+              remove(x, i)
+            }
+            add (x, value)
+            x
+            # stop("Method '[[<-' not available for object of class RiskFactorConnector")
           }
 )
