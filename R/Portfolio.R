@@ -82,22 +82,14 @@ setMethod(f = "Portfolio", signature = c(),
 ## @include
 ## @export
 setGeneric(name = "generateEvents",
-           def = function(object, ad0, ...){
+           def = function(object, ...){
              standardGeneric("generateEvents")
            })
 
-## @include
-## @export
-setMethod("generateEvents", signature = c("Portfolio", "character"),
-          definition = function(object, ad0){
-            ad0_zdt <- FEMS::AD0(ad0)
-            FEMS:::generateEvents(object, ad0_zdt)
-          })
 
-#' @include AnalysisDate.R
 # @export
-setMethod("generateEvents", signature = c("Portfolio", "AD0"),
-          definition = function(object, ad0){
+setMethod("generateEvents", signature = c("Portfolio"),
+          definition = function(object, ...){
             # send contract and risk factors to the Server
             
             ## create body for contracts
@@ -786,12 +778,16 @@ is.rf.in.rf_conn <- function(temp_rf, rf_conn) {
 }
 
 sim.data.rf <- function(contract, rfac){
-
+  
   # check if its a YieldCurve first... if not, skip it...
   if (is(rfac,"YieldCurve") || is(rfac,"DynamicYieldCurve")){
     anchor_dt <- contract$ContractTerms$CycleAnchorDateOfRateReset
     cycle <- contract$ContractTerms$CycleOfRateReset
     mat <- contract$ContractTerms$MaturityDate
+    if (mat=="NULL"){
+      # this is pretty inefficient so far, can end date be derived?
+      mat <- as.character(ymd(anchor_dt) %m+% years(30))
+    }
     sim.data.rate.reset(rfac, anchor_dt, cycle, mat)
   }
 

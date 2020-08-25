@@ -157,7 +157,7 @@ setMethod(f = "EventSeries", signature = c("Portfolio", "AD0"),
                 NominalValue = getEventAttributes(evs_raw[[i]]$events, "nominalValue"),
                 NominalRate = getEventAttributes(evs_raw[[i]]$events, "nominalRate"),
                 NominalAccrued = getEventAttributes(evs_raw[[i]]$events, "nominalAccrued"))
-              evs_list[[i]] <- temp_df
+              evs_list[[i]] <- temp_df[temp_df$Date>=as.character(ad), ]
               id_list[[i]] <- evs_raw[[i]]$contractId
               ct_list[[i]] <- object$contracts[[evs_raw[[i]]$contractId]]$ContractTerms$ContractType
             }
@@ -443,6 +443,20 @@ setMethod("[", signature = c("EventSeries", "numeric", "character"),
 #' @rdname as.df-methods
 as.data.frame.EventSeries <- function(x) {
   x$evs
+}
+
+
+#' @export
+#' @docType methods
+#' @rdname as.df.list-methods
+as.data.frame.eventList = function (x) {
+  out=do.call("rbind",lapply(x,
+                             FUN = function(evs){
+                               cbind(
+                                 ContractID = evs$id,
+                                 FEMS:::as.data.frame.EventSeries(evs))}))
+  row.names(out)=NULL
+  return(out)
 }
 
 
