@@ -230,7 +230,7 @@ setMethod(f = "EventSeries", signature = c("Operations", "AD0"),
 
 setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
           definition = function(object, ad, ...){
-            
+
             # create event series object
             out <- new("EventSeries")
             out$id <- FEMS:::get(object,"ContractID")
@@ -543,15 +543,15 @@ setMethod(f = "value", signature = c("Operations", "timeDate", "character",
 setMethod(f = "value", signature = c("Operations", "timeBuckets", "character", 
                                      "DiscountingEngine"),
           definition = function(object, by, type, method, ...){
-            
+
             # message("Method 'value' with signature with timeBuckets")
             if(type=="nominal") {
               by2 = as.timeDate(by)
-              val = ops.nominal(events(object, by2[1]), by2, ...)
+              val = ops.nominal(events(object, as.timeDate(by2[1])[1]), by2, ...)
               names(val) = by@breakLabs
               return(val)
             } else if (type %in% c("markToModel","markToMarket")) {
-              val = ops.marketValue(events(object, by[1]), by, method, ...)
+              val = ops.marketValue(events(object, as.timeDate(by[1])[1]), by, method, ...)
               names(val) = by@breakLabs
               return(val)
             } else {
