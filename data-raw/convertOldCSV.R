@@ -1,8 +1,8 @@
 # change csv files used from previous actus core attributes
 
 rm(list=ls())
-
-data <- read.csv("./data/FixedIncomePortfolio2.csv")
+file_name <- "./data/FixedIncomePortfolio3.csv"
+data <- read.csv(file_name)
 
 # convert all NA to NULL
 data[is.na(data)] <- "NULL"
@@ -50,9 +50,13 @@ data[,idx_cyreset] <- gsub("BeginningOf", "B", data[,idx_cyreset], fixed=TRUE)
 idx_fix <- grep("FixingPeriod", colnames(data))
 data[,idx_fix] <- gsub("0D", "P0D", data[,idx_fix], fixed=TRUE)
 
-# add a column for redemption payments of LAMs
+# set interest cycles for LAMs & ANNs
+idx_annlam <- c(grep("ANN", data$ContractType),grep("LAM", data$ContractType))
+data[idx_annlam, colnames(data)=="CycleOfInterestPayment"] <- 
+  data[idx_annlam, colnames(data)=="CycleOfPrincipalRedemption"]
+data[idx_annlam, colnames(data)=="CycleAnchorDateOfInterestPayment"] <- 
+  data[idx_annlam, colnames(data)=="CycleAnchorDateOfPrincipalRedemption"]
 
-
-write.csv(data, "./data/FixedIncomePortfolio2.csv")
+write.csv(data, file_name, row.names=FALSE)
 
 

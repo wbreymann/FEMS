@@ -152,7 +152,7 @@ setMethod(f = "import", signature = c("Portfolio", "character"),
             
             port_data[is.na(port_data)] <- "NULL"
             #port_data <- port_data[, -grep("_", colnames(port_data))]
-            port_data <- port_data[,-which(names(port_data) %in% "X")]
+            #port_data <- port_data[,-which(names(port_data) %in% "X")]
             
             ## get loaded IDs
             ctIDs <- port_data$ContractType
