@@ -129,7 +129,7 @@ setMethod(f = "set",
             if (sum(as.numeric(is_yc)) > 1) {
               stop("ErrorIn::DiscountingEngine:: Only one YieldCurve can be defined in RiskFactorConnector for DCEngine !!!")
             }
-            object$RiskFactorObject <- what$riskfactors[[is_yc[is_yc==TRUE]]]
+            object$RiskFactorObject <- what$riskfactors[is_yc==TRUE][[1]]
           })
 
 ## -----------------------------------------------------------------

@@ -115,7 +115,7 @@ events.modelstructure = function(node, ..., filterFun=isLeaf) {
         if (is.null(node$eventList)) {
           node$eventList <- eventList()
         }
-        node$eventList[[x$ContractID]] <- evs
+        node$eventList[[as.character(get(x,"ContractID"))]] <- evs
       }
     }, pars)
 }
@@ -129,10 +129,10 @@ events.modelstructure = function(node, ..., filterFun=isLeaf) {
 setMethod(f = "liquidity", signature = c("Node", "timeBuckets", "character"),
           definition = function(object, by, type){
             # Compute liquidity for whole tree
-            clearAnalytics(Node, "liquidity")
+            clearAnalytics(object, "liquidity")
             object$Do(fun=fAnalytics, "liquidity", by=by, type=type, filterFun=isLeaf)
             aggregateAnalytics(object, "liquidity")
-            liq = data.frame (t(object$Get("liquidity", format = function(x) ff(x,0))  ),
+            liq = data.frame (t(object$Get("liquidity", format = function(x) as.numeric(ff(x,0)))  ),
                               check.names=FALSE, fix.empty.names=FALSE)
             rownames(liq) = capture.output(print(object))[-1]
             liq
@@ -145,16 +145,44 @@ setMethod(f = "liquidity", signature = c("Node", "timeBuckets", "character"),
 #' @rdname val-methods
 #' @export
 setMethod(f = "value", signature = c("Node", "timeBuckets", "character"),
-          definition = function(object, by, type){
+          definition = function(object, by, type, method) {
+            if (missing(method)) {
+              method <- DcEngine()
+            }
             # Compute value for whole tree
-            clearAnalytics(Node, "value")
-            object$Do(fun=fAnalytics, "value", by=as.character(by), type=type, filterFun=isLeaf)
+            clearAnalytics(object, "value")
+            object$Do(fun=fAnalytics, "value", by=as.character(by), type=type, method=method, filterFun=isLeaf)
             aggregateAnalytics(object, "value")
-            val <- data.frame (t(object$Get("value", format = function(x) ff(x,0))  ),
+            val <- data.frame (t(object$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
                               check.names=FALSE, fix.empty.names=FALSE)
             rownames(val) <- capture.output(print(object))[-1]
             colnames(val) <- by@breakLabs
             val
+          })
+
+
+####---------------------------------------------------------------
+## income methods
+
+#' @include Income.R
+#' @rdname inc-methods
+#' @export
+setMethod(f = "income", signature = c("Node", "timeBuckets", "character"),
+          definition = function(object, by, type, revaluation.gains = FALSE, method, ...){
+            
+            # Compute value for whole tree
+            if (missing(method)) {
+              method <- DcEngine()
+            }
+            clearAnalytics(object, "income")
+            object$Do(fun=fAnalytics, "income", by=by, type=type, method=method, 
+                      revaluation.gains=revaluation.gains, filterFun=isLeaf)
+            aggregateAnalytics(object, "income")
+            inc <- data.frame (t(object$Get("income", format = function(x) as.numeric(ff(x,0)))  ),
+                               check.names=FALSE, fix.empty.names=FALSE)
+            rownames(inc) <- capture.output(print(object))[-1]
+            colnames(inc) <- by@bucketLabs
+            inc
           })
 
 ##################################################
@@ -165,10 +193,10 @@ setMethod(f = "value", signature = c("Node", "timeBuckets", "character"),
 #' This function thus subsumes the function of all three specialized 
 #' functions above (which are commented out)
 fAnalytics = function(node, ...) {
+
   pars = list(...)
   # clear analytics
   node[[ pars[[1]] ]] <- NULL
-  
   if ( is.null(node$eventList) || length(node$eventList)==0 ) {
     node[[ pars[[1]] ]] <- rep(0, length(pars[["by"]]))
     if ( is.null(names(pars[["by"]])) ) {
@@ -183,7 +211,7 @@ fAnalytics = function(node, ...) {
       FUN = function(x, pars) {
         pars = list(...)
         fnam = pars[[1]] # the name of the analytics [liquidity|income|value]
-        object = node$eventList[[x$ContractID]] # the eventSeries of the contract
+        object = node$eventList[[as.character(get(x,"ContractID"))]] # the eventSeries of the contract
         pars = pars[c(-1)]
       do.call(fnam, c(object=object, pars))
       })
@@ -224,6 +252,7 @@ clearAnalytics = function(node, analytics) {
 
 # Clears previously computed the analytics "analytics" from the tree "node"
 clearAnalytics = function(node, analytics) {
+  node[[analytics]] = NULL
   nodes = Traverse(node, traversal="pre-order")
   for (n in nodes) {
     n[[analytics]] = NULL
