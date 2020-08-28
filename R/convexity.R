@@ -5,6 +5,8 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
+#' @include cashFlows.R util.R
+#' @export 
 convexity <- function(x, yield=NULL, price=NULL, 
                       isPercentage=TRUE, per=NULL) {
   

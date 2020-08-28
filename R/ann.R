@@ -5,10 +5,15 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
-annuity = function(dealDate="2015-01-01", nominal=1000, coupon=0.05, annuity=100, 
-                   annuityFreq="1 year", maturity = NULL, role="long", 
-                   variable=FALSE, ...) {
+#' @include Annuity.R
+#' @export 
+annuity = function(dealDate, nominal=0.0, ir=0.0, annuity=0.0, 
+                   annuityFreq="1 year", maturity = "0 years", role="long", 
+                   variable.rates=FALSE, ...) {
 
+  if (missing(dealDate)){
+    stop("Variable dealDate muss gesetzt werden !!!")
+  }
   args <- list(...)
   if(is.null(maturity)) {
     maturity <- NULL
@@ -20,6 +25,7 @@ annuity = function(dealDate="2015-01-01", nominal=1000, coupon=0.05, annuity=100
   contractDealDate <- as.character(timeDate(dealDate)-24*3600)
   initialExchangeDate <- dealDate
   
+  ann_fr <- annuityFreq
   if(is.null(annuityFreq)) {
     annuityFreq <- NULL
   } else {
@@ -53,7 +59,7 @@ annuity = function(dealDate="2015-01-01", nominal=1000, coupon=0.05, annuity=100
   }
   
   if(!"DayCountConvention"%in%names(args)) {
-    args[["DayCountConvention"]] <- "AA"
+    args[["DayCountConvention"]] <- "30E360"
   }
   
   attributes <- list(InitialExchangeDate=initialExchangeDate,
@@ -61,8 +67,17 @@ annuity = function(dealDate="2015-01-01", nominal=1000, coupon=0.05, annuity=100
                     ContractDealDate=contractDealDate,
                     MaturityDate=maturity,
                     NotionalPrincipal=nominal,
-                    NominalInterestRate=coupon,
+                    NominalInterestRate=ir,
                     CycleOfPrincipalRedemption=annuityFreq,
+                    CycleAnchorDateOfPrincipalRedemption = 
+                      as.character(timeSequence(initialExchangeDate, 
+                                                by=ann_fr, 
+                                                length.out=2)[2]),
+                    CycleOfInterestPayment=annuityFreq,
+                    CycleAnchorDateOfInterestPayment = 
+                      as.character(timeSequence(initialExchangeDate, 
+                                                by=ann_fr, 
+                                                length.out=2)[2]),
                     NextPrincipalRedemptionPayment=annuity,
                     ContractRole=role)
   attributes <- append(attributes, args)

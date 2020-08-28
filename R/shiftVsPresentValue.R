@@ -5,6 +5,8 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
+#' @include cashFlows.R YieldCurve.R DynamicYieldCurve.R
+#' @export 
 shiftVsValueTable <- function(x, yieldCurve, shift=NULL, isPercentage=TRUE, per=NULL) {
   if(is.null(shift)) {
     shift <- seq(from=1,to=10,length.out=10)

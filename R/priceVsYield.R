@@ -5,6 +5,8 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
+#' @include yieldToMaturity.R convexity.R duration.R
+#' @export 
 priceVsYieldTable <- function(x, prices=NULL, isPercentage=TRUE, per=NULL) {
   if(is.null(prices)) {
     prices <- seq(from=50,to=500,length.out=10)

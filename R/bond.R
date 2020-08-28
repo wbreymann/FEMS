@@ -5,10 +5,14 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
-bond = function(dealDate="2015-01-01", maturity="5 years", nominal=1000, 
-                coupon=0.05, couponFreq="1 year", role="long", 
-                variable=FALSE, ...) {
-  
+#' @include PrincipalAtMaturity.R
+#' @export 
+bond <- function(dealDate, maturity="0 years", nominal=0, 
+                coupon=0.0, couponFreq="1 year", role="long", 
+                variable.rates=FALSE, ...) {
+  if (missing(dealDate)){
+    stop("Variable dealDate muss gesetzt werden !!!")
+  }
   args <- list(...)
   if(nchar(maturity)<13) {
     maturity <- as.character(timeSequence(timeDate(dealDate), 
@@ -18,6 +22,7 @@ bond = function(dealDate="2015-01-01", maturity="5 years", nominal=1000,
   contractDealDate <- as.character(timeDate(dealDate)-24*3600)
   initialExchangeDate <- dealDate
   
+  couponFreq_bef <- couponFreq
   if(is.null(couponFreq) || couponFreq=="NULL") {
     couponFreq <- NULL
     coupon <- -999999999
@@ -52,10 +57,10 @@ bond = function(dealDate="2015-01-01", maturity="5 years", nominal=1000,
   }
   
   if(!"DayCountConvention"%in%names(args)) {
-    args[["DayCountConvention"]] <- "AA"
+    args[["DayCountConvention"]] <- "30E360"
   }
   
-  if(variable) {
+  if(variable.rates) {
     args[["CycleOfRateReset"]] <- couponFreq  
   }
   
@@ -66,6 +71,10 @@ bond = function(dealDate="2015-01-01", maturity="5 years", nominal=1000,
                     NotionalPrincipal=nominal,
                     NominalInterestRate=coupon,
                     CycleOfInterestPayment=couponFreq,
+                    CycleAnchorDateOfInterestPayment = 
+                      as.character(timeSequence(initialExchangeDate, 
+                                                by=couponFreq_bef, 
+                                                length.out=2)[2]),
                     ContractRole=role)
   attributes <- append(attributes, args)
   out <- Pam()
