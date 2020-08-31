@@ -7,6 +7,14 @@ bc
 bc1 <- BaseContract(Dates=c("2019-12-31","2020-12-31"),
                     CashFlows=c(-90,100))
 bc1
+cashFlows(bc1, "2019-12-31")  ## Error!
+events(bc1, "2019-12-31") ## Error!
+
+bc1 <- BaseContract(Dates=c("2019-12-31","2020-12-31"),
+                    CashFlows=c(-90,100))
+bc1
+cashFlows(bc1, "2019-12-31")  ## Error!
+
 
 # Contract with variable time
 bc2 <- BaseContract(Dates=c("2019-12-31","2020-12-31","tt"),

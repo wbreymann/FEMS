@@ -58,8 +58,11 @@ plot(cfPattern)
 # link Operations contract with market environment
 set(ops1, rf1)
 # pure events
+cashFlows(ops1, ad)  ## Error: Variable Time shows wrong values.
 events1 = events(ops1, ad)
 print(events1$evs)
+plot(ops1, ad)  ## Doesn't work. 
+
 
 # liquidity
 by <- times[c(1, 13, 24)]
@@ -111,8 +114,11 @@ ops.invest(rf1)
 # Analyse
 
 # pure events
+cashFlows(ops2, ad)
+cashFlows(ops2, "2015-12-31") # One day earlier. Look's good.
 events2 = events(ops2, ad)
 print(events2$evs)
+plot(ops2, ad)  # Doesn't work
 
 # Liquidität
 liquidity(ops2, by=tb, type="marginal")

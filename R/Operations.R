@@ -267,7 +267,8 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             }
             # evaluate invest pattern
             # Should be generalized, cf. above
-            ops <- object$InvestPattern(object$RiskFactorConnector,object$params)
+            # ops <- object$InvestPattern(object$RiskFactorConnector,object$params)
+            ops <- do.call(object$InvestPattern, object$InvestParams)
             if(!is.null(ops)) {
               if (length(ops)<2) stop("An investment pattern needs to have length>1!")
               vals <- c(ops[1,],diff(ops)[-1,])
