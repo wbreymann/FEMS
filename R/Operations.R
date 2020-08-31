@@ -46,11 +46,11 @@
 #'                            contract will be evaluated
 #' 
 #' @return
-#' 
-# @include 
+#' @include FEMSContract.R
 #' @export
 #' @rdname ops-classes
 setRefClass("Operations",
+            contains = "FEMSContract",
             fields = list(
               ContractType = "character",
               ContractID = "character",

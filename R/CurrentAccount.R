@@ -1,5 +1,7 @@
+#' @include FEMSContract.R
 #' @export
 setRefClass("CurrentAccount",
+            contains = "FEMSContract",
             fields = list(
               ContractID = "character",
               ContractType = "character",
