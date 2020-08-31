@@ -57,7 +57,6 @@ Collate:
     'BaseContract.R'
     'CapmEngine.R'
     'CompoundContract.R'
-    'FEMSContract.R'
     'ContractPlot.R'
     'Liquidity.R'
     'Events.R'
