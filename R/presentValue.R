@@ -5,6 +5,8 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
+#' @include cashFlows.R DynamicYieldCurve.R YieldCurve.R
+#' @export 
 presentValue <- function(x, yield=NULL, yieldCurve=NULL, per=NULL, isPercentage=TRUE) {
   
   if(is.null(yield) && is.null(yieldCurve)) {

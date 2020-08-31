@@ -5,6 +5,8 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
+#' @include duration.R presentValue.R 
+#' @export 
 immunize <- function(x, target, yield, isPercentage=TRUE, per=NULL) {
   browser()
   target.val <- presentValue(target, yield=yield, isPercentage=isPercentage, per=per)

@@ -5,6 +5,8 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
+#' @include cashFlows.R
+#' @export 
 yield <- function(x, price, isPercentage=TRUE, per=NULL) {
   
   # date as per which 'price' is valid 

@@ -5,7 +5,8 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
-
+#' @include cashFlows.R presentValue.R yieldToMaturity.R util.R DynamicYieldCurve.R YieldCurve.R
+#' @export 
 duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL, 
                      isPercentage=TRUE, per=NULL) {
 
