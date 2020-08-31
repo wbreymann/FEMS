@@ -78,6 +78,7 @@ cashFlows <- function(x, from=NULL, to=NULL, riskfactors=NULL, variableRate=data
   cf.ts <- timeSeries(cf[,c("Value","Time")], charvec=substring(cf$Date,1,10))
   cf.ts$Time <- as.numeric(cf.ts$Time)
   cf.ts$Value <- as.numeric(cf.ts$Value)
-  cf.ts <- aggregate(cf.ts, time(cf.ts), "sum")
-  return(cf.ts)
+  ts <- aggregate(cf.ts, time(cf.ts), "sum")
+  ts$Time <- cf.ts[row.names(ts),]$Time
+  return(ts)
 }
