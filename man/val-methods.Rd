@@ -91,7 +91,7 @@ value(object, by, type, method, ...)
 
 \S4method{value}{CurrentAccount,character,character,ValuationEngine}(object, by, type, method, end_date, ...)
 
-\S4method{value}{Node,timeBuckets,character,ANY}(object, by, type)
+\S4method{value}{Node,timeBuckets,character,ANY}(object, by, type, method)
 
 \S4method{value}{Operations,AD0,character,missing}(object, by, type, method, ...)
 
