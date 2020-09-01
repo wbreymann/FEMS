@@ -58,7 +58,7 @@ plot(cfPattern)
 # link Operations contract with market environment
 set(ops1, rf1)
 # pure events
-cashFlows(ops1, ad)  ## Error: Variable Time shows wrong values.
+cashFlows(ops1, ad) 
 events1 = events(ops1, ad)
 print(events1$evs)
 plot(ops1, ad)  ## Doesn't work. 
