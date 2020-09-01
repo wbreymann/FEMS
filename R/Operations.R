@@ -235,7 +235,7 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             out <- new("EventSeries")
             out$id <- FEMS:::get(object,"ContractID")
             out$ct <- FEMS:::get(object,"ContractType")
-            
+
             # AD0 event
             events <- data.frame(Date=as.character(ad),
                                 Value=0.0,
@@ -260,7 +260,9 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
                                       Type="OPS",
                                       Level="P",
                                       Currency=object$Currency,
-                                      Time=0.0,
+                                      Time=yearFraction(as.character(ad), 
+                                                        as.character(time(ops)), 
+                                                        convention = "30E360"),
                                       NominalValue=0.0,
                                       NominalRate=0.0,
                                       NominalAccrued=0.0))
@@ -278,7 +280,9 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
                                       Type=c("IED",rep("DPR",length(ops)-1)),
                                       Level="P",
                                       Currency=object$Currency,
-                                      Time=0.0,
+                                      Time=yearFraction(as.character(ad), 
+                                                        as.character(time(ops)), 
+                                                        convention = "30E360"),
                                       NominalValue=vals,
                                       NominalRate=0.0,
                                       NominalAccrued=0.0))
@@ -296,7 +300,9 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
                                       Type="RES",
                                       Level="P",
                                       Currency=object$Currency,
-                                      Time=0.0,
+                                      Time=yearFraction(as.character(ad), 
+                                                        as.character(time(ops))[-1], 
+                                                        convention = "30E360"),
                                       NominalValue=vals,
                                       NominalRate=0.0,
                                       NominalAccrued=0.0))
