@@ -49,7 +49,7 @@ BS$children
 class(BS$children)
 
 # yield curve
-(yc_flat <- FlatCurve(0.025, "2013-12-31"))
+(yc_flat <- MarketInterestRate(0.025, "2013-12-31"))
 yc_flat
 (val1 <- value(bc1, by="2023-12-31", curve=yc_flat, compound="compound")) 
 (val2 <- value(bc2, by="2023-12-31", curve=yc_flat, compound="compound")) 

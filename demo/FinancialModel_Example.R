@@ -39,8 +39,7 @@ length(Father$Wealth$contracts)
 Father$Wealth$contracts 
 
 # Define risk factor environment -----------------------------------------------
-(yc.flat <- FlatCurve(0.03, "2013-12-31"))
-yc.flat$MarketObjectCode <- "YC_CH"
+(yc.flat <- MarketInterestRate(0.03, "2013-12-31", label= "YC_CH"))
 (rf1 = RFConn(list(yc.flat)))
 
 # Wealth evolution without expenses --------------------------------------------

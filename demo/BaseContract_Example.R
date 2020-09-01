@@ -63,7 +63,7 @@ vals_err <- value(bc2, by="2014-01-01", curve=yc)
 ###########################################################
 # Define a flat yield curve
 
-yc_flat <- FlatCurve(0.05, "2015-01-01")
+yc_flat <- MarketInterestRate(0.05, "2015-01-01")
 yc_flat
 (val <- value(bc2, by="2016-01-01", curve=yc_flat))
 
