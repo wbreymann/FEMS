@@ -46,7 +46,7 @@ rf <- RFConn(yc_flat)
 # calculate event series
 # currently still not the same format as an rActus EventSeries
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2018-12-31")) ## Error: CF not taken into account properly
-cashFlows(curr_acc, "2012-12-31", rf, end_date="2018-12-31") # This should also work
+cashFlows(curr_acc, from = "2012-12-31", riskfactors = rf) # This should also work
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf)) # must produce an error
 (evs.curr_acc.1 <- events(curr_acc, "2012-12-31", rf, end_date="2013-12-31"))  
 (evs.curr_acc.2 <- events(curr_acc, "2013-12-31", rf, end_date="2014-12-31"))
