@@ -11,6 +11,8 @@ devtools::load_all()
 t0 <- "2013-12-31"
 (yc_flat <- FlatCurve(0.03, t0))
 yc_flat$MarketObjectCode <- "YC_FLAT"
+# MarketRate(rate=0.03, date=t0, label="CH_RATE")
+
 # I'm unhappy with the name "FlatCurve, cf. below.
 # The reason is a didactical: 
 # The students do not know anything about a yield curve when that must first
@@ -19,7 +21,7 @@ yc_flat$MarketObjectCode <- "YC_FLAT"
 # Ideally, also in the RiskFactorConnector, it should be named accordingly, 
 # e.g. "MarketRate".
 # However, internally, it should be compatible with YieldCurve.
-# Just derie it from YieldCurve.
+# Just derive it from YieldCurve.
 
 # define the in- and out-flows
 dates <- as.character(timeSequence(from="2019-01-31", by="month", length.out=12))
@@ -32,7 +34,9 @@ dates <- as.character(timeSequence(from="2019-01-31", by="month", length.out=12)
 # We need a simpler interface, as for "bond", etc.
 # What's about the naming? Just "account"? or "bankAccount"?
 # The interface then could look like this (cf. also comments below)
+
 # bankAccount(start, balance, currency, ...)
+
 # where ... are all the additional variables.
 # For the cash flows, I suggest
 # "transactions" for eternal transcation
@@ -180,7 +184,7 @@ deprec <- function(times) {
 }
 
 # Testing the function 
-cfPattern = do.call("deprec", ops2$InvestParams)
+cfPattern = do.call("deprec", list(times))
 plot(cfPattern)
 
 # Constructing the object
@@ -194,7 +198,8 @@ cashFlows(ops2, "2015-12-31") # One day earlier. Look's good.
 # Notice that here the depreciation is shown but it is not a cash flow!
 # This can be distinguised here:
 events2 = events(ops2, ad)
-print(events2$evs)
+events2 = events(ops2, "2015-12-31")
+print(events2)  # pretty print funktioniert nicht.
 plot(ops2, ad)  # Doesn't work
 
 
