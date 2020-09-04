@@ -99,6 +99,50 @@ setMethod("plot", signature("ContractType", "character"),
           })
 
 
+#' @include EventSeries.R FEMSContract.R
+#' @export
+#' @docType methods
+#' @rdname plt-methods
+setMethod("plot", signature("FEMSContract", "character"),
+          definition = function(x, y, yc=NULL, to=NULL, ...){
+
+            if (is(yc,"YieldCurve")){
+              rf_con <- RFConn(yc)
+              set(x, rf_con)
+            }
+            
+            # extract event series as data.frame
+            if ((class(x)=="CurrentAccount") & (is.null(to))) {
+              to <- as.character(ymd(x$ContractDealDate) %m+% years(5))
+              evs <- EventSeries(x, y, to)
+            } else {
+              evs <- EventSeries(x, y)
+            }
+            df <- as.data.frame(evs)
+            
+            # plot
+            # I need to distinguish between single and combined contracts!
+            ct <- get(evs,"ct")
+            id <- get(evs,"id")
+            if (tolower(ct) %in% c("future", "futur", "option", "optns")) {
+              FEMS:::contractPlot(df,contractType = ct,
+                                  childType =
+                                    get(get(x,what="ChildContracts")[[1]], what="ContractType"),
+                                  contractId = id)
+              
+            } else if (tolower(ct) %in% c("swap", "swaps")){
+              FEMS:::contractPlot(df,contractType = ct,
+                                  childType =
+                                    c(get(get(x,what="ChildContracts")[[1]], what="ContractType"),
+                                      get(get(x,what="ChildContracts")[[2]], what="ContractType")),
+                                  contractId = id)
+            } else {
+              FEMS:::contractPlot(df,contractType = ct, contractId = id)
+              
+            }
+          })
+
+
 # setMethod("plot", signature("ContractType", "character"),
 #           definition = function(x, y, yc=NULL, ...){
 #             browser()
@@ -134,7 +178,7 @@ contractPlot <- function(x, ...){
     if(tolower(gsub(" ", "", contractType)) %in%
        c("pam", "principalatmaturity", "ann", "annuity",
          "nam", "negativeamortizer", "lam", "linearamortizer",
-         "lax", "exoticlinearamortizer")) {
+         "lax", "exoticlinearamortizer","operations")) {
 
         ## (1) initialize graphics object
         graph <- initializeBasicCTGraphic(df, start, end, by)
@@ -1438,6 +1482,7 @@ addPrincipalRedemptionLayer <- function(obj, rawdata, axis) {
 }
 
 addCapitalisationLayer <- function(obj, rawdata, axis) {
+
     ## what is the axis to draw on?
     if(axis == "NULL") {
         y2.lim <- obj[["y2.lim"]]
