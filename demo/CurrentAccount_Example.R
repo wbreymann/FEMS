@@ -7,8 +7,7 @@ devtools::load_all()
 # Example 1:
 # set starting date and yield curve
 t0 <- "2013-12-31"
-(yc_flat <- FlatCurve(0.03, t0))
-yc_flat$MarketObjectCode <- "YC_FLAT"
+(yc_flat <- MarketInterestRate(0.03, t0, label = "YC_FLAT")
 
 # define the in- and out-flows
 (cashflows <- data.frame(CashFlows = 150000, row.names = "2014-06-30"))
@@ -79,8 +78,7 @@ add.cashflow(curr_acc,
 # Just a negative amount from the beginning...
 # Interest payment currently not relevant since interest accrued is reflected in account value
 t0 <- "2012-12-30"
-(yc_flat <- FlatCurve(0.03, t0))
-yc_flat$MarketObjectCode <- "YC_FLAT"
+(yc_flat <- MarketInterestRate(0.03, t0, label = "YC_FLAT"))
 rf <- RFConn(yc_flat)
 
 (cashflows2 <- data.frame(CashFlows = -10000, row.names = "2013-12-31"))
@@ -116,8 +114,7 @@ curr_acc3 <- CurrentAccount(ContractID = "Test_CurrAcc3",
 # Example 4:
 # example from the exercise...
 t0 <- "2013-12-31"
-(yc_flat <- FlatCurve(0.03, t0))
-yc_flat$MarketObjectCode <- "FlatCurve"
+(yc_flat <- MarketInterestRate(0.03, t0, label = "FlatCurve"))
 (cashflows <- data.frame(CashFlows = 150000, row.names = "2013-12-31"))
 perc_out_dt <- c("2013-12-31","2014-12-31","2015-12-31","2016-12-31","2017-12-31")
 (percentage_outflows <- data.frame(PercentageOutflows = rep(0.04, length(perc_out_dt)), 
@@ -137,8 +134,7 @@ curr_acc <- CurrentAccount(ContractID = "CurrentAccount_1",
 # Example 5:
 # check some accruels 
 t0 <- "2013-12-31"
-(yc_flat <- FlatCurve(0.03, t0))
-yc_flat$MarketObjectCode <- "FlatCurve"
+(yc_flat <- MarketInterestRate(0.03, t0, label = "FlatCurve"))
 cashflows_dt <- c("2013-12-31","2014-06-30","2014-12-31","2015-06-30","2015-12-31")
 (cashflows <- data.frame(CashFlows = c(10000,-1000,2000,-3000,-5000), row.names = cashflows_dt))
 perc_out_dt <- c("2013-12-31","2014-12-31","2015-12-31","2016-12-31","2017-12-31")
@@ -160,10 +156,9 @@ curr_acc5 <- CurrentAccount(ContractID = "CurrentAccount_1",
 # Example 6:
 # check some accruels 
 t0 <- "2013-12-31"
-yc_flat <- FlatCurve(0.03, t0)
-yc_flat <- add(yc_flat, FlatCurve(0.04, "2014-12-31"))
-(yc_flat <- add(yc_flat, FlatCurve(0.05, "2015-12-31")))
-yc_flat$MarketObjectCode <- "FlatCurve"
+yc_flat <- MarketInterestRate(0.03, t0, label = "FlatCurve")
+yc_flat <- add(yc_flat, MarketInterestRate(0.04, "2014-12-31"))
+(yc_flat <- add(yc_flat, MarketInterestRate(0.05, "2015-12-31")))
 
 cashflows_dt <- c("2013-12-31","2014-12-31","2015-12-31")
 (cashflows <- data.frame(CashFlows = c(10000,-1000,2000), row.names = cashflows_dt))
@@ -184,8 +179,7 @@ curr_acc6 <- CurrentAccount(ContractID = "CurrentAccount_6",
 # Example 7:
 # check some accruels 
 t0 <- "2012-06-30"
-yc_flat <- FlatCurve(0.03, t0)
-yc_flat$MarketObjectCode <- "FlatCurve"
+yc_flat <- MarketInterestRate(0.03, t0, label = "FlatCurve")
 
 cashflows_dt <- c("2013-12-31","2014-12-31","2015-12-31")
 (cashflows <- data.frame(CashFlows = c(1000,-1000,2000), row.names = cashflows_dt))

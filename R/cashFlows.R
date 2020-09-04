@@ -39,6 +39,7 @@ cashFlows <- function(x, from=NULL, to=NULL, riskfactors=NULL, variableRate=data
         to <- eS$evs$Date[length(eS$evs$Date)]
       } else {
         # use 5 years after ContractDealDate
+        print("No end date specified. Default of 5 years from start date is used !")
         to <- as.character(ymd(from) %m+% years(5))
       }
     }
@@ -66,9 +67,17 @@ cashFlows <- function(x, from=NULL, to=NULL, riskfactors=NULL, variableRate=data
   }
   
   if (is.null(riskfactors)) {
-    eS <- events(x, from)
+    if ((class(x)=="CurrentAccount")){
+      eS <- events(x, from, end_date = to)
+    } else {
+      eS <- events(x, from)
+    }
   } else {
-    eS <- events(x, from, riskfactors)
+    if ((class(x)=="CurrentAccount")){
+      eS <- events(x, from, riskfactors, end_date = to)
+    } else {
+      eS <- events(x, from, riskfactors)
+    }
   }
   
   cf <- as.data.frame(eS)[,c("Date","Value","Type","Time")]

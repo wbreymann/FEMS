@@ -244,7 +244,9 @@ setMethod(f = "add", signature = c("DynamicYieldCurve", "DynamicYieldCurve"),
             }
             
             yc <- DynamicYieldCurve()
-            set(yc, what=list(Rates=rbind(object$Rates, what$Rates)))
+            set(yc, what=list(Rates=rbind(object$Rates, what$Rates),
+                              MarketObjectCode = object$MarketObjectCode,
+                              DayCountConvention = object$DayCountConvention))
             return(yc)
           })
 

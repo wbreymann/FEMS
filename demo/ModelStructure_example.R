@@ -8,8 +8,7 @@ t0="2016-01-01"
 ad0 = as.character(timeDate(t0) - 1*24*3600)
 ad0
 
-(yc.flat <- FlatCurve(0.03, t0))
-yc.flat$MarketObjectCode <- "YC_CH"
+(yc.flat <- MarketInterestRate(0.03, t0, label = "YC_CH"))
 
 rf1 = RFConn(list(yc.flat))
 rf1

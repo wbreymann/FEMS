@@ -9,19 +9,7 @@ devtools::load_all()
 
 # set starting date and yield curve
 t0 <- "2013-12-31"
-(yc_flat <- FlatCurve(0.03, t0))
-yc_flat$MarketObjectCode <- "YC_FLAT"
-# MarketRate(rate=0.03, date=t0, label="CH_RATE")
-
-# I'm unhappy with the name "FlatCurve, cf. below.
-# The reason is a didactical: 
-# The students do not know anything about a yield curve when that must first
-# define a market interest rate.
-# Therefore I suggest to use "MarketInterestRate" instead.
-# Ideally, also in the RiskFactorConnector, it should be named accordingly, 
-# e.g. "MarketRate".
-# However, internally, it should be compatible with YieldCurve.
-# Just derive it from YieldCurve.
+(yc_flat <- MarketInterestRate(0.03, t0, label = "YC_FLAT"))
 
 # define the in- and out-flows
 dates <- as.character(timeSequence(from="2019-01-31", by="month", length.out=12))
@@ -60,7 +48,7 @@ rf <- RFConn(yc_flat)
 # calculate event series
 # currently still not the same format as an rActus EventSeries
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2018-12-31")) ## Error: CF not taken into account properly
-cashFlows(curr_acc, "2012-12-31", rf, end_date="2018-12-31") # This should also work
+cashFlows(curr_acc, from = "2012-12-31", riskfactors = rf) # This should also work
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf)) # must produce an error
 (evs.curr_acc.1 <- events(curr_acc, "2012-12-31", rf, end_date="2013-12-31"))  
 (evs.curr_acc.2 <- events(curr_acc, "2013-12-31", rf, end_date="2014-12-31"))
@@ -91,8 +79,8 @@ plot(idx)
 # plot(price.ts)
 # 
 # This market interest rates
-(yc.flat <- FlatCurve(0.03, ad))
-yc.flat$MarketObjectCode <- "YC_FLAT"
+(yc.flat <- MarketInterestRate(0.03, ad, label = "YC_FLAT")
+
 # yc.tnr <- c("3M", "1Y", "2Y", "5Y", "7Y", "10Y")
 # yc.rts <- c(-0.28, -0.26, -0.21, 0.03, 0.20, 0.42)/100
 # yc.ch <- YieldCurve(MarketObjectCode = "YC_CH", ReferenceDate = ad, 
