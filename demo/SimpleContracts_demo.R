@@ -188,7 +188,7 @@ deprec <- function(times) {
 }
 
 # Testing the function 
-cfPattern = do.call("deprec", ops2$InvestParams)
+cfPattern = do.call("deprec", list(times))
 plot(cfPattern)
 
 # Constructing the object
@@ -202,7 +202,8 @@ cashFlows(ops2, "2015-12-31") # One day earlier. Look's good.
 # Notice that here the depreciation is shown but it is not a cash flow!
 # This can be distinguised here:
 events2 = events(ops2, ad)
-print(events2$evs)
+events2 = events(ops2, "2015-12-31")
+print(events2)  # pretty print funktioniert nicht.
 plot(ops2, ad)  # Doesn't work
 
 
