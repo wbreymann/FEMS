@@ -9,44 +9,42 @@ devtools::load_all()
 
 # set starting date and yield curve
 t0 <- "2013-12-31"
-(yc_flat <- MarketInterestRate(0.03, t0, label = "YC_FLAT"))
+(yc_flat <- MarketInterestRate(0.03, t0, label = "Rates_CH"))
 
 # define the in- and out-flows
 dates <- as.character(timeSequence(from="2019-01-31", by="month", length.out=12))
-(cashflows <- data.frame(CashFlows = rep(5000, 12), row.names = as.character(dates)))
+(ext_tas <- timeSeries(data = rep(5000, 12), 
+                       charvec = dates, 
+                       units = "Ext.Transactions"))
 # perc_out_dt <- c("2013-12-31","2014-12-31")
-# (percentage_outflows <- data.frame(PercentageOutflows = rep(0.04, length(perc_out_dt)),
-#                                    row.names = perc_out_dt))
+# (percentage_outflows <- timeSeries(data = rep(0.04, length(perc_out_dt)),
+#                                    charvec = perc_out_dt,
+#                                    units = "PercentageOutflows"))
 
-# Construct current account
-# We need a simpler interface, as for "bond", etc.
-# What's about the naming? Just "account"? or "bankAccount"?
-# The interface then could look like this (cf. also comments below)
-# bankAccount(start, balance, currency, ...)
-# where ... are all the additional variables.
-# For the cash flows, I suggest
-# "transactions" for eternal transcation
-# and "transfer" for the internal transactions (with are just "Umbuchungen")
 curr_acc <- CurrentAccount(ContractID = "Test_CurrAcc",
                            ContractDealDate = t0,
                            Currency = "CHF",
-                           NotionalPrincipal = 50000,
-                           CashFlows = cashflows,
-                           # PercentageOutflows = percentage_outflows,
+                           Balance = 50000,
+                           ExternalTransactions = ext_tas,
                            CycleAnchorDateOfInterestPayment = t0,
                            CycleOfInterestPayment = "1Y-",
-                           MarketObjectCodeRateReset = "YC_FLAT")
-# We should then have the possibility to set transactions and transfers 
-# by a set function.
-curr_acc # We need an adequate show method
+                           MarketObjectCodeRateReset = "Rates_CH",
+                           NominalInterestRate = 0.02,
+                           CycleAnchorDateOfRateReset = "2014-12-31",
+                           CycleOfRateReset = "P1YL1")
+
+# or alternatively
+(curr_acc <- bankAccount(t0, balance = 50000, ir = 0.02, ext_transactions = ext_tas,
+                        MarketObjectCodeRateReset = "Rates_CH"))
 
 # construct riskfactor connector
 rf <- RFConn(yc_flat)
 
 # calculate event series
 # currently still not the same format as an rActus EventSeries
-(evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2018-12-31")) ## Error: CF not taken into account properly
-cashFlows(curr_acc, from = "2012-12-31", riskfactors = rf) # This should also work
+(evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2019-12-31")) ## Error: CF not taken into account properly
+cashFlows(curr_acc, from = "2012-12-31", riskfactors = rf) 
+cashFlows(curr_acc, from = "2012-12-31", to = "2019-12-31", riskfactors = rf) 
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf)) # must produce an error
 (evs.curr_acc.1 <- events(curr_acc, "2012-12-31", rf, end_date="2013-12-31"))  
 (evs.curr_acc.2 <- events(curr_acc, "2013-12-31", rf, end_date="2014-12-31"))
@@ -54,11 +52,31 @@ cashFlows(curr_acc, from = "2012-12-31", riskfactors = rf) # This should also wo
 (evs.curr_acc.4 <- events(curr_acc, "2015-12-31", rf, end_date="2016-12-31"))  
 (evs.curr_acc.5 <- events(curr_acc, "2016-12-31", rf, end_date="2017-12-31"))  
 (evs.curr_acc.6 <- events(curr_acc, "2017-12-31", rf, end_date="2018-12-31"))  
+(evs.curr_acc.6 <- events(curr_acc, "2018-12-31", rf, end_date="2019-12-31"))  
 
-# first add a single internal cash flow
-add.internalcashflow(curr_acc, 
-                     data.frame(InternalCashFlows = 5000, row.names = "2019-06-30"))
-(evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2019-06-30"))
+# or directly only via YieldCurve
+(evs.curr_acc <- events(curr_acc, "2012-12-31", yc_flat, end_date="2019-12-31"))
+
+# set different external transactions and internal transfers
+(ext_tas <- timeSeries(data = rep(10000, 12), 
+                       charvec = dates, 
+                       units = "Ext.Transactions"))
+set(curr_acc, ExternalTransactions = ext_tas)
+(evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2019-12-31"))
+
+
+(int_tfs <- timeSeries(data = rep(-1000, 12), 
+                       charvec = dates, 
+                       units = "Int.Transfers"))
+set(curr_acc, InternalTransfers = int_tfs)
+(evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2019-12-31"))
+
+# add a single internal transfer
+add.internaltransfer(curr_acc, 
+                     (int_tfs <- timeSeries(data = 2000, 
+                                            charvec = "2020-01-31", 
+                                            units = "Int.Transfers")))
+(evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2020-01-31"))
 
 #------------ Operational cash flows defined by an internal model -------------
 
@@ -77,7 +95,7 @@ plot(idx)
 # plot(price.ts)
 # 
 # This market interest rates
-(yc.flat <- MarketInterestRate(0.03, ad, label = "YC_FLAT")
+(yc.flat <- MarketInterestRate(0.03, ad, label = "Rates_CH")
 
 # yc.tnr <- c("3M", "1Y", "2Y", "5Y", "7Y", "10Y")
 # yc.rts <- c(-0.28, -0.26, -0.21, 0.03, 0.20, 0.42)/100
