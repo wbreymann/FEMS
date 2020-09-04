@@ -7,7 +7,7 @@ devtools::load_all()
 # Example 1:
 # set starting date and yield curve
 t0 <- "2013-12-31"
-(yc_flat <- MarketInterestRate(0.03, t0, label = "YC_FLAT")
+(yc_flat <- MarketInterestRate(0.03, t0, label = "YC_FLAT"))
 
 # define the in- and out-flows
 (cashflows <- data.frame(CashFlows = 150000, row.names = "2014-06-30"))
@@ -19,13 +19,15 @@ perc_out_dt <- c("2013-12-31","2014-12-31")
 curr_acc <- CurrentAccount(ContractID = "Test_CurrAcc",
                          ContractDealDate = t0,
                          Currency = "CHF",
-                         NotionalPrincipal = 50000,
+                         Balance = 50000,
                          CashFlows = cashflows,
                          PercentageOutflows = percentage_outflows,
                          CycleAnchorDateOfInterestPayment = t0,
                          CycleOfInterestPayment = "1Y-",
                          MarketObjectCodeRateReset = "YC_FLAT")
 curr_acc
+curr_acc_tst <- bankAccount(t0, balance = 50000, cashflows = cashflows, 
+                        outflows = percentage_outflows, ir = 0.03, irFreq = "1 year")
 
 # construct riskfactor connector
 rf <- RFConn(yc_flat)
@@ -191,7 +193,7 @@ curr_acc7 <- CurrentAccount(ContractID = "CurrentAccount_7",
                             CycleAnchorDateOfInterestPayment = "2013-12-31",
                             CycleOfInterestPayment = "1Y-",
                             MarketObjectCodeRateReset = "FlatCurve",
-                            NotionalPrincipal = 15000,
+                            Balance = 15000,
                             AccruedInterest = 120)
 
 (evs.curr_acc7 <- events(curr_acc7, t0, RFConn(yc_flat), end_date="2016-03-31"))
