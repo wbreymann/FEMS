@@ -788,36 +788,13 @@ sim.data.rf <- function(contract, rfac){
       # this is pretty inefficient so far, can end date be derived?
       mat <- as.character(ymd(anchor_dt) %m+% years(30))
     }
-    sim.data.rate.reset(rfac, anchor_dt, cycle, mat)
+    rfac$Data <- get.data.rate.reset(rfac, anchor_dt, cycle, mat)
   }
 
 }
 
-sim.data.rate.reset <-  function(yc, anchor_dt, cycle, end_dt){
 
-  times <- as.character(timeSequence(from = anchor_dt, 
-                        to = timeSequence(end_dt, 
-                                          convert.ISODuration(cycle), 
-                                          length.out =2)[2],
-                        by = convert.ISODuration(cycle)))
-  data <- getRateAt(yc, times[2:length(times)], times[1:length(times)-1])
-  yc$Data <- data.frame(Dates=times[1:length(times)-1],
-                        Values=data)
-  
-}
 
-convert.ISODuration <- function(duration) {
-
-  # currently, just take the 2nd and 3rd element
-  n_units <- substr(duration, 2, 2)
-  units <- substr(duration, 3, 3)
-  
-  conv_units <- switch(units, "Y" = "years", 
-                "Q" = "quarter", 
-                "M" = "months", 
-                "D" = "days")
-  return(paste(n_units,conv_units))
-}
 
 
 

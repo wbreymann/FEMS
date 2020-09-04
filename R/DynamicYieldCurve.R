@@ -621,6 +621,16 @@ setMethod(f = "discountFactors",
             return(discountFactors(object, termEnd, termStart, method, period, ...))
           })
 
+#' @export
+#' @rdname dfs-methods
+#' @aliases discountFactors, DynamicYieldCurve, character, character-method
+setMethod(f = "discountFactors",
+          signature = c("numeric", "character", "character"),
+          definition = function(object, termEnd, termStart, method = "continuous", period = "Y", ...) {
+            yc <- MarketInterestRate(object, min(termStart,termEnd))
+            return(discountFactors(yc, termEnd, termStart, method, period, ...))
+          })
+
 
 ## @include
 #' @export

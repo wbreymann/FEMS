@@ -255,5 +255,42 @@ couponsPerYear <- function(x, isContract=TRUE) {
   return(m)
 }
 
+# -----------------------------------------------------------------
+# private util methods
+# get rates from YieldCurve for rate reset schedule 
+get.data.rate.reset <-  function(yc, anchor_dt, cycle, end_dt){
+
+  if (end_dt < anchor_dt) {
+    df <- data.frame(Dates=NULL,Values=NULL)
+    return(df)
+  }
+  times <- as.character(timeSequence(from = anchor_dt, 
+                                     to = timeSequence(end_dt, 
+                                                       by = convert.ISODuration(cycle), 
+                                                       length.out = 2)[2],
+                                     by = convert.ISODuration(cycle)))
+  if (class(yc) == "YieldCurve" || class(yc) == "DynamicYieldCurve") {
+    data <- getRateAt(yc, times[2:length(times)], times[1:length(times)-1])
+  } else {
+    data <- rep(yc, length(times)-1)
+  }
+  df <- data.frame(Dates=times[1:length(times)-1],
+                   Values=data)
+  return(df)
+}
+
+convert.ISODuration <- function(duration) {
+  
+  # currently, just take the 2nd and 3rd element
+  n_units <- substr(duration, 2, 2)
+  units <- substr(duration, 3, 3)
+  
+  conv_units <- switch(units, "Y" = "years", 
+                       "Q" = "quarter", 
+                       "M" = "months", 
+                       "D" = "days")
+  return(paste(n_units,conv_units))
+}
+
 
 
