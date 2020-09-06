@@ -261,8 +261,7 @@ couponsPerYear <- function(x, isContract=TRUE) {
 get.data.rate.reset <-  function(yc, anchor_dt, cycle, end_dt){
 
   if (end_dt < anchor_dt) {
-    df <- data.frame(Dates=NULL,Values=NULL)
-    return(df)
+    return(NULL)
   }
   times <- as.character(timeSequence(from = anchor_dt, 
                                      to = timeSequence(end_dt, 
@@ -274,8 +273,9 @@ get.data.rate.reset <-  function(yc, anchor_dt, cycle, end_dt){
   } else {
     data <- rep(yc, length(times)-1)
   }
-  df <- data.frame(Dates=times[1:length(times)-1],
-                   Values=data)
+  df <- timeSeries(data = data,
+                   charvec = times[1:length(times)-1],
+                   units = "Values")
   return(df)
 }
 
