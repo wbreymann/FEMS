@@ -151,7 +151,7 @@ setMethod("generateEvents", signature = c("Portfolio"),
               
               contracts[[i]] <- contract_list
             }
-            
+
             # create body for risk factors
             riskFactors <- list()
             if (length(rf_conn$riskfactors) > 0) {
@@ -163,7 +163,7 @@ setMethod("generateEvents", signature = c("Portfolio"),
                 } else {
                   temp_list$base <- factor$Data$Values[1]
                 }
-                temp_list$data <- data.frame(time = factor$Data$Dates, 
+                temp_list$data <- data.frame(time = rownames(factor$Data), 
                                              value =  as.character(factor$Data$Values))
                 temp_list$data$time <- paste0(temp_list$data$time,"T00:00:00")
                 riskFactors[[i]] <- temp_list

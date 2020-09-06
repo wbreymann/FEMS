@@ -23,7 +23,7 @@
 #' @rdname rf-classes
 setRefClass("RiskFactor",
             fields = list(MarketObjectCode = "character",
-                          Data = "data.frame"
+                          Data = "timeSeries"
             ))
 ##############################################################
 #' \code{RiskFactor}-class constructor
