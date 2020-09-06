@@ -252,6 +252,8 @@ currentaccount.evs <- function(object, model, end_date, method, period){
     r <- get.data.rate.reset(yc, object$CycleAnchorDateOfRateReset, 
                                      object$CycleOfRateReset, 
                                      end_date)
+    r <- data.frame(Dates = rownames(r),
+                    Values = r$Values)
     deal_date_r <- data.frame(Dates = object$ContractDealDate,
                               Values = object$NominalInterestRate)
     if (!(deal_date_r$Dates %in% r$Dates)) {
