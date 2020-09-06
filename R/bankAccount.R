@@ -7,7 +7,7 @@
 #*******************************************************************************
 #' @include CurrentAccount.R
 #' @export 
-bankAccount = function(dealDate, balance = 0, accrued = 0, 
+bankAccount = function(start, balance = 0, accrued = 0, 
                        ir = 0.0, irFreq = "1 year", ext_transactions = NULL, 
                        int_transfers = NULL, perc_outflows = NULL, 
                        variable.rates = FALSE, ...) {
@@ -44,7 +44,7 @@ bankAccount = function(dealDate, balance = 0, accrued = 0,
   if(!"Currency" %in% names(args)) {
     args[["Currency"]] <- "CHF"
   }
-  ip_anchor <- as.character(timeSequence(dealDate, 
+  ip_anchor <- as.character(timeSequence(start, 
                                          by = ir_freq_bef, 
                                          length.out = 2)[2])
   if(variable.rates) {
@@ -52,7 +52,7 @@ bankAccount = function(dealDate, balance = 0, accrued = 0,
     args[["CycleAnchorDateOfRateReset"]] <- ip_anchor  
   }
   out <- CurrentAccount(ContractID = "Account",
-                        ContractDealDate = dealDate,
+                        ContractDealDate = start,
                         Balance = balance,
                         AccruedInterest = accrued,
                         NominalInterestRate = ir,

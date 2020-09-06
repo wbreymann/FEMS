@@ -7,23 +7,23 @@
 #*******************************************************************************
 #' @include Annuity.R
 #' @export 
-annuity = function(dealDate, nominal=0.0, ir=0.0, annuity=0.0, 
+annuity = function(start, nominal=0.0, ir=0.0, annuity=0.0, 
                    annuityFreq="1 year", maturity = "0 years", role="long", 
                    variable.rates=FALSE, ...) {
 
-  if (missing(dealDate)){
-    stop("Variable dealDate muss gesetzt werden !!!")
+  if (missing(start)){
+    stop("Variable start muss gesetzt werden !!!")
   }
   args <- list(...)
   if(is.null(maturity)) {
     maturity <- NULL
   } else if(!is.null(maturity) && nchar(maturity)<13) {
-    maturity <- as.character(timeSequence(timeDate(dealDate), 
+    maturity <- as.character(timeSequence(timeDate(start), 
                                                by=maturity, length.out=2)[2])
   }
-  statusDate <- as.character(timeDate(dealDate)-24*3600)
-  contractDealDate <- as.character(timeDate(dealDate)-24*3600)
-  initialExchangeDate <- dealDate
+  statusDate <- as.character(timeDate(start)-24*3600)
+  contractDealDate <- as.character(timeDate(start)-24*3600)
+  initialExchangeDate <- start
   
   ann_fr <- annuityFreq
   if(is.null(annuityFreq)) {
