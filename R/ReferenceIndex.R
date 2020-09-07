@@ -104,9 +104,9 @@ setMethod(f = "set", signature = c("ReferenceIndex", "list"),
                          object$MarketObjectCode = value
                        },
                        Data = {
-                         object$Data = data.frame(Dates = as.character(value$Dates), 
-                                                        Values = as.numeric(value$Values),
-                                                        stringsAsFactors = FALSE)
+                         object$Data = timeSeries(data = as.numeric(value$Values), 
+                                                  charvec = as.character(value$Dates),
+                                                  units = "Values")
                        } )
               } else {
                 warning(paste("field ", i, " does not exist, cannot assign value!", sep=""))
@@ -134,13 +134,12 @@ setMethod(f = "get", signature = c("ReferenceIndex", "character"),
                                      object$MarketObjectCode
                                      },
                                    Dates = {
-                                     object$Data[,"Dates"]
+                                     rownames(idx$Data)
                                      },
                                    Values = {
-                                     object$Data[,"Values"]
+                                     object$Data$Values
                                      },
-                                   Data = list(Dates = get(object, "Dates"),
-                                               Values = get(object, "Values"))
+                                   Data = object$Data
                 )
               } else {
                 warning(paste("field ", i, " does not exist, cannot get value!", sep = ""))
@@ -159,10 +158,10 @@ setMethod(f = "get", signature = c("ReferenceIndex", "character"),
 #' @aliases vat,ReferenceIndex,character-method
 setMethod(f = "valueAt", signature = c("ReferenceIndex", "character"),
           definition = function(object, at, ...){
-          datums <- sort(as.Date(unlist(object$Data["Dates"])))
-          bool_matrix <- t(sapply(at, function(x) datums <= as.Date(x)))
-          indices <- unname(apply(bool_matrix,1,function(x) max(which(x))))
-	  	    return(object$Data["Values"][indices,1])
+            datums <- sort(as.Date(unlist(rownames(object$Data))))
+            bool_matrix <- t(sapply(at, function(x) datums <= as.Date(x)))
+            indices <- unname(apply(bool_matrix,1,function(x) max(which(x))))
+            return(object$Data[,"Values"][indices])
           })
 
 ## @include

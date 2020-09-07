@@ -16,7 +16,7 @@ cashFlows <- function(x, from=NULL, to=NULL, riskfactors=NULL, variableRate=data
     for(i in 2:length(cts)) cfs=rbind(cfs, cashFlows(cts[[i]], from))
     colnames(cfs) <- c("Value", "Time")
     return(cfs)
-  } else if (class(x)=="Operations" || class(x)=="CurrentAccount") {
+  } else if (any(is(x) %in% c("Operations", "CurrentAccount"))) {
     
     if(is.null(riskfactors)) {
       riskfactors <- FEMS:::get(x, "RiskFactorConnector")$RiskFactorConnector

@@ -7,20 +7,20 @@
 #*******************************************************************************
 #' @include PrincipalAtMaturity.R
 #' @export 
-bond <- function(dealDate, maturity="0 years", nominal=0, 
+bond <- function(start, maturity="0 years", nominal=0, 
                 coupon=0.0, couponFreq="1 year", role="long", 
                 variable.rates=FALSE, ...) {
-  if (missing(dealDate)){
-    stop("Variable dealDate muss gesetzt werden !!!")
+  if (missing(start)){
+    stop("Variable start muss gesetzt werden !!!")
   }
   args <- list(...)
   if(nchar(maturity)<13) {
-    maturity <- as.character(timeSequence(timeDate(dealDate), 
+    maturity <- as.character(timeSequence(timeDate(start), 
                                                by=maturity, length.out=2)[2])
   }
-  statusDate <- as.character(timeDate(dealDate)-24*3600)
-  contractDealDate <- as.character(timeDate(dealDate)-24*3600)
-  initialExchangeDate <- dealDate
+  statusDate <- as.character(timeDate(start)-24*3600)
+  contractDealDate <- as.character(timeDate(start)-24*3600)
+  initialExchangeDate <- start
   
   couponFreq_bef <- couponFreq
   if(is.null(couponFreq) || couponFreq=="NULL") {

@@ -56,14 +56,135 @@ setRefClass("Operations",
               ContractID = "character",
               ContractDealDate = "character",
               Currency = "character",
-              CashFlowPattern = "function",
-              InvestPattern = "function",
-              ReservePattern = "function",
-              CashFlowParams = "list",
-              InvestParams = "list",
-              ReserveParams = "list",
               RiskFactorConnector = "RiskFactorConnector"
             ))
+
+## -----------------------------------------------------------------
+# Child Classes of Operations & Constructors
+
+#' @export
+#' @rdname ops-classes
+setRefClass("OperationalCF",
+            contains = "Operations",
+            fields = list(
+              CashFlowPattern = "function",
+              CashFlowParams = "list"
+            ))
+
+#' @export
+#' @rdname ops-methods
+setGeneric(name = "OperationalCF",
+           def = function(...){
+             standardGeneric("OperationalCF")
+           })
+
+## @include
+#' @export
+#' @rdname ct-methods
+setMethod(f = "OperationalCF",signature = c(),
+          definition = function(...){
+            object = new("OperationalCF")
+            pars = list(...)
+            if(length(pars)==0){
+            }  else if (is.list(pars[[1]])) {
+              FEMS:::set(object=object, what=pars[[1]])
+            } else {
+              FEMS:::set(object=object, what=pars)
+            }
+            return(object)
+          })
+
+setMethod(f = "initialize", signature="OperationalCF",
+          function(.Object, ...) {
+            .Object <- callNextMethod()
+            # initialize pars
+            .Object$ContractType = "OperationalCF"
+            .Object$CashFlowPattern = function(model,params) { NULL }
+            return(.Object)
+          })
+
+
+#' @export
+#' @rdname ops-classes
+setRefClass("Investments",
+            contains = "Operations",
+            fields = list(
+              InvestPattern = "function",
+              InvestParams = "list"
+            ))
+
+#' @export
+#' @rdname ops-methods
+setGeneric(name = "Investments",
+           def = function(...){
+             standardGeneric("Investments")
+           })
+
+## @include
+#' @export
+#' @rdname ct-methods
+setMethod(f = "Investments",signature = c(),
+          definition = function(...){
+            object = new("Investments")
+            pars = list(...)
+            if(length(pars)==0){
+            }  else if (is.list(pars[[1]])) {
+              FEMS:::set(object=object, what=pars[[1]])
+            } else {
+              FEMS:::set(object=object, what=pars)
+            }
+            return(object)
+          })
+
+setMethod(f = "initialize", signature="Investments",
+          function(.Object, ...) {
+            .Object <- callNextMethod()
+            # initialize pars
+            .Object$ContractType = "Investments"
+            .Object$InvestPattern = function(model,params) { NULL }
+            return(.Object)
+          })
+
+#' @export
+#' @rdname ops-classes
+setRefClass("Reserves",
+            contains = "Operations",
+            fields = list(
+              ReservePattern = "function",
+              ReserveParams = "list"
+            ))
+
+#' @export
+#' @rdname ops-methods
+setGeneric(name = "Reserves",
+           def = function(...){
+             standardGeneric("Reserves")
+           })
+
+## @include
+#' @export
+#' @rdname ct-methods
+setMethod(f = "Reserves",signature = c(),
+          definition = function(...){
+            object = new("Reserves")
+            pars = list(...)
+            if(length(pars)==0){
+            }  else if (is.list(pars[[1]])) {
+              FEMS:::set(object=object, what=pars[[1]])
+            } else {
+              FEMS:::set(object=object, what=pars)
+            }
+            return(object)
+          })
+
+setMethod(f = "initialize", signature="Reserves",
+          function(.Object, ...) {
+            .Object <- callNextMethod()
+            # initialize pars
+            .Object$ContractType = "Reserves"
+            .Object$ReservePattern = function(model,params) { NULL }
+            return(.Object)
+          })
 
 ## -----------------------------------------------------------------
 #'
@@ -71,42 +192,42 @@ setRefClass("Operations",
 # #' @include
 #' @export
 #' @rdname ops-methods
-setGeneric(name = "Operations",
-           def = function(...){
-             standardGeneric("Operations")
-           })
+# setGeneric(name = "Operations",
+#            def = function(...){
+#              standardGeneric("Operations")
+#            })
 
 ## @include
 #' @export
 #' @rdname ct-methods
-setMethod(f = "Operations",signature = c(),
-          definition = function(...){
-              object = new("Operations")
-              pars = list(...)
-              if(length(pars)==0){
-              }  else if (is.list(pars[[1]])) {
-                  FEMS:::set(object=object, what=pars[[1]])
-              } else {
-                FEMS:::set(object=object, what=pars)
-              }
-              return(object)
-          })
+# setMethod(f = "Operations",signature = c(),
+#           definition = function(...){
+#               object = new("Operations")
+#               pars = list(...)
+#               if(length(pars)==0){
+#               }  else if (is.list(pars[[1]])) {
+#                   FEMS:::set(object=object, what=pars[[1]])
+#               } else {
+#                 FEMS:::set(object=object, what=pars)
+#               }
+#               return(object)
+#           })
 
 ## -----------------------------------------------------------------
 ## what happens when an instance should be created?
 ## @include 
 ## @export
 ## @rdname
-setMethod(f = "initialize", signature="Operations",
-          function(.Object, ...) {
-              .Object <- callNextMethod()
-              # initialize pars
-              .Object$ContractType = "Operations"
-              .Object$CashFlowPattern = function(model,params) { NULL }
-              .Object$InvestPattern = function(model,params) { NULL }
-              .Object$ReservePattern = function(model,params) { NULL }
-              return(.Object)
-          })
+# setMethod(f = "initialize", signature="Operations",
+#           function(.Object, ...) {
+#               .Object <- callNextMethod()
+#               # initialize pars
+#               .Object$ContractType = "Operations"
+#               .Object$CashFlowPattern = function(model,params) { NULL }
+#               .Object$InvestPattern = function(model,params) { NULL }
+#               .Object$ReservePattern = function(model,params) { NULL }
+#               return(.Object)
+#           })
 
 ## -----------------------------------------------------------------
 ## get an overview of most important terms
@@ -251,7 +372,11 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             # ops <- object$CashFlowPattern(object$RiskFactorConnector, object$params)
             # code is generalized so that an arbitrary function with arbitrary
             # arguments can be passed.
-            ops <- do.call(object$CashFlowPattern, object$CashFlowParams)
+            if ("CashFlowPattern" %in% names(object$getRefClass()$fields())) {
+              ops <- do.call(object$CashFlowPattern, object$CashFlowParams)
+            } else {
+              ops <- NULL
+            }
             if(!is.null(ops)) {
               vals <- as.numeric(series(ops))
               events <- rbind(events,
@@ -270,7 +395,11 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             # evaluate invest pattern
             # Should be generalized, cf. above
             # ops <- object$InvestPattern(object$RiskFactorConnector,object$params)
-            ops <- do.call(object$InvestPattern, object$InvestParams)
+            if ("InvestPattern" %in% names(object$getRefClass()$fields())) {
+              ops <- do.call(object$InvestPattern, object$InvestParams)
+            } else {
+              ops <- NULL
+            }
             if(!is.null(ops)) {
               if (length(ops)<2) stop("An investment pattern needs to have length>1!")
               vals <- c(ops[1,],diff(ops)[-1,])
@@ -289,7 +418,11 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             }
             # evaluate reserving pattern
             # Should be generalized, cf. above
-            ops <- object$ReservePattern(object$RiskFactorConnector,object$params)
+            if ("ReservePattern" %in% names(object$getRefClass()$fields())) {
+              ops <- object$ReservePattern(object$RiskFactorConnector,object$params)
+            } else {
+              ops <- NULL
+            }
             if(!is.null(ops)) {
               # compute change in nominal value, note, reserves are liabilities so interprete
               # nominal positions as (-1) * nominal

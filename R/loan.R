@@ -6,21 +6,21 @@
 #*******************************************************************************
 #' @include LinearAmortizer.R
 #' @export 
-loan <- function(dealDate, maturity = "0 years", nominal = 0, 
+loan <- function(start, maturity = "0 years", nominal = 0, 
                 ir = 0.0, irFreq="1 year", role = "long", 
                 amortFreq = "1 year", amort = 0,
                 variable.rates = FALSE, ...) {
-  if (missing(dealDate)){
-    stop("Variable dealDate muss gesetzt werden !!!")
+  if (missing(start)){
+    stop("Variable start muss gesetzt werden !!!")
   }
   args <- list(...)
   if(nchar(maturity)<13) {
-    maturity <- as.character(timeSequence(timeDate(dealDate), 
+    maturity <- as.character(timeSequence(timeDate(start), 
                                           by=maturity, length.out=2)[2])
   }
-  statusDate <- as.character(timeDate(dealDate)-24*3600)
-  contractDealDate <- as.character(timeDate(dealDate)-24*3600)
-  initialExchangeDate <- dealDate
+  statusDate <- as.character(timeDate(start)-24*3600)
+  contractDealDate <- as.character(timeDate(start)-24*3600)
+  initialExchangeDate <- start
   ir_freq_bef <- irFreq
   if(is.null(irFreq) || irFreq=="NULL") {
     irFreq <- NULL
