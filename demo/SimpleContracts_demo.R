@@ -8,12 +8,7 @@ devtools::load_all()
 # 1. Current account
 
 # set starting date and yield curve
-t0 <- "2013-12-31"
-<<<<<<< HEAD
 (marketRate <- MarketInterestRate(0.03, t0, label = "IR_MARKET"))
-=======
-(yc_flat <- MarketInterestRate(0.03, t0, label = "Rates_CH"))
->>>>>>> 4f9f530bea93cb7a7e74437e62e39e6fbcfd6ac3
 
 # define the in- and out-flows
 dates <- as.character(timeSequence(from = "2019-01-31", by = "month", length.out = 12))
