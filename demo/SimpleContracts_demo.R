@@ -9,7 +9,7 @@ devtools::load_all()
 
 # set starting date and yield curve
 t0 <- "2013-12-31"
-(yc_flat <- MarketInterestRate(0.03, t0, label = "YC_FLAT"))
+(marketRate <- MarketInterestRate(0.03, t0, label = "IR_MARKET"))
 
 # define the in- and out-flows
 dates <- as.character(timeSequence(from="2019-01-31", by="month", length.out=12))
