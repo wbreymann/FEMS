@@ -165,6 +165,7 @@ setMethod(f = "events", signature = c("CurrentAccount", "character", "RiskFactor
           definition = function(object, ad, model, end_date){
             # currently calculates the entire event series
             # could be made more efficient using StatusDate
+
             if (missing(end_date)) {
               stop("ErrorIn::CurrentAccount::events:: end_date needs to be provided !!! ")
             }
@@ -177,6 +178,7 @@ setMethod(f = "events", signature = c("CurrentAccount", "character", "YieldCurve
           definition = function(object, ad, model, end_date){
             # currently calculates the entire event series
             # could be made more efficient using StatusDate
+
             rf1 <- RFConn(model)
             if (missing(end_date)) {
               stop("ErrorIn::CurrentAccount::events:: end_date needs to be provided !!! ")
@@ -190,6 +192,7 @@ setMethod(f = "events", signature = c("CurrentAccount", "character", "DynamicYie
           definition = function(object, ad, model, end_date){
             # currently calculates the entire event series
             # could be made more efficient using StatusDate
+
             rf1 <- RFConn(model)
             if (missing(end_date)) {
               stop("ErrorIn::CurrentAccount::events:: end_date needs to be provided !!! ")
@@ -200,6 +203,10 @@ setMethod(f = "events", signature = c("CurrentAccount", "character", "DynamicYie
 #' @export
 setMethod(f = "EventSeries", signature = c("CurrentAccount", "character"),
           definition = function(object, ad, model, end_date, ...){
+            
+            if (class(model)=="YieldCurve"){
+              model <- RFConn(model)
+            }
             
             # create event series object
             out <- new("EventSeries")
@@ -221,7 +228,7 @@ currentaccount.evs <- function(object, model, end_date, method, period){
   if (length(object$MarketObjectCodeRateReset)==0){
     yc <- object$NominalInterestRate
   } else {
-    yc <- get(model, object$MarketObjectCodeRateReset)
+      yc <- get(model, object$MarketObjectCodeRateReset)
   }
   
   # get dates for interest payments

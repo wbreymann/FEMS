@@ -78,6 +78,7 @@ add.internaltransfer(curr_acc,
                                             units = "Int.Transfers")))
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date = "2020-01-31"))
 
+#plot(curr_acc, "2012-12-31", yc = yc_flat)
 #------------ Operational cash flows defined by an internal model -------------
 
 # define analysis time
@@ -180,7 +181,7 @@ plot(b0, "2020-01-01")
 # I'm not yet very happy with "dealDate".
 # Why not just "start"?
 # We also need a currency (no default).
-b1 <- bond(dealDate = "2020-01-01", maturity = "5 years", nominal = 10000, coupon = 0.05)
+b1 <- bond(start = "2020-01-01", maturity = "5 years", nominal = 10000, coupon = 0.05)
 cashFlows(b1)
 
 # The function "events" can also be used, as for ACTUS CTs:

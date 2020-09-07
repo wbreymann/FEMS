@@ -112,9 +112,11 @@ setMethod("plot", signature("FEMSContract", "character"),
             }
             
             # extract event series as data.frame
-            if ((class(x)=="CurrentAccount") & (is.null(to))) {
-              to <- as.character(ymd(x$ContractDealDate) %m+% years(5))
-              evs <- EventSeries(x, y, to)
+            if ((class(x)=="CurrentAccount")) {
+              if (is.null(to)){
+                to <- as.character(ymd(x$ContractDealDate) %m+% years(5))
+              }
+              evs <- EventSeries(x, y, rf_con, end_date = to)
             } else {
               evs <- EventSeries(x, y)
             }
@@ -159,7 +161,7 @@ setMethod("plot", signature("FEMSContract", "character"),
 # -----------------------------------------------------------
 # private helper method (accessed through method 'plot')
 contractPlot <- function(x, ...){
-
+  
     ##require(timeSeries)
     ## get function arguments
     df <- x
@@ -178,7 +180,8 @@ contractPlot <- function(x, ...){
     if(tolower(gsub(" ", "", contractType)) %in%
        c("pam", "principalatmaturity", "ann", "annuity",
          "nam", "negativeamortizer", "lam", "linearamortizer",
-         "lax", "exoticlinearamortizer","operations")) {
+         "lax", "exoticlinearamortizer","operations",
+         "operationalcf","investments","reserves","currentaccount")) {
 
         ## (1) initialize graphics object
         graph <- initializeBasicCTGraphic(df, start, end, by)
@@ -522,7 +525,7 @@ initializeBasicCTGraphic <- function(rawdata, start, end, by) {
   ## ~~~~~~~~~~~~~~~~~~~~~~~~~~
   y1toy2 <- 0.5 ## ratio between y1 and y2 scales
   y1Data <- c(as.numeric(subset(rawdata, subset =
-                                  Type %in% c("CDD", "IED", "PRD", "TD", "MD"))[,"Value"]))
+                                  Type %in% c("CDD", "IED", "PRD", "TD", "MD","OPS","DPR","RES","ETA","ITF"))[,"Value"]))
   if(!class(rawdata$NominalValue)=="NULL")
   {
     y1Data<-c(y1Data,as.numeric(rawdata[, "NominalValue"]))
@@ -1218,7 +1221,7 @@ addNotionalPrincipalStateLayer <- function(obj, rawdata, axis) {
 
     ## extract layer relevant data and bring in graphics form
     ## notice that we only need AD0 on Parent level (in a combined contract)
-    subs <- c("IED", "PRD", "IPCI", "PR", "MD", "TD")
+    subs <- c("IED", "PRD", "IPCI", "PR", "MD", "TD","DPR","ETA","ITF")
     if(!(axis %in% c("C1", "C2"))) {
         subs <- c("AD0", subs)
     }
@@ -1287,7 +1290,7 @@ addNotionalPrincipalPaymentLayer <- function(obj, rawdata, axis) {
 
     ## extract layer relevant data and bring in graphics form
     data <- subset(x = df, subset = Type %in% c("IED", "MD", "PRD", "TD",
-                           "STD", "OPPD", "OPXED"))
+                           "STD", "OPPD", "OPXED","OPS","DPR","RES","ETA"))
 
     if(nrow(data) > 0) {
         ## prepare x and y positions of cashflows
@@ -1367,7 +1370,7 @@ addInterestPaymentLayer <- function(obj, rawdata, axis) {
     pars <- getEventParameters()["IP", ]
 
     ## extract layer relevant data and bring in graphics form
-    data <- subset(x = df, subset = Type %in% c("IP"))
+    data <- subset(x = df, subset = Type %in% c("IP","ITF"))
     ## aggregate raw data to timeaxis dates
     ## ytd ...
     if(nrow(data)>0) {
@@ -1584,7 +1587,7 @@ addInterestAccrualsLayer <- function(obj, rawdata, axis) {
 
         ## extract and prepare relevant data
         pars <- getEventParameters()["IA", ]
-        subs <- c("IED", "PRD", "IP", "IPCI", "RR", "TD")
+        subs <- c("IED", "PRD", "IP", "IPCI", "RR", "TD","ETA","ITF")
         if(!("IED" %in% df$Type | "PRD" %in% df$Type)) {
             subs <- c("AD0", subs)
         }
@@ -1599,6 +1602,12 @@ addInterestAccrualsLayer <- function(obj, rawdata, axis) {
             if(nrow(subset(x = data, subset = Type == "TD")) > 0){
                 data[which(data$Type == "TD"), "Value"] <- data[which(data$Type == "TD"), "NominalAccrued"]
 
+            }
+            if(nrow(subset(x = data, subset = Type == "ETA")) > 0){
+              data[which(data$Type == "ETA"), "Value"] <- data[which(data$Type == "ETA"), "NominalAccrued"]
+            }
+            if(nrow(subset(x = data, subset = Type == "ITF")) > 0){
+              data[which(data$Type == "ITF"), "Value"] <- data[which(data$Type == "ITF"), "NominalAccrued"]
             }
             ## prepare line x and y coordinates
             xStart <- as.numeric(as.timeDate(data$Date[1:(nrow(data)-1)]))
@@ -1926,12 +1935,18 @@ getEventParameters <- function() {
                       "OPPD: Option Premium \nPayment",
                       "OPXED: Option Exercise \nEnd Date",
                       "AD0: Analysis \nDate",
+                      "OPS: Operational \nCashflow",
+                      "DPR: Depreciation",
+                      "RES: Reserves",
+                      "ETA: External \nTransaction",
+                      "ITF: Internal \nTransfer",
                       "NominalValue: ")
     colors <- c("black", "red", "red", "darkgreen", "darkgreen",
                 "darkgreen", "red", "green", "red", "red", "blue",
-                "darkblue", "darkblue", "red", "red", "black", "red")
-    linetypes <- c(1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2)
-    linewidths <- c(2, 2, 2, 1.5, 1.5, 1.5, 2, 1.5, 2, 2, 1.5, 1.5, 1.5, 2, 2, 2, 2)
+                "darkblue", "darkblue", "red", "red", "black", "red",
+                "red", "red", "red", "red", "red")
+    linetypes <- c(1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1,1,2)
+    linewidths <- c(2, 2, 2, 1.5, 1.5, 1.5, 2, 1.5, 2, 2, 1.5, 1.5, 1.5, 2, 2, 2, 2,2,2,2,2,2)
     pars <- data.frame(description = descriptions,
                        color = as.character(colors),
                        linetype = linetypes,
@@ -1939,7 +1954,8 @@ getEventParameters <- function() {
     pars$description <- as.character(descriptions)
     pars$color <- as.character(colors)
     rownames(pars) <- c("CDD", "IED", "PRD", "IP", "IA", "IPCI", "PR",
-                        "RR", "MD", "TD", "DV", "MR", "STD", "OPPD", "OPXED", "AD0", "NominalValue")
+                        "RR", "MD", "TD", "DV", "MR", "STD", "OPPD", "OPXED", "AD0", 
+                        "OPS","DPR","RES","ETA","ITF","NominalValue")
 
     return(pars)
 }
