@@ -67,8 +67,8 @@ setRefClass("Operations",
 setRefClass("OperationalCF",
             contains = "Operations",
             fields = list(
-              CashFlowPattern = "function",
-              CashFlowParams = "list"
+              pattern = "function",
+              args = "list"
             ))
 
 #' @export
@@ -99,7 +99,7 @@ setMethod(f = "initialize", signature="OperationalCF",
             .Object <- callNextMethod()
             # initialize pars
             .Object$ContractType = "OperationalCF"
-            .Object$CashFlowPattern = function(model,params) { NULL }
+            .Object$pattern = function(model,params) { NULL }
             return(.Object)
           })
 
@@ -109,8 +109,8 @@ setMethod(f = "initialize", signature="OperationalCF",
 setRefClass("Investments",
             contains = "Operations",
             fields = list(
-              InvestPattern = "function",
-              InvestParams = "list"
+              pattern = "function",
+              args = "list"
             ))
 
 #' @export
@@ -141,7 +141,7 @@ setMethod(f = "initialize", signature="Investments",
             .Object <- callNextMethod()
             # initialize pars
             .Object$ContractType = "Investments"
-            .Object$InvestPattern = function(model,params) { NULL }
+            .Object$pattern = function(model,params) { NULL }
             return(.Object)
           })
 
@@ -150,8 +150,8 @@ setMethod(f = "initialize", signature="Investments",
 setRefClass("Reserves",
             contains = "Operations",
             fields = list(
-              ReservePattern = "function",
-              ReserveParams = "list"
+              pattern = "function",
+              args = "list"
             ))
 
 #' @export
@@ -182,7 +182,7 @@ setMethod(f = "initialize", signature="Reserves",
             .Object <- callNextMethod()
             # initialize pars
             .Object$ContractType = "Reserves"
-            .Object$ReservePattern = function(model,params) { NULL }
+            .Object$pattern = function(model,params) { NULL }
             return(.Object)
           })
 
@@ -372,8 +372,8 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             # ops <- object$CashFlowPattern(object$RiskFactorConnector, object$params)
             # code is generalized so that an arbitrary function with arbitrary
             # arguments can be passed.
-            if ("CashFlowPattern" %in% names(object$getRefClass()$fields())) {
-              ops <- do.call(object$CashFlowPattern, object$CashFlowParams)
+            if (class(object)=="OperationalCF") {
+              ops <- do.call(object$pattern, object$args)
             } else {
               ops <- NULL
             }
@@ -395,8 +395,8 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             # evaluate invest pattern
             # Should be generalized, cf. above
             # ops <- object$InvestPattern(object$RiskFactorConnector,object$params)
-            if ("InvestPattern" %in% names(object$getRefClass()$fields())) {
-              ops <- do.call(object$InvestPattern, object$InvestParams)
+            if (class(object)=="Investments") {
+              ops <- do.call(object$pattern, object$args)
             } else {
               ops <- NULL
             }
@@ -418,8 +418,8 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             }
             # evaluate reserving pattern
             # Should be generalized, cf. above
-            if ("ReservePattern" %in% names(object$getRefClass()$fields())) {
-              ops <- object$ReservePattern(object$RiskFactorConnector,object$params)
+            if (class(object)=="Reserves") {
+              ops <- object$pattern(object$RiskFactorConnector, object$args)
             } else {
               ops <- NULL
             }

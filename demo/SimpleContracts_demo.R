@@ -122,18 +122,18 @@ ops.profit <- function(model, idx, times) {
 # and will produce an error.
 # 
 ops1 <- OperationalCF(ContractID="Ops001", Currency="CHF",
-                  CashFlowPattern = ops.profit,
-                  CashFlowParams = list(model = rf1, idx = "PriceIndex", 
-                                        times = as.character(times)))
+                      pattern = ops.profit,
+                      args = list(model = rf1, idx = "PriceIndex", 
+                                  times = as.character(times)))
 
 # Contract terms
 terms(ops1)
 ops1$ContractType
-ops1$CashFlowPattern
-ops1$CashFlowParams 
+ops1$pattern
+ops1$args 
 
 
-cfPattern <- do.call("ops.profit", ops1$CashFlowParams)
+cfPattern <- do.call("ops.profit", ops1$args)
 plot(cfPattern)
 
 # link Operations contract with market environment
@@ -159,7 +159,7 @@ plot(cfPattern)
 
 # Constructing the object
 ops2 <- Investments(ContractID = "Ops002", Currency = "CHF", 
-                    InvestPattern = deprec, InvestParams = list(times = times))
+                    pattern = deprec, args = list(times = times))
 
 
 # Cashflows and more
