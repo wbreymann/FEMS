@@ -11,6 +11,7 @@
 \alias{discountFactors,YieldCurve,character,character-method}
 \alias{discountFactors,DynamicYieldCurve,character,missing-method}
 \alias{DynamicYieldCurve,}
+\alias{discountFactors,numeric,character,character-method}
 \alias{discountFactors,DynamicYieldCurve,character,character-method}
 \alias{missing-method}
 \title{Generic method to retrieve discount factors for specific
@@ -37,6 +38,15 @@ discountFactors(object, termEnd, termStart, ...)
 )
 
 \S4method{discountFactors}{DynamicYieldCurve,character,missing}(
+  object,
+  termEnd,
+  termStart,
+  method = "continuous",
+  period = "Y",
+  ...
+)
+
+\S4method{discountFactors}{numeric,character,character}(
   object,
   termEnd,
   termStart,

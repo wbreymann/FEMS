@@ -34,7 +34,9 @@
 \alias{Nam,ANY-method}
 \alias{NegativeAmortizer}
 \alias{NegativeAmortizer,ANY-method}
-\alias{Operations,ANY-method}
+\alias{OperationalCF,ANY-method}
+\alias{Investments,ANY-method}
+\alias{Reserves,ANY-method}
 \alias{Optns}
 \alias{Optns,ANY-method}
 \alias{Option}
@@ -115,7 +117,11 @@ NegativeAmortizer(...)
 
 \S4method{NegativeAmortizer}{ANY}(...)
 
-\S4method{Operations}{ANY}(...)
+\S4method{OperationalCF}{ANY}(...)
+
+\S4method{Investments}{ANY}(...)
+
+\S4method{Reserves}{ANY}(...)
 
 Optns(...)
 

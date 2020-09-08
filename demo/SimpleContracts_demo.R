@@ -8,7 +8,8 @@ devtools::load_all()
 # 1. Current account
 
 # set starting date and yield curve
-(marketRate <- MarketInterestRate(0.03, t0, label = "IR_MARKET"))
+t0 = "2013-12-31"
+(marketRate <- MarketInterestRate(0.03, t0, label = "Rates_CH"))
 
 # define the in- and out-flows
 dates <- as.character(timeSequence(from = "2019-01-31", by = "month", length.out = 12))
@@ -37,7 +38,7 @@ curr_acc <- CurrentAccount(ContractID = "Test_CurrAcc",
                         MarketObjectCodeRateReset = "Rates_CH"))
 
 # construct riskfactor connector
-rf <- RFConn(yc_flat)
+rf <- RFConn(marketRate)
 
 # calculate event series
 # currently still not the same format as an rActus EventSeries
@@ -54,7 +55,7 @@ cashFlows(curr_acc, from = "2012-12-31", to = "2019-12-31", riskfactors = rf)
 (evs.curr_acc.6 <- events(curr_acc, "2018-12-31", rf, end_date = "2019-12-31"))  
 
 # or directly only via YieldCurve
-(evs.curr_acc <- events(curr_acc, "2012-12-31", yc_flat, end_date = "2019-12-31"))
+(evs.curr_acc <- events(curr_acc, "2012-12-31", marketRate, end_date = "2019-12-31"))
 
 # set different external transactions and internal transfers
 (ext_tas <- timeSeries(data = rep(10000, 12), 
@@ -77,7 +78,7 @@ add.internaltransfer(curr_acc,
                                             units = "Int.Transfers")))
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date = "2020-01-31"))
 
-#plot(curr_acc, "2012-12-31", yc = yc_flat)
+#plot(curr_acc, "2012-12-31", yc = marketRate)
 #------------ Operational cash flows defined by an internal model -------------
 
 # define analysis time
@@ -86,7 +87,8 @@ ad <- "2016-01-01"
 
 # Define prices externally, here just as an initial value with
 # normally distributed random increments
-values <- cumsum(c(1,0.01*rnorm(23)))
+# values <- cumsum(c(1,0.01*rnorm(23)))
+values <- c(0,0.01*rnorm(23))
 idx <- Index(MarketObjectCode = "PriceIndex",
              Data = list(Dates = times, 
                          Values = values))
