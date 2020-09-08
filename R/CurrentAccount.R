@@ -42,7 +42,8 @@ setMethod(f = "CurrentAccount",signature = c(),
                          StatusDate = "0000-01-01",
                          Balance = 0,
                          AccruedInterest = 0,
-                         NominalInterestRate = 0)
+                         NominalInterestRate = 0,
+                         Currency = "CHF")
             if(length(pars)==0){
             }  else if (is.list(pars[[1]])) {
               FEMS:::set(object, pars[[1]])
@@ -143,6 +144,7 @@ setMethod(f = "show", signature = c("CurrentAccount"),
           definition = function(object){
             print("CurrentAccount:")
             cat(paste0("DealDate: ", object$ContractDealDate,"\n"))
+            cat(paste0("Currency: ", object$Currency,"\n"))
             cat(paste0("Balance: ", object$Balance,"\n"))
             cat(paste0("Accrued: ", object$AccruedInterest,"\n"))
             if (!dim(object$ExternalTransactions)[1] == 0){
@@ -157,6 +159,17 @@ setMethod(f = "show", signature = c("CurrentAccount"),
               print("Outflows:")
               print(object$PercentageOutflows)
             }
+          })
+
+#' @include Events.R 
+#' @export
+setMethod(f = "events", signature = c("CurrentAccount", "character", "missing"),
+          definition = function(object, ad, model, end_date){
+            browser()
+            if (missing(end_date)) {
+              stop("ErrorIn::CurrentAccount::events:: end_date needs to be provided !!! ")
+            }
+            return(FEMS:::EventSeries(object, ad, RFConn(), end_date = end_date))
           })
 
 #' @include Events.R

@@ -9,7 +9,7 @@
 #' @export 
 bankAccount = function(start, balance = 0, accrued = 0, 
                        ir = 0.0, irFreq = "1 year", ext_transactions = NULL, 
-                       int_transfers = NULL, perc_outflows = NULL, 
+                       int_transfers = NULL, perc_outflows = NULL, currency = "CHF", 
                        variable.rates = FALSE, ...) {
   
   ir_freq_bef <- irFreq
@@ -41,9 +41,7 @@ bankAccount = function(start, balance = 0, accrued = 0,
   if (!is.null(perc_outflows)) {
     args[["PercentageOutflows"]] <- perc_outflows
   }
-  if(!"Currency" %in% names(args)) {
-    args[["Currency"]] <- "CHF"
-  }
+
   ip_anchor <- as.character(timeSequence(start, 
                                          by = ir_freq_bef, 
                                          length.out = 2)[2])
@@ -57,7 +55,8 @@ bankAccount = function(start, balance = 0, accrued = 0,
                         AccruedInterest = accrued,
                         NominalInterestRate = ir,
                         CycleAnchorDateOfInterestPayment = ip_anchor,
-                        CycleOfInterestPayment = irFreq)
+                        CycleOfInterestPayment = irFreq,
+                        Currency = currency)
   set(out, args)
   return(out)
   
