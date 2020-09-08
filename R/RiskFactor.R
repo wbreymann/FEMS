@@ -22,7 +22,7 @@
 #' @export 
 #' @rdname rf-classes
 setRefClass("RiskFactor",
-            fields = list(MarketObjectCode = "character",
+            fields = list(label = "character",
                           Data = "timeSeries"
             ))
 ##############################################################

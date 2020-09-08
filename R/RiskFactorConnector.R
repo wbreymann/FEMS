@@ -188,7 +188,7 @@ setMethod("add", signature = c("RiskFactorConnector", "list"),
 #' @aliases add,RiskFactorConnector,list-method
 setMethod("add", signature = c("RiskFactorConnector", "RiskFactor"),
           definition = function(object, what, ...){
-            id <- FEMS:::get(what, "MarketObjectCode")
+            id <- FEMS:::get(what, "label")
             rf_list <- list(New = what)
             if (length(id) == 0) {
               names(rf_list) <- paste("RiskFactor_",as.character(length(object$riskfactors) + 1), sep = "")

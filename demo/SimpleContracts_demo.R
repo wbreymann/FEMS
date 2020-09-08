@@ -1,5 +1,3 @@
-#[17:15] Auth Christoph (auth)
-
 # library(FEMS)
 rm(list=ls())
 devtools::load_all()
@@ -8,7 +6,7 @@ devtools::load_all()
 # 1. Current account
 
 # set starting date and yield curve
-t0 = "2013-12-31"
+t0 <- "2013-12-31"
 (marketRate <- MarketInterestRate(0.03, t0, label = "Rates_CH"))
 
 # define the in- and out-flows
@@ -88,10 +86,8 @@ ad <- "2016-01-01"
 # Define prices externally, here just as an initial value with
 # normally distributed random increments
 # values <- cumsum(c(1,0.01*rnorm(23)))
-values <- c(0,0.01*rnorm(23))
-idx <- Index(MarketObjectCode = "PriceIndex",
-             Data = list(Dates = times, 
-                         Values = values))
+values <- c(0, 0.01*rnorm(23))
+idx <- Index(data = values, charvec = as.character(times), label = "PriceIndex")
 plot(idx)
 # price.ts <- timeSeries(data = values, charvec = times)
 # plot(price.ts)
@@ -101,7 +97,7 @@ plot(idx)
 
 # yc.tnr <- c("3M", "1Y", "2Y", "5Y", "7Y", "10Y")
 # yc.rts <- c(-0.28, -0.26, -0.21, 0.03, 0.20, 0.42)/100
-# yc.ch <- YieldCurve(MarketObjectCode = "YC_CH", ReferenceDate = ad, 
+# yc.ch <- YieldCurve(label = "YC_CH", ReferenceDate = ad, 
 #                     Tenors = yc.tnr, Rates = yc.rts)
 # plot(yc.ch)
 plot(yc.flat)
@@ -179,8 +175,6 @@ b0 <- bond("2020-01-01")
 cashFlows(b0)
 plot(b0, "2020-01-01")
 
-# I'm not yet very happy with "dealDate".
-# Why not just "start"?
 # We also need a currency (no default).
 b1 <- bond(start = "2020-01-01", maturity = "5 years", nominal = 10000, coupon = 0.05)
 cashFlows(b1)

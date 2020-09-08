@@ -80,7 +80,7 @@ setMethod(f = "YieldCurve",signature = c(),
             
             # fill fields with NULL values
             fill_fields <- list()
-            fill_fields$MarketObjectCode <- "Generic_Yield_Curve"
+            fill_fields$label <- "Generic_Yield_Curve"
             fill_fields$ReferenceDate <- as.character(today())
             fill_fields$Tenors <- "0M"
             fill_fields$Rates <- Inf
@@ -110,9 +110,9 @@ setMethod(f = "YieldCurve",signature = c(),
                 }
               }
               
-              # use if MarketObjectCode is provided,
-              if ("MarketObjectCode" %in% pars_names) {
-                fill_fields$MarketObjectCode <- pars$MarketObjectCode
+              # use if label is provided,
+              if ("label" %in% pars_names) {
+                fill_fields$label <- pars$label
               }
               if ("DayCountConvention" %in% pars_names) {
                 fill_fields$DayCountConvention <- pars$DayCountConvention
@@ -141,7 +141,7 @@ setMethod(f = "MarketInterestRate", signature = c("numeric","character"),
             yc <- YieldCurve()
             tenors <- c("1W", "6M", "1Y", "5Y", "10Y", "50Y", "100Y")
             rates <- rep(1, length(tenors)) * rate
-            set(yc, list(MarketObjectCode = label,
+            set(yc, list(label = label,
                         ReferenceDate = ref_date,
                         Tenors = tenors,
                         Rates = rates))
@@ -174,8 +174,8 @@ setMethod(f = "set", signature = c("YieldCurve", "list"),
                        DayCountConvention = {
                          object$DayCountConvention <- tolower(value)
                        },
-                       MarketObjectCode = {
-                         object$MarketObjectCode <- value
+                       label = {
+                         object$label <- value
                        }
                 )
               } else {
@@ -203,7 +203,7 @@ setMethod(f = "get", signature = c("YieldCurve", "character"),
             for (i in what) {
               if (is.valid.yieldcurve.field(i)) {
                 out[[i]] <- switch(i,
-                                   MarketObjectCode = object$MarketObjectCode,
+                                   label = object$label,
                                    ReferenceDate = object$ReferenceDate,
                                    Tenors = object$Tenors,
                                    Rates = object$Rates,
@@ -532,7 +532,7 @@ setMethod(f = "get", signature = c("YieldCurve", "character"),
 #' @export
 setMethod(f = "show", signature = c("YieldCurve"),
           definition = function(object){
-            cat(paste0("MarketObjectCode: ", object$MarketObjectCode,"\n"))
+            cat(paste0("Label: ", object$label,"\n"))
             cat(paste0("ReferenceDate: ", object$ReferenceDate,"\n"))
             cat(paste0("DayCountConvention: ", object$DayCountConvention,"\n"))
             curve <- object$Rates
@@ -651,7 +651,7 @@ setMethod(f = "wealth", signature = c("YieldCurve","numeric","character"),
 ## helper methods
 # existing fields in the YieldCurve class
 validYieldCurveFields <- function() {
-  return(c("Rates", "Tenors", "ReferenceDate", "MarketObjectCode", 
+  return(c("Rates", "Tenors", "ReferenceDate", "label", 
            "DayCountConvention", "TenorDates"))
 }
 

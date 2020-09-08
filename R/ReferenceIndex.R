@@ -66,7 +66,7 @@ setRefClass("ReferenceIndex", contains = "RiskFactor",
 #' @rdname ind-methods
 #' @aliases Index-method
 setGeneric(name = "Index",
-           def = function(...){
+           def = function(data, charvec, label, ...){
              standardGeneric("Index")
            })
 
@@ -74,17 +74,13 @@ setGeneric(name = "Index",
 #' @export
 #' @rdname ind-methods
 ## @aliases 
-setMethod(f = "Index",signature = c(),
-          definition = function(...){
-            object = new("ReferenceIndex")
-            pars = list(...)
-            if (length(pars) != 0) {
-              if (is.list(pars[[1]])) {
-                set(object, what = pars[[1]])
-              }else{
-                set(object, what = pars)
-              }
-            }
+setMethod(f = "Index",signature = c("numeric", "character", "character"),
+          definition = function(data, charvec, label, ...){
+            object <- new("ReferenceIndex")
+            object$Data <- timeSeries(data = data, 
+                                      charvec = charvec, 
+                                      units = "Values")
+            object$label <- label
             return(object)
           })
 
@@ -100,8 +96,8 @@ setMethod(f = "set", signature = c("ReferenceIndex", "list"),
               if (FEMS:::is.valid.index.set.field(i)) {
                 value <- what[[i]]
                 switch(i,
-                       MarketObjectCode = {
-                         object$MarketObjectCode = value
+                       label = {
+                         object$label = value
                        },
                        Data = {
                          object$Data = timeSeries(data = as.numeric(value$Values), 
@@ -130,8 +126,8 @@ setMethod(f = "get", signature = c("ReferenceIndex", "character"),
             for (i in what) {
               if (is.valid.index.get.field(i)) {
                 out[[i]] <- switch(i,
-                                   MarketObjectCode = {
-                                     object$MarketObjectCode
+                                   label = {
+                                     object$label
                                      },
                                    Dates = {
                                      rownames(idx$Data)
@@ -168,7 +164,7 @@ setMethod(f = "valueAt", signature = c("ReferenceIndex", "character"),
 #' @export
 setMethod(f = "show", signature = c("ReferenceIndex"),
           definition = function(object){
-            cat(paste0("MarketObjectCode: ", object$MarketObjectCode,"\n"))
+            cat(paste0("Label: ", object$label,"\n"))
             print("Time Series:")
             print(object$Data)
           })
@@ -179,7 +175,7 @@ setMethod(f = "show", signature = c("ReferenceIndex"),
 # existing fields in the java class
 validIndexSetFields <- function() {
   return(c(
-    "Data", "MarketObjectCode"
+    "Data", "label"
   ))
 }
 is.valid.index.set.field <- function(x) {
@@ -188,7 +184,7 @@ is.valid.index.set.field <- function(x) {
 }
 validIndexGetFields <- function() {
   return(c(
-    "MarketObjectCode", "Dates", "Values", "Data" 
+    "label", "Dates", "Values", "Data" 
   ))
 }
 is.valid.index.get.field <- function(x) {

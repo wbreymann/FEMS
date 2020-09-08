@@ -32,7 +32,7 @@
 setMethod("plot", signature("YieldCurve", "missing"),
           definition = function(x, y, ...){
             # extract information from yield curve
-            name = get(x, "MarketObjectCode")
+            name = get(x, "label")
             t0 = get(x, "ReferenceDate")
             tenors = get(x, "Tenors")
             rates = get(x, "Rates")
@@ -102,7 +102,7 @@ setMethod("plot", signature("YieldCurve", "missing"),
 setMethod("plot", signature("RiskFactor"),
           definition = function(x, y, ...){
             # extract information from yield curve
-            name=get(x, "MarketObjectCode")
+            name=get(x, "label")
             times=get(x, "Dates")
             values=get(x, "Values")
             
