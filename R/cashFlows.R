@@ -9,8 +9,8 @@
 #' @export 
 cashFlows <- function(x, from=NULL, to=NULL, riskfactors=NULL, variableRate=data.frame()) {
 
-# x: FEMS contract or portfolio  
   if (class(x)=="Portfolio") {
+    # is this a portfolio, this case is not properly handled yet...
     cts <- FEMS:::get(x, "contracts")
     cfs <- cashFlows(cts[[1]], from)
     for(i in 2:length(cts)) cfs=rbind(cfs, cashFlows(cts[[i]], from))
@@ -18,23 +18,28 @@ cashFlows <- function(x, from=NULL, to=NULL, riskfactors=NULL, variableRate=data
     return(cfs)
   } else if (any(is(x) %in% c("Operations", "CurrentAccount"))) {
     
+    # for FEMS Contracts like Operations and CurrentAccount, the setup is different
+    
+    # potentially get risk factor out of the contract, if it is provided
     if(is.null(riskfactors)) {
-      riskfactors <- FEMS:::get(x, "RiskFactorConnector")$RiskFactorConnector
-    }
-    if (is(riskfactors,"YieldCurve")) {
-      riskfactors <- RFConn(riskfactors)
-    } else if (!is.null(riskfactors) & !is(riskfactors,"RiskFactorConnector")) {
-      stop("Argument 'riskfactors' must either be of type 'YieldCurve' or 'RiskfactorConnector' !!!")
+      rf_conn <- FEMS:::get(x, "RiskFactorConnector")$RiskFactorConnector
+      if (identical(rf_conn$riskfactors, list())) {
+        riskfactors <- NULL
+      }
     }
     
+    # set from to the contract deal date if not provided
     if(is.null(from)) {
       from <- as.character(FEMS:::get(x, "ContractDealDate"))
       if(is.null(from)){
         stop("Argument 'from' has to be provided !!!")
       }
     }
+    
+    # for both contracts, there is no maturity date, take to from actual events already calculated with OPS
+    # take to to be from plus 5 years for current accounts and print a message...
     if(is.null(to)) {
-      if (class(x)=="Operations") {
+      if (any(is(x) %in% c("Operations"))) {
         eS <- events(x, from, riskfactors)
         to <- eS$evs$Date[length(eS$evs$Date)]
       } else {
@@ -57,15 +62,17 @@ cashFlows <- function(x, from=NULL, to=NULL, riskfactors=NULL, variableRate=data
     }
   
     if(is.null(riskfactors)) {
-      riskfactors <- FEMS:::get(x, "RiskFactorConnector")$RiskFactorConnector
-    }
-    if (is(riskfactors,"YieldCurve")) {
-      riskfactors <- RFConn(riskfactors)
-    } else if (!is.null(riskfactors) & !is(riskfactors,"RiskFactorConnector")) {
-      stop("Argument 'riskfactors' must either be of type 'YieldCurve' or 'RiskfactorConnector' !!!")
+      riskfactors <- FEMS:::get(x, "RiskFactorConnector")
     }
   }
   
+  # check if riskfactors is just a yieldcurve, if so, convert this to RFConn
+  if (is(riskfactors,"YieldCurve")) {
+    riskfactors <- RFConn(riskfactors)
+  } else if (!is.null(riskfactors) & !is(riskfactors,"RiskFactorConnector")) {
+    stop("Argument 'riskfactors' must either be of type 'YieldCurve' or 'RiskfactorConnector' !!!")
+  }
+
   if (is.null(riskfactors)) {
     if ((class(x)=="CurrentAccount")){
       eS <- events(x, from, end_date = to)
@@ -79,7 +86,7 @@ cashFlows <- function(x, from=NULL, to=NULL, riskfactors=NULL, variableRate=data
       eS <- events(x, from, riskfactors)
     }
   }
-  
+
   cf <- as.data.frame(eS)[,c("Date","Value","Type","Time")]
   cf <- cf[cf$Date>=from,]
   cf <- cf[cf$Date<=to,]

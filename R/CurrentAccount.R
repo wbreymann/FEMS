@@ -21,7 +21,7 @@ setRefClass("CurrentAccount",
               StatusDate = "character",
               Balance = "numeric",
               AccruedInterest = "numeric",
-              rf_connector = "RiskFactorConnector",
+              RiskFactorConnector = "RiskFactorConnector",
               val_engine = "ValuationEngine"
             ))
 
@@ -70,7 +70,7 @@ setMethod(f = "set", signature = c("CurrentAccount","missing"),
 #' @export
 setMethod(f = "set", signature = c("CurrentAccount", "RiskFactorConnector"),
           definition = function(object, what){
-            object$rf_connector <- what
+            object$RiskFactorConnector <- what
           })
 
 #' @export
@@ -165,7 +165,6 @@ setMethod(f = "show", signature = c("CurrentAccount"),
 #' @export
 setMethod(f = "events", signature = c("CurrentAccount", "character", "missing"),
           definition = function(object, ad, model, end_date){
-            browser()
             if (missing(end_date)) {
               stop("ErrorIn::CurrentAccount::events:: end_date needs to be provided !!! ")
             }
@@ -482,7 +481,7 @@ setMethod(f = "liquidity", signature = c("CurrentAccount", "timeDate", "characte
           definition = function(object, by, type, digits = 2) {
             filtered <- c("DPR", "ITF","RES","IPCI")
             evs <- events(object, as.character(by[1]), 
-                          object$rf_connector, end_date=as.character(by[length(by)]))
+                          object$RiskFactorConnector, end_date=as.character(by[length(by)]))
             evs$evs <- evs$evs[!is.element(evs$evs$Type, filtered),]
             liq <- liquidity(evs, by, type, digits=digits)
             return(liq)
@@ -496,7 +495,7 @@ setMethod(f = "liquidity", signature = c("CurrentAccount", "timeDate", "characte
 #' @rdname val-methods
 setMethod(f = "value", signature = c("CurrentAccount", "character", "character", "missing"),
           definition = function(object, by, type, method, end_date, ...){
-            val <- value(object, by, type, object$rf_connector, end_date=end_date)
+            val <- value(object, by, type, object$RiskFactorConnector, end_date=end_date)
             return(val)
           })
 
@@ -506,9 +505,9 @@ setMethod(f = "value", signature = c("CurrentAccount", "character", "character",
 setMethod(f = "value", signature = c("CurrentAccount", "character", "character", "ValuationEngine"),
           definition = function(object, by, type, method, end_date, ...){
             if (type == "nominal") {
-              val <- FEMS::value(FEMS::events(object, by[1], object$rf_connector, end_date=end_date), by, "nominal", method, ...)
+              val <- FEMS::value(FEMS::events(object, by[1], object$RiskFactorConnector, end_date=end_date), by, "nominal", method, ...)
             } else if (type %in% c("markToModel", "markToMarket") ) {
-              val <- FEMS::value(FEMS::events(object, by[1], object$rf_connector, end_date=end_date), by, "markToModel", method, ...)
+              val <- FEMS::value(FEMS::events(object, by[1], object$RiskFactorConnector, end_date=end_date), by, "markToModel", method, ...)
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
             }

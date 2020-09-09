@@ -153,9 +153,8 @@ setMethod(f = "get", signature = c("ContractType","character"),
               # out <- .jcall(object$jref,
               #               "Lorg/actus/util/time/EventSeries;",
               #               "getGeneratedEventSeries")
-            } else if (what[1] == "ValuationEngine") {
-              # out <- .jcall(object$jref, "Lorg/actus/valuation/ValuationProvider;",
-              #               "getValuationEngine")
+            } else if (what[1] == "RiskFactorConnector") {
+              out <- object$rf_connector
             } else {
               # out <- object$ContractTerms[[what]]
               out <- as.list(sapply(what, function(x) object$ContractTerms[[x]]))
