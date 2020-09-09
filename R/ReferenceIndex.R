@@ -74,12 +74,12 @@ setGeneric(name = "Index",
 #' @export
 #' @rdname ind-methods
 ## @aliases 
-setMethod(f = "Index",signature = c("numeric", "character", "character"),
+setMethod(f = "Index",signature = c("numeric", "ANY", "character"),
           definition = function(data, charvec, label, ...){
             object <- new("ReferenceIndex")
             object$Data <- timeSeries(data = data, 
                                       charvec = charvec, 
-                                      units = "Values")
+                                      units = "Values", ...)
             object$label <- label
             return(object)
           })
