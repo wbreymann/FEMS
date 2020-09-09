@@ -157,6 +157,9 @@ setMethod(f = "EventSeries", signature = c("Portfolio", "AD0"),
                 NominalValue = getEventAttributes(evs_raw[[i]]$events, "nominalValue"),
                 NominalRate = getEventAttributes(evs_raw[[i]]$events, "nominalRate"),
                 NominalAccrued = getEventAttributes(evs_raw[[i]]$events, "nominalAccrued"))
+              temp_idx <- temp_df$Type %in% c("IPCI")
+              temp_df[temp_idx,"Value"] <- temp_df[temp_idx,"NominalValue"] - 
+                                              temp_df[c(temp_idx[2:length(temp_idx)],FALSE),"NominalValue"]
               evs_list[[i]] <- temp_df[temp_df$Date>=as.character(ad), ]
               id_list[[i]] <- evs_raw[[i]]$contractId
               ct_list[[i]] <- object$contracts[[evs_raw[[i]]$contractId]]$ContractTerms$ContractType

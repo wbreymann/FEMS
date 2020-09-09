@@ -369,7 +369,7 @@ currentaccount.evs <- function(object, model, end_date, method, period){
       nominal_accrued <- nominal_accrued * df_s + (df_s-1) * nominal_value
       
       if (all_dates[i] %in% interest_dates) {
-        value <- 0
+        value <- nominal_accrued
         nominal_value <- nominal_value + nominal_accrued
         nominal_accrued <- 0
         next_ev <- rbind(next_ev,
