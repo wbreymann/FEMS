@@ -109,8 +109,10 @@ setMethod("plot", signature("FEMSContract", "character"),
             if (is(yc,"YieldCurve")){
               rf_con <- RFConn(yc)
               set(x, rf_con)
+            } else {
+              rf_con <- RFConn()
             }
-            
+
             # extract event series as data.frame
             if ((class(x)=="CurrentAccount")) {
               if (is.null(to)){
