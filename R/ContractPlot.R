@@ -189,7 +189,11 @@ contractPlot <- function(x, ...){
 
         ## (2) add layers according to contract type
         graph[["y1.lab"]] <- "Notional/Principal"
-        graph[["y2.lab"]] <- "Interest Payments"
+        if (contractType == "Investments"){
+          graph[["y2.lab"]] <- "Depreciation"
+        } else {
+          graph[["y2.lab"]] <- "Interest Payments"
+        }
         graph <- addNotionalPrincipalPaymentLayer(graph, df, axis = "NULL")
         graph <- addNotionalPrincipalStateLayer(graph, df, axis = "NULL")
         graph <- addPrincipalRedemptionLayer(graph, df, axis = "NULL")
@@ -548,7 +552,7 @@ initializeBasicCTGraphic <- function(rawdata, start, end, by) {
   
   ## add secondary y axis (if any data should be drawn on this)
   y2Data <- c(as.numeric(subset(rawdata, subset =
-                                  Type %in% c("IP", "IPCI", "PR", "DV", "MR", "STD"))[, "Value"]))
+                                  Type %in% c("IP", "IPCI", "PR", "DV", "MR", "STD","DPR"))[, "Value"]))
   if(length(y2Data) > 0) {
     y2.max <- max(abs(y2Data), na.rm = TRUE)
     if(y2.max>0) {
@@ -1286,11 +1290,16 @@ addNotionalPrincipalPaymentLayer <- function(obj, rawdata, axis) {
     df <- as.data.frame(rawdata)
 
     ## get graphical parameters
-    pars <- getEventParameters()["IED", ]
+    if ("OPS" %in% df$Type) {
+      pars <- getEventParameters()["OPS", ]
+    }else {
+      pars <- getEventParameters()["IED", ]
+    }
+    
 
     ## extract layer relevant data and bring in graphics form
     data <- subset(x = df, subset = Type %in% c("IED", "MD", "PRD", "TD",
-                           "STD", "OPPD", "OPXED","OPS","DPR","RES","ETA"))
+                           "STD", "OPPD", "OPXED","OPS","RES","ETA"))
 
     if(nrow(data) > 0) {
         ## prepare x and y positions of cashflows
@@ -1338,6 +1347,7 @@ addNotionalPrincipalPaymentLayer <- function(obj, rawdata, axis) {
 
 
 addInterestPaymentLayer <- function(obj, rawdata, axis) {
+
     ## what is the axis to draw on?
     if(axis == "NULL") {
         y2.lim <- obj[["y2.lim"]]
@@ -1367,10 +1377,14 @@ addInterestPaymentLayer <- function(obj, rawdata, axis) {
     df <- as.data.frame(rawdata)
 
     ## get graphical parameters
-    pars <- getEventParameters()["IP", ]
+    if ("DPR" %in% df$Type) {
+      pars <- getEventParameters()["DPR", ]
+    } else {
+      pars <- getEventParameters()["IP", ]
+    }
 
     ## extract layer relevant data and bring in graphics form
-    data <- subset(x = df, subset = Type %in% c("IP","ITF"))
+    data <- subset(x = df, subset = Type %in% c("IP","ITF","DPR"))
     ## aggregate raw data to timeaxis dates
     ## ytd ...
     if(nrow(data)>0) {
@@ -1943,9 +1957,9 @@ getEventParameters <- function() {
                       "NominalValue: ")
     colors <- c("black", "red", "red", "darkgreen", "darkgreen",
                 "darkgreen", "red", "green", "red", "red", "blue",
-                "darkblue", "darkblue", "red", "red", "black", "red",
-                "red", "red", "red", "red", "red")
-    linetypes <- c(1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1,1,2)
+                "darkblue", "darkblue", "red", "red", "black", "darkgreen",
+                "darkgreen", "red", "red", "red", "red")
+    linetypes <- c(1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,2,1,1,1,2)
     linewidths <- c(2, 2, 2, 1.5, 1.5, 1.5, 2, 1.5, 2, 2, 1.5, 1.5, 1.5, 2, 2, 2, 2,2,2,2,2,2)
     pars <- data.frame(description = descriptions,
                        color = as.character(colors),
