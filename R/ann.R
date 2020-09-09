@@ -7,7 +7,7 @@
 #*******************************************************************************
 #' @include Annuity.R
 #' @export 
-annuity = function(start, nominal=0.0, ir=0.0, annuity=0.0, 
+annuity <- function(start, nominal=0.0, ir=0.0, annuity=NULL, 
                    annuityFreq="1 year", maturity = "0 years", role="long", 
                    variable.rates=FALSE, ...) {
 
@@ -61,6 +61,10 @@ annuity = function(start, nominal=0.0, ir=0.0, annuity=0.0,
   if(!"DayCountConvention"%in%names(args)) {
     args[["DayCountConvention"]] <- "30E360"
   }
+
+  if (!(is.null(annuity))) {
+    args[["NextPrincipalRedemptionPayment"]] <- annuity
+  }
   
   attributes <- list(InitialExchangeDate=initialExchangeDate,
                     StatusDate=statusDate,
@@ -78,7 +82,6 @@ annuity = function(start, nominal=0.0, ir=0.0, annuity=0.0,
                       as.character(timeSequence(initialExchangeDate, 
                                                 by=ann_fr, 
                                                 length.out=2)[2]),
-                    NextPrincipalRedemptionPayment=annuity,
                     ContractRole=role)
   attributes <- append(attributes, args)
   out <- Ann()
