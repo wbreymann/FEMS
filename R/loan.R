@@ -8,7 +8,7 @@
 #' @export 
 loan <- function(start, maturity = "0 years", nominal = 0, 
                 ir = 0.0, irFreq="1 year", role = "long", 
-                amortFreq = "1 year", amort = 0,
+                amortFreq = "1 year", amort = NULL,
                 variable.rates = FALSE, ...) {
   if (missing(start)){
     stop("Variable start muss gesetzt werden !!!")
@@ -81,6 +81,9 @@ loan <- function(start, maturity = "0 years", nominal = 0,
   if(variable.rates) {
     args[["CycleOfRateReset"]] <- irFreq  
   }
+  if (!(is.null(amort))) {
+    args[["NextPrincipalRedemptionPayment"]] <- amort
+  }
 
   attributes <- list(InitialExchangeDate=initialExchangeDate,
                      StatusDate=statusDate,
@@ -95,7 +98,6 @@ loan <- function(start, maturity = "0 years", nominal = 0,
                                                  length.out=2)[2]),
                      ContractRole=role,
                      CycleOfPrincipalRedemption=amortFreq,
-                     NextPrincipalRedemptionPayment=amort,
                      CycleAnchorDateOfPrincipalRedemption = 
                        as.character(timeSequence(initialExchangeDate, 
                                                  by=amort_freq_bef, 
