@@ -25,6 +25,7 @@ discountFactors(object, termEnd, termStart, ...)
   termStart,
   method = "continuous",
   period = "Y",
+  refdate = NULL,
   ...
 )
 
@@ -34,6 +35,7 @@ discountFactors(object, termEnd, termStart, ...)
   termStart,
   method = "continuous",
   period = "Y",
+  refdate = NULL,
   ...
 )
 
@@ -43,6 +45,7 @@ discountFactors(object, termEnd, termStart, ...)
   termStart,
   method = "continuous",
   period = "Y",
+  refdate = NULL,
   ...
 )
 
@@ -52,6 +55,7 @@ discountFactors(object, termEnd, termStart, ...)
   termStart,
   method = "continuous",
   period = "Y",
+  refdate = NULL,
   ...
 )
 
@@ -61,6 +65,7 @@ discountFactors(object, termEnd, termStart, ...)
   termStart,
   method = "continuous",
   period = "Y",
+  refdate = NULL,
   ...
 )
 }

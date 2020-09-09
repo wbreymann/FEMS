@@ -4,12 +4,12 @@
 \name{Index}
 \alias{Index}
 \alias{Index-method}
-\alias{Index,ANY-method}
+\alias{Index,numeric,ANY,character-method}
 \title{\code{ReferenceIndex}-class constructor}
 \usage{
-Index(...)
+Index(data, charvec, label, ...)
 
-\S4method{Index}{ANY}(...)
+\S4method{Index}{numeric,ANY,character}(data, charvec, label, ...)
 }
 \arguments{
 \item{...}{}
