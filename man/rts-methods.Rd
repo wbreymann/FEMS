@@ -19,13 +19,13 @@ tenor(s) from a \code{\link{DynamicYieldCurve}} object}
 \usage{
 rates(object, termEnd, termStart, ...)
 
-\S4method{rates}{YieldCurve,character,missing}(object, termEnd, termStart, isDateEnd = FALSE, ...)
+\S4method{rates}{YieldCurve,character,missing}(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...)
 
-\S4method{rates}{YieldCurve,character,character}(object, termEnd, termStart, isDateEnd = FALSE, ...)
+\S4method{rates}{YieldCurve,character,character}(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...)
 
-\S4method{rates}{DynamicYieldCurve,character,missing}(object, termEnd, termStart, isDateEnd = FALSE, ...)
+\S4method{rates}{DynamicYieldCurve,character,missing}(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...)
 
-\S4method{rates}{DynamicYieldCurve,character,character}(object, termEnd, termStart, isDateEnd = FALSE, ...)
+\S4method{rates}{DynamicYieldCurve,character,character}(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...)
 }
 \arguments{
 \item{object}{An object of class \code{DynamicYieldCurve} for 
