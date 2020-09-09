@@ -451,7 +451,7 @@ setMethod(f = "sensitivity",
               dates <- get(object, "evs")$Date
               cfs <- get(object, "evs")$Value
               ad0 <- by[1]
-              yc.nme = get(method,"RiskFactorObject")$MarketObjectCode
+              yc.nme = get(method,"RiskFactorObject")$label
               yc <- FEMS:::get(scenarios[[1]], yc.nme)
               dfs <- discountFactors(yc, dates, ad0, isDateEnd=TRUE)
               V.0 = as.numeric(cfs%*%dfs)

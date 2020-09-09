@@ -122,14 +122,14 @@ setMethod("generateEvents", signature = c("Portfolio"),
                   temp_rf <- DynamicYieldCurve(
                     Rates = temp_yc$Rates,
                     DayCountConvention = temp_yc$DayCountConvention,
-                    MarketObjectCode = temp_yc$MarketObjectCode
+                    label = temp_yc$label
                   )
                 } else {
                   temp_rf <- YieldCurve(
                     ReferenceDate=temp_yc$ReferenceDate, 
                     Tenors=temp_yc$Tenors, 
                     Rates=temp_yc$Rates, 
-                    MarketObjectCode = temp_yc$MarketObjectCode,
+                    label = temp_yc$label,
                     DayCountConvention = temp_yc$DayCountConvention)
                 }
                 
@@ -137,7 +137,7 @@ setMethod("generateEvents", signature = c("Portfolio"),
                 tst_rf <- is.rf.in.rf_conn(temp_rf, rf_conn)
                 if (!tst_rf[[1]]){
                     # set the name here of this as well as in the contract_list object
-                    temp_rf$MarketObjectCode <- paste0("MarketObject_",i)
+                    temp_rf$label <- paste0("MarketObject_",i)
                     contract_list$MarketObjectCodeOfRateReset <- paste0("MarketObject_",i)
                     add(rf_conn, temp_rf)
                 } else {
@@ -157,7 +157,7 @@ setMethod("generateEvents", signature = c("Portfolio"),
             if (length(rf_conn$riskfactors) > 0) {
               for (i in 1:length(rf_conn$riskfactors)) {
                 factor <- rf_conn$riskfactors[[i]]
-                temp_list <- list(marketObjectCode = factor$MarketObjectCode)
+                temp_list <- list(marketObjectCode = factor$label)
                 if (is(factor, "YieldCurve")) {
                   temp_list$base <- 1
                 } else {
@@ -770,7 +770,7 @@ is.rf.in.rf_conn <- function(temp_rf, rf_conn) {
     for (i in 1:length(rf_conn$riskfactors)){
       rfac <- rf_conn$riskfactors[[i]]
       if (identical(temp_rf$Data, rfac$Data)){
-        return(list(TRUE, rfac$MarketObjectCode))
+        return(list(TRUE, rfac$label))
       }
     }
   }
