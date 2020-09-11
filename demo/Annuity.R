@@ -1,13 +1,13 @@
 #*************************************************************
-# Copyright (c) 2015 by ZHAW.
+# Copyright (c) 2020 by ZHAW.
 # Please see accompanying distribution file for license.
 #*************************************************************
 
 ## -----------------------------------------------------------------
-## import rActus library
+## import FEMS library
 ## -----------------------------------------------------------------
 rm(list = ls())
-#library(rActus)
+library(FEMS)
 
 ## ---------------------------------------------------------------
 ## Preparations
@@ -19,12 +19,10 @@ ad <- "2012-12-31"
 yc <- YieldCurve()
 tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
 rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
-set(yc, what = list(
-  MarketObjectCode = "YC_Prim",
-  ReferenceDate = ad,
-  Tenors = tenors,
-  Rates = rates))
-setTimeSeries(yc, yc$ReferenceDate, as.character(today()))
+set(yc, what = list(label = "YC_Prim",
+                    ReferenceDate = ad,
+                    Tenors = tenors,
+                    Rates = rates))
 
 # create actus risk factor connector (later linking of risk factor(s) and CT)
 rf <- RFConn()
@@ -56,7 +54,7 @@ set(ann, eng)
 set(ann, what = list(
          ContractID = "001",
          Currency = "CHF",
-         Calendar = "MondayToFriday",
+         Calendar = "MF",
          ContractRole = "RPA",                   # Real Position Asset
          StatusDate       = "2012-12-31",     # on this day we analyse our PAM.
          ContractDealDate = "2012-12-31",
@@ -65,25 +63,27 @@ set(ann, what = list(
          NotionalPrincipal = 1000,               # nominal value
          NominalInterestRate = 0.05,             # nominal Interest rate
          PremiumDiscountAtIED = 0.0,
-         DayCountConvention = "30E/360",
+         DayCountConvention = "30E360",
          BusinessDayConvention = "SCF",
          CycleAnchorDateOfPrincipalRedemption = "2014-01-01",
-         CycleOfPrincipalRedemption = "1Y-"))
+         CycleOfPrincipalRedemption = "P1YL1",
+         CycleAnchorDateOfInterestPayment = "2014-01-01",
+         CycleOfInterestPayment = "P1YL1"))
 
 #' generate contract events
 as.data.frame(events(ann,ad))
 
-#DONE UNTIL HERE.... Value doesnt work for annuity somehow...
 #' compute nominal value
 value(ann, by = ad, type = "nominal")
 value(ann, by = c(ad, "2013-01-01", "2014-01-02"), type = "nominal")
 
 #' compute mark-to-model value
-value(ann,by=ad,type="markToModel")
-value(ann,by=c(ad,"2013-01-02","2014-01-02"),type="markToModel")
+value(ann, by = ad, type = "markToModel", method = eng)
+value(ann, by = c(ad, "2013-01-02", "2014-01-02"), 
+      type = "markToModel", method = eng)
 
 #' plot contract events
-plot(ann,ad)
+plot(ann, ad)
 
 # Summary of the plot:
 # ~~~~~~~~~~~~~~~~~~~
@@ -99,17 +99,17 @@ plot(ann,ad)
 ## change the cycle of the redemption and cycle of interest payment
 ## and plot the events again
 ## -----------------------------------------------------------------
-set(ann, what=list(CycleOfPrincipalRedemption = "6M-",
+set(ann, what = list(CycleOfPrincipalRedemption = "P6ML1",
                    CycleAnchorDateOfPrincipalRedemption = "2013-07-01"))
 
 #' generate contract events
 as.data.frame(events(ann,ad))
 
 #' compute mark-to-model value
-value(ann,by="2013-01-02",type="markToModel")
+value(ann, by = "2013-01-02", type = "markToModel", method = eng)
 
 #' plot contract events
-plot(ann,ad)
+plot(ann, ad)
 
 # Summary of the plot:
 # ~~~~~~~~~~~~~~~~~~~
@@ -121,18 +121,18 @@ plot(ann,ad)
 ## add one interest payment after 6M.... first redemption payment
 ## after 1 year  => grace period (=Gnadenfrist)
 ## -----------------------------------------------------------------
-set(ann, what=list(CycleAnchorDateOfPrincipalRedemption = "2014-01-01",
-                   CycleAnchorDateOfInterestPayment = "2013-07-01",
-                   CycleOfInterestPayment = "6M-"))
+set(ann, what = list(CycleAnchorDateOfPrincipalRedemption = "2014-01-01",
+                     CycleAnchorDateOfInterestPayment = "2013-07-01",
+                     CycleOfInterestPayment = "P6ML1"))
 
 #' generate contract events
 as.data.frame(events(ann,ad))
 
 #' compute mark-to-model value
-value(ann,by="2013-01-02",type="markToModel")
+value(ann, by = "2013-01-02", type = "markToModel", method = eng)
 
 #' plot contract events
-plot(ann,ad)
+plot(ann, ad)
 
 # Summary of the plot:
 # ~~~~~~~~~~~~~~~~~~~
@@ -143,14 +143,13 @@ plot(ann,ad)
 ## -----------------------------------------------------------------
 ## add capitalisation
 ## -----------------------------------------------------------------
-set(ann, what=list(
-         CapitalizationEndDate = "2013-07-01"))
+set(ann, what = list(CapitalizationEndDate = "2013-07-01"))
 
 #' generate contract events
 as.data.frame(events(ann,ad))
 
 #' compute mark-to-model value
-value(ann,by="2013-01-02",type="markToModel")
+value(ann, by = "2013-01-02", type = "markToModel", method = eng)
 
 #' plot contract events
 plot(ann,ad)
@@ -165,9 +164,9 @@ plot(ann,ad)
 ## -----------------------------------------------------------------
 set(object = ann, what = list(
                   CycleAnchorDateOfRateReset = "2014-01-01",
-                  CycleOfRateReset = "6M-",
-                  MarketObjectCodeRateReset = "YC_Prim",
-                  FixingDays = "2D",
+                  CycleOfRateReset = "P6ML1",
+                  MarketObjectCodeOfRateReset = "YC_Prim",
+                  FixingPeriod = "P2D",
                   RateMultiplier = 1,
                   RateSpread = 0))
 
@@ -175,10 +174,10 @@ set(object = ann, what = list(
 as.data.frame(events(ann,ad))
 
 #' compute mark-to-model value
-value(ann,by="2013-01-02",type="markToModel")
+value(ann, by = "2013-01-02", type = "markToModel", method = eng)
 
 #' plot contract events
-plot(ann,ad)
+plot(ann, ad)
 
 # Summary of the plot:
 # ~~~~~~~~~~~~~~~~~~~
@@ -190,18 +189,17 @@ plot(ann,ad)
 ## -----------------------------------------------------------------
 ## Amortization Date later than Maturity Date => ballooning
 ## -----------------------------------------------------------------
-set(ann, what=list(
-         AmortizationDate = "2020-01-01",
-         MaturityDate= "2015-01-01" ))
+set(ann, what = list(AmortizationDate = "2020-01-01",
+                     MaturityDate = "2015-01-01" ))
 
 #' generate contract events
 as.data.frame(events(ann,ad))
 
 #' compute mark-to-model value
-value(ann,by="2013-01-02",type="markToModel")
+value(ann, by = "2013-01-02", type = "markToModel", method = eng)
 
 #' plot contract events
-plot(ann,ad)
+plot(ann, ad)
 
 # Summary of the plot:
 # ~~~~~~~~~~~~~~~~~~~

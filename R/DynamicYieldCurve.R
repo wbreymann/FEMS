@@ -490,7 +490,7 @@ setMethod(f = "getRateAt",
               
             } else {
               #HERE GOES IMPLEMENTATION OF DYNAMIC PART
-              warning("NOT PROPERLY TESTED YET !!!")
+              warning("RATES SELECTED WITH REFDATE AFTER INITIAL DATE. NOTE: FUNCTIONALITY NOT PROPERLY TESTED YET !!!")
               out <- rep(NA, length(from))
               for (k in 1:length(from)) {
                 

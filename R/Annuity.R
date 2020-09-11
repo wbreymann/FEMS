@@ -119,22 +119,3 @@ setMethod(f = "initialize", signature = "Annuity",
 #               print(get(object = object, what = get.summary.fields("Ann")))
 #           })
 
-# a=ActusDictionary$rflActus_attributes[["Annuity"]]
-# ann
-# $ContractID
-# [1] "001"
-# $ContractRole
-# [1] "RPA"
-# $StatusDate
-# [1] "0000-01-01T00"
-# $PremiumDiscountAtIED
-# [1] 0
-# $DayCountConvention
-# [1] "30E/360"
-# $ContractType
-# [1] "ANN"
-# a$ContractID
-# names(a)
-# a$ContractID
-# ann=Ann()
-# getModelDetails(ann)
