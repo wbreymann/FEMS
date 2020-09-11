@@ -241,7 +241,7 @@ setMethod(f = "EventSeries", signature = c("EventSeries", "missing"),
 #' @docType methods
 #' @rdname print-methods
 setMethod("print", signature = "EventSeries", 
-          definition = function(x, type = "pretty", indices, ...) {
+          definition = function(x, type = "pretty", indices, round.value=0, ...) {
             
             if (type == "raw") {
               x
@@ -254,7 +254,12 @@ setMethod("print", signature = "EventSeries",
                 colnames(y) = .defaults$shortNames[colnames(y)]
                 for (nam  in colnames(y))
                 {
-                  if (is.numeric(y[,nam])) {
+                  if ( is.element(nam, c("Value", "Nominal")) ) {
+                    y[,nam] = round(y[,nam], round.value)
+                  }
+                  else if ( nam == "Accrued" ) {
+                    y[,nam] = round(y[,nam], 2)
+                  } else if (is.numeric(y[,nam])) {
                     y[,nam] = round(y[,nam],4)
                   }
                 }
