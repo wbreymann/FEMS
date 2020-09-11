@@ -1,6 +1,5 @@
-
 rm(list=ls())
-devtools::load_all()
+library(FEMS)
 
 
 #################################################################################################
@@ -10,24 +9,25 @@ t0 <- "2013-12-31"
 (yc_flat <- MarketInterestRate(0.03, t0, label = "YC_FLAT"))
 
 # define the in- and out-flows
-(cashflows <- data.frame(CashFlows = 150000, row.names = "2014-06-30"))
+(ext.tas <- timeSeries(data = 150000, charvec = "2014-06-30"))
 perc_out_dt <- c("2013-12-31","2014-12-31")
-(percentage_outflows <- data.frame(PercentageOutflows = rep(0.04, length(perc_out_dt)), 
-                                   row.names = perc_out_dt))
+(percentage_outflows <- timeSeries(data = rep(0.04, length(perc_out_dt)), 
+                                   charvec = perc_out_dt))
 
 # construct current account
 curr_acc <- CurrentAccount(ContractID = "Test_CurrAcc",
                          ContractDealDate = t0,
                          Currency = "CHF",
                          Balance = 50000,
-                         CashFlows = cashflows,
+                         ExternalTransactions = ext.tas,
                          PercentageOutflows = percentage_outflows,
                          CycleAnchorDateOfInterestPayment = t0,
                          CycleOfInterestPayment = "1Y-",
                          MarketObjectCodeRateReset = "YC_FLAT")
 curr_acc
-curr_acc_tst <- bankAccount(t0, balance = 50000, cashflows = cashflows, 
-                        outflows = percentage_outflows, ir = 0.03, irFreq = "1 year")
+#plot(curr_acc, "2012-12-31", yc = yc_flat)
+curr_acc_tst <- bankAccount(t0, balance = 50000, ext_transactions = ext.tas, 
+                            perc_outflows = percentage_outflows, ir = 0.03, irFreq = "1 year")
 
 # construct riskfactor connector
 rf <- RFConn(yc_flat)
@@ -35,7 +35,7 @@ rf <- RFConn(yc_flat)
 # calculate event series
 # currently still not the same format as an rActus EventSeries
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2018-12-31"))
-(evs.curr_acc <- events(curr_acc, "2012-12-31", rf)) # must produce an error
+# (evs.curr_acc <- events(curr_acc, "2012-12-31", rf)) # must produce an error
 (evs.curr_acc.1 <- events(curr_acc, "2012-12-31", rf, end_date="2013-12-31"))  
 (evs.curr_acc.2 <- events(curr_acc, "2013-12-31", rf, end_date="2014-12-31"))
 (evs.curr_acc.3 <- events(curr_acc, "2014-12-31", rf, end_date="2015-12-31"))  
@@ -44,8 +44,8 @@ rf <- RFConn(yc_flat)
 (evs.curr_acc.6 <- events(curr_acc, "2017-12-31", rf, end_date="2018-12-31"))  
 
 # first add a single internal cash flow
-add.internalcashflow(curr_acc, 
-             data.frame(InternalCashFlows = 5000, row.names = "2019-06-30"))
+add.internaltransfer(curr_acc, 
+             timeSeries(data = 5000, charvec = "2019-06-30"))
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2019-06-30"))
 
 # check liquidity function...
@@ -57,8 +57,8 @@ liquidity(curr_acc, by = tb, type = "cumulative")
 
 
 # now add another...
-add.internalcashflow(curr_acc, 
-                     data.frame(InternalCashFlows = -2000, row.names = "2019-12-31"))
+add.internaltransfer(curr_acc, 
+                     timeSeries(data = -2000, charvec = "2019-12-31"))
 (evs.curr_acc_new <- events(curr_acc, "2012-12-31", rf, end_date="2019-12-31"))
 
 evs = evs.curr_acc
@@ -71,8 +71,8 @@ value(evs, by, "nominal", digits=0)
 
 
 # now add another cash flow to the current account...
-add.cashflow(curr_acc, 
-             data.frame(CashFlows = 1000, row.names = "2015-06-30"))
+add.externaltransaction(curr_acc, 
+             timeSeries(data = 1000, charvec = "2015-06-30"))
 (evs.curr_acc_new <- events(curr_acc, "2012-12-31", rf, end_date="2018-12-31"))
 
 #################################################################################################
@@ -83,11 +83,11 @@ t0 <- "2012-12-30"
 (yc_flat <- MarketInterestRate(0.03, t0, label = "YC_FLAT"))
 rf <- RFConn(yc_flat)
 
-(cashflows2 <- data.frame(CashFlows = -10000, row.names = "2013-12-31"))
+(cashflows2 <- timeSeries(data = -10000, charvec = "2013-12-31"))
 curr_acc2 <- CurrentAccount(ContractID = "Test_CurrAcc2",
                          ContractDealDate = t0,
                          Currency = "CHF",
-                         CashFlows = cashflows2,
+                         ExternalTransactions = cashflows2,
                          CycleAnchorDateOfInterestPayment = t0,
                          CycleOfInterestPayment = "1Y-",
                          MarketObjectCodeRateReset = "YC_FLAT")
@@ -98,12 +98,12 @@ curr_acc2 <- CurrentAccount(ContractID = "Test_CurrAcc2",
 #################################################################################################
 # Example 3:
 # Multiple cash in- and outflows...
-(cashflows3 <- data.frame(CashFlows = c(10000, -2000, 4000, -1000), 
-                          row.names = c("2013-12-31","2014-12-31","2015-12-31","2016-12-31")))
+(cashflows3 <- timeSeries(data = c(10000, -2000, 4000, -1000), 
+                          charvec = c("2013-12-31","2014-12-31","2015-12-31","2016-12-31")))
 curr_acc3 <- CurrentAccount(ContractID = "Test_CurrAcc3",
                             ContractDealDate = t0,
                             Currency = "CHF",
-                            CashFlows = cashflows3,
+                            ExternalTransactions = cashflows3,
                             CycleAnchorDateOfInterestPayment = t0,
                             CycleOfInterestPayment = "1Y-",
                             MarketObjectCodeRateReset = "YC_FLAT",
@@ -117,14 +117,14 @@ curr_acc3 <- CurrentAccount(ContractID = "Test_CurrAcc3",
 # example from the exercise...
 t0 <- "2013-12-31"
 (yc_flat <- MarketInterestRate(0.03, t0, label = "FlatCurve"))
-(cashflows <- data.frame(CashFlows = 150000, row.names = "2013-12-31"))
+(cashflows <- timeSeries(data = 150000, charvec = "2013-12-31"))
 perc_out_dt <- c("2013-12-31","2014-12-31","2015-12-31","2016-12-31","2017-12-31")
-(percentage_outflows <- data.frame(PercentageOutflows = rep(0.04, length(perc_out_dt)), 
-                                   row.names = perc_out_dt))
+(percentage_outflows <- timeSeries(data = rep(0.04, length(perc_out_dt)), 
+                                   charvec = perc_out_dt))
 curr_acc <- CurrentAccount(ContractID = "CurrentAccount_1",
                          ContractDealDate = t0,
                          Currency = "CHF",
-                         CashFlows = cashflows,
+                         ExternalTransactions = cashflows,
                          PercentageOutflows = percentage_outflows,
                          CycleAnchorDateOfInterestPayment = t0,
                          CycleOfInterestPayment = "1Y-",
@@ -138,14 +138,14 @@ curr_acc <- CurrentAccount(ContractID = "CurrentAccount_1",
 t0 <- "2013-12-31"
 (yc_flat <- MarketInterestRate(0.03, t0, label = "FlatCurve"))
 cashflows_dt <- c("2013-12-31","2014-06-30","2014-12-31","2015-06-30","2015-12-31")
-(cashflows <- data.frame(CashFlows = c(10000,-1000,2000,-3000,-5000), row.names = cashflows_dt))
+(cashflows <- timeSeries(data = c(10000,-1000,2000,-3000,-5000), charvec = cashflows_dt))
 perc_out_dt <- c("2013-12-31","2014-12-31","2015-12-31","2016-12-31","2017-12-31")
-(percentage_outflows <- data.frame(PercentageOutflows = rep(0.04, length(perc_out_dt)), 
-                                   row.names = perc_out_dt))
+(percentage_outflows <- timeSeries(data = rep(0.04, length(perc_out_dt)), 
+                                   charvec = perc_out_dt))
 curr_acc5 <- CurrentAccount(ContractID = "CurrentAccount_1",
                            ContractDealDate = t0,
                            Currency = "CHF",
-                           CashFlows = cashflows,
+                           ExternalTransactions = cashflows,
                            PercentageOutflows = percentage_outflows,
                            CycleAnchorDateOfInterestPayment = t0,
                            CycleOfInterestPayment = "1Y-",
@@ -159,23 +159,29 @@ curr_acc5 <- CurrentAccount(ContractID = "CurrentAccount_1",
 # check some accruels 
 t0 <- "2013-12-31"
 yc_flat <- MarketInterestRate(0.03, t0, label = "FlatCurve")
-yc_flat <- add(yc_flat, MarketInterestRate(0.04, "2014-12-31"))
-(yc_flat <- add(yc_flat, MarketInterestRate(0.05, "2015-12-31")))
 
 cashflows_dt <- c("2013-12-31","2014-12-31","2015-12-31")
-(cashflows <- data.frame(CashFlows = c(10000,-1000,2000), row.names = cashflows_dt))
+(cashflows <- timeSeries(data = c(10000,-1000,2000), charvec = cashflows_dt))
 
 curr_acc6 <- CurrentAccount(ContractID = "CurrentAccount_6",
                             ContractDealDate = t0,
                             Currency = "CHF",
-                            CashFlows = cashflows,
+                            ExternalTransactions = cashflows,
                             CycleAnchorDateOfInterestPayment = t0,
                             CycleOfInterestPayment = "1Y-",
-                            MarketObjectCodeRateReset = "FlatCurve")
+                            MarketObjectCodeRateReset = "FlatCurve",
+                            NominalInterestRate = 0.02)
 
 (evs.curr_acc6 <- events(curr_acc6, "2013-12-31", RFConn(yc_flat), end_date="2018-03-31"))
 
 
+yc_flat <- YieldCurve(label = "FlatCurve", 
+                      ReferenceDate = t0,
+                      Rates = c(0.03, 0.035, 0.0375, 0.04, 0.042, 0.05, 0.06),
+                      Tenors = c("1W", "6M", "1Y", "5Y", "10Y", "50Y", "100Y"))
+set(curr_acc6, list(CycleAnchorDateOfRateReset = t0,
+                    CycleOfRateReset = "1Y-"))
+(evs.curr_acc6 <- events(curr_acc6, "2013-12-31", RFConn(yc_flat), end_date="2018-03-31"))
 
 #################################################################################################
 # Example 7:
@@ -184,12 +190,12 @@ t0 <- "2012-06-30"
 yc_flat <- MarketInterestRate(0.03, t0, label = "FlatCurve")
 
 cashflows_dt <- c("2013-12-31","2014-12-31","2015-12-31")
-(cashflows <- data.frame(CashFlows = c(1000,-1000,2000), row.names = cashflows_dt))
+(cashflows <- timeSeries(data = c(1000,-1000,2000), charvec = cashflows_dt))
 
 curr_acc7 <- CurrentAccount(ContractID = "CurrentAccount_7",
                             ContractDealDate = t0,
                             Currency = "CHF",
-                            CashFlows = cashflows,
+                            ExternalTransactions = cashflows,
                             CycleAnchorDateOfInterestPayment = "2013-12-31",
                             CycleOfInterestPayment = "1Y-",
                             MarketObjectCodeRateReset = "FlatCurve",

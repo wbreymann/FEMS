@@ -270,7 +270,7 @@ currentaccount.evs <- function(object, model, end_date, method, period){
       !identical(object$CycleOfRateReset, character(0))) {
     r <- get.data.rate.reset(yc, object$CycleAnchorDateOfRateReset, 
                                      object$CycleOfRateReset, 
-                                     end_date)
+                                     end_date, ISO = FALSE)
     r <- data.frame(Dates = rownames(r),
                     Values = r$Values)
     deal_date_r <- data.frame(Dates = object$ContractDealDate,
@@ -514,19 +514,6 @@ setMethod(f = "value", signature = c("CurrentAccount", "character", "character",
             return(val)
           })
 
-
-get.dates.from.cycle <- function(anchor_date, cycle, end_date){
-  tSeq <- timeSequence(anchor_date, end_date, by = convert.cycle(cycle))
-  return(as.character(tSeq))
-}
-
-convert.cycle <- function(cycle) {
-  period <- substr(cycle, nchar(cycle)-1, nchar(cycle)-1)
-  possible_periods <- c("day", "week", "month", "quarter", "year")
-  names(possible_periods) <- c("D", "W", "M", "Q", "Y")
-  by <- paste0(substr(cycle, 1, nchar(cycle)-2)," ",possible_periods[[period]])
-  return(by)
-}
 
 
 

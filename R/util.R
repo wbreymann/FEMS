@@ -258,16 +258,16 @@ couponsPerYear <- function(x, isContract=TRUE) {
 # -----------------------------------------------------------------
 # private util methods
 # get rates from YieldCurve for rate reset schedule 
-get.data.rate.reset <-  function(yc, anchor_dt, cycle, end_dt){
+get.data.rate.reset <-  function(yc, anchor_dt, cycle, end_dt, ISO = TRUE){
 
   if (end_dt < anchor_dt) {
     return(NULL)
   }
   times <- as.character(timeSequence(from = anchor_dt, 
                                      to = timeSequence(end_dt, 
-                                                       by = convert.ISODuration(cycle), 
+                                                       by = convert.Duration(cycle, ISO), 
                                                        length.out = 2)[2],
-                                     by = convert.ISODuration(cycle)))
+                                     by = convert.Duration(cycle, ISO)))
   if (class(yc) == "YieldCurve" || class(yc) == "DynamicYieldCurve") {
     data <- getRateAt(yc, times[2:length(times)], times[1:length(times)-1])
   } else {
@@ -279,17 +279,35 @@ get.data.rate.reset <-  function(yc, anchor_dt, cycle, end_dt){
   return(df)
 }
 
-convert.ISODuration <- function(duration) {
+convert.cycle <- function(cycle) {
+  period <- substr(cycle, nchar(cycle)-1, nchar(cycle)-1)
+  possible_periods <- c("day", "week", "month", "quarter", "year")
+  names(possible_periods) <- c("D", "W", "M", "Q", "Y")
+  by <- paste0(substr(cycle, 1, nchar(cycle)-2)," ",possible_periods[[period]])
+  return(by)
+}
+
+convert.Duration <- function(duration, ISO) {
   
-  # currently, just take the 2nd and 3rd element
-  n_units <- substr(duration, 2, 2)
-  units <- substr(duration, 3, 3)
-  
-  conv_units <- switch(units, "Y" = "years", 
-                       "Q" = "quarter", 
-                       "M" = "months", 
-                       "D" = "days")
-  return(paste(n_units,conv_units))
+  if (ISO){
+    # currently, just take the 2nd and 3rd element
+    n_units <- substr(duration, 2, 2)
+    units <- substr(duration, 3, 3)
+    
+    conv_units <- switch(units, "Y" = "years", 
+                         "Q" = "quarter", 
+                         "M" = "months", 
+                         "D" = "days")
+    out <- paste(n_units,conv_units)
+  } else {
+    out <- convert.cycle(duration)
+  }
+  return(out)
+}
+
+get.dates.from.cycle <- function(anchor_date, cycle, end_date){
+  tSeq <- timeSequence(anchor_date, end_date, by = convert.cycle(cycle))
+  return(as.character(tSeq))
 }
 
 
