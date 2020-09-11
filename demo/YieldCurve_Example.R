@@ -1,8 +1,8 @@
 #####################################################
 # YieldCurve - Object
 
-library("devtools")
-devtools::load_all()
+rm(list=ls())
+library(FEMS)
 
 t <- "2012-12-31"
 yc <- YieldCurve()
@@ -11,7 +11,7 @@ rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
 
 # set function can be called as before...
 set(yc, what = list(
-  MarketObjectCode = "YC_Prim",
+  label = "YC_Prim",
   ReferenceDate = t,
   Tenors = tenors,
   Rates = rates))
@@ -38,16 +38,16 @@ show(yc)
 plot(yc)
 
 # get rates & discount factor from relative date
-rates(yc, "1Y")  ###!! Fehler
-discountFactors(yc, "1Y")  ###!! Fehler
+rates(yc, "1Y")
+discountFactors(yc, "1Y")
 
 # get 1 year forward rates as of specific dates
 rates(yc, "1Y", "2013-06-30")
 discountFactors(yc, "1Y", "2013-06-30")
 
 # change day count convention
-set(yc, what = list(DayCountConvention = "A/365"))
-yc$DayCountConvention <- "A/365" # or same as this...
+set(yc, what = list(DayCountConvention = "A365"))
+yc$DayCountConvention <- "A365" # or same as this...
 
 
 # get rates and discount factors
@@ -61,7 +61,7 @@ getRateSeries(yc,"2012-12-31","2013-12-31")  # Please add argument for time step
 
 ##############################################################################
 # another example with creating forward rate series
-yc2 <- YieldCurve(MarketObjectCode = "YC_Prim",
+yc2 <- YieldCurve(label = "YC_Prim",
                   ReferenceDate = "2012-12-31",
                   Tenors = c("1M", "2M", "3M", "4M", "5M", "6M"),
                   Rates = c(0.01, 0.015, 0.02, 0.022, 0.024, 0.025))
@@ -70,7 +70,7 @@ fwd_rates <- getRateSeries(yc2, "2012-12-31", "2013-06-30", frequency = "month")
 fwd_rates
 
 # now change day count convention
-yc2$DayCountConvention <- "A/365"
+yc2$DayCountConvention <- "A365"
 fwd_rates2 <- getRateSeries(yc2, "2012-12-31", "2013-06-30", frequency = "month")
 fwd_rates2
 

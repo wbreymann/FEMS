@@ -40,7 +40,11 @@ cashFlows <- function(x, from=NULL, to=NULL, riskfactors=NULL, variableRate=data
     # take to to be from plus 5 years for current accounts and print a message...
     if(is.null(to)) {
       if (any(is(x) %in% c("Operations"))) {
-        eS <- events(x, from, riskfactors)
+        if (is.null(riskfactors)) {
+          eS <- events(x, from)
+        } else {
+          eS <- events(x, from, riskfactors)
+        }
         to <- eS$evs$Date[length(eS$evs$Date)]
       } else {
         # use 5 years after ContractDealDate
