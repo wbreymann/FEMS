@@ -20,11 +20,10 @@ yc <- YieldCurve()
 tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
 rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
 set(yc, what = list(
-        MarketObjectCode = "YC_Prim",
+        label = "YC_Prim",
         ReferenceDate = ad, 
         Tenors = tenors, 
         Rates = rates))
-setTimeSeries(yc, yc$ReferenceDate, as.character(today()))
 
 # create actus risk factor connector (later linking of risk factor(s) and CT)
 rf <- RFConn()
