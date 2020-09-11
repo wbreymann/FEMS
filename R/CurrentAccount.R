@@ -147,6 +147,7 @@ setMethod(f = "show", signature = c("CurrentAccount"),
             cat(paste0("Currency: ", object$Currency,"\n"))
             cat(paste0("Balance: ", object$Balance,"\n"))
             cat(paste0("Accrued: ", object$AccruedInterest,"\n"))
+            cat(paste0("InterestRate: ", round(object$NominalInterestRate*100, 2),"%","\n"))
             if (!dim(object$ExternalTransactions)[1] == 0){
               print("ExternalTransactions:")
               print(object$ExternalTransactions)
