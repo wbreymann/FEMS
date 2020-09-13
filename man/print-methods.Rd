@@ -6,7 +6,7 @@
 \alias{[,eventList,ANY,missing-method}
 \title{\code{EventSeries}-print method}
 \usage{
-\S4method{print}{EventSeries}(x, type = "pretty", indices, ...)
+\S4method{print}{EventSeries}(x, type = "pretty", indices, round.value = 0, ...)
 
 \S4method{[}{eventList,ANY,missing}(x, i)
 }
