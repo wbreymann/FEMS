@@ -3,7 +3,6 @@
 \docType{class}
 \name{Operations-class}
 \alias{Operations-class}
-\alias{OperationalCF-class}
 \alias{Investments-class}
 \alias{Reserves-class}
 \title{Operations Contract class definition}

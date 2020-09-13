@@ -24,40 +24,35 @@
 #'
 #' @examples
 #' # define the contract
-#' pam = Pam(
-#'            what=list(
-#'                  ContractID = "001",
-#'                  Currency = "CHF",
-#'                  ContractRole = "RPA",               
-#'                  StatusDate       = "2016-05-30T00",
-#'                  ContractDealDate = "2016-05-30T00",
-#'                  InitialExchangeDate = "2016-05-30T00",
-#'                  MaturityDate = "2020-06-01T00",
-#'                  NotionalPrincipal = 1000,
-#'                  NominalInterestRate = 0.05,
-#'                  CycleOfInterestPayment = "1Y-",
-#'                  CycleOfRateReset = "1Y-",
-#'                  MarketObjectCodeRateReset = "RiskFreeYC",
-#'                  DayCountConvention = "30E/360"))
-#'                  
-#' # define the analysis date
-#' ad = "2016-06-01T00"
-#' 
-#' # define the risk factor connector
-#' yc = YieldCurve(
-#' what = list(MarketObjectCode = "RiskFreeYC",
-#'   Nodes = list(ReferenceDate = ad, 
-#'   Tenors = c("1W", "1M", "6M", "1Y", "2Y", "5Y"), 
-#'   Rates = c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03))))
-#' rf <- RFConn()
-#' add(rf,yc)
-#' 
-#' # compute events
-#' evs=events(pam,ad,rf)
-#' evs
+#' pam <- Pam(ContractID = "001",
+#'            Currency = "CHF",
+#'            ContractRole = "RPA",               
+#'            StatusDate = "2016-05-30",
+#'            ContractDealDate = "2016-05-30",
+#'            InitialExchangeDate = "2016-05-30",
+#'            MaturityDate = "2020-06-01",
+#'            NotionalPrincipal = 1000,
+#'            NominalInterestRate = 0.05,
+#'            CycleAnchorDateOfInterestPayment = "2017-06-01",
+#'            CycleOfInterestPayment = "P1YL1",
+#'            CycleAnchorDateOfRateReset = "2017-06-01",
+#'            CycleOfRateReset = "P1YL1",
+#'            MarketObjectCodeOfRateReset = "RiskFreeYC",
+#'            DayCountConvention = "30E360")
+#'
+#' ad <- "2016-06-01"
+#'
+#' yc <- YieldCurve(label = "RiskFreeYC",
+#'                  ReferenceDate = ad, 
+#'                  Tenors = c("1W", "1M", "6M", "1Y", "2Y", "5Y"), 
+#'                  Rates = c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03))
+#'
+#' rf <- RFConn(yc)
+#' set(pam, rf)
+#'
+#' evs <- events(pam, ad)
 #' as.data.frame(evs)
 #' 
-## @include 
 #' @export
 #' @docType methods
 #' @rdname ev-methods

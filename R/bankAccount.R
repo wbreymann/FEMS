@@ -1,10 +1,36 @@
-#*******************************************************************************
-# ZHAW Risk and Finance Lab
-# package: rflContracts
-# Date: 09.11.2015
-# IDP - Institute for Data Analysis and Process Design
-# author(s): Christoph Auth (auth@zhaw.ch)
-#*******************************************************************************
+##############################################################
+#' \code{bankAccount}
+#'
+#' Function which creates an instance of \code{CurrentAccount}.
+#' 
+#' @param start Start date of the account
+#' 
+#' @param balance Initial balance of the account
+#'
+#' @param accrued Accrued interest up to the start date
+#' 
+#' @param ir Interest rate
+#' 
+#' @param irFreq Interest rate frequency
+#' 
+#' @param ext_transactions timeSeries object indicating ExternalTransactions
+#' 
+#' @param int_transfers timeSeries object indicating InternalTransfers
+#' 
+#' @param perc_outflows timeSeries object indicating PercentageOutflows
+#' 
+#' @param currency Currency of the account
+#' 
+#' @param variable.rates Logical, if the account has variable rates.
+#' 
+#' @return An object of class \code{CurrentAccount} 
+#' 
+#' @examples
+#' cashflows <- timeSeries(c(1000,1000,30000,10000,-20000), units="CHF", 
+#'                 timeSequence(from="2014-04-01", by="year", length.out=5))
+#' my.account <- bankAccount("2013-12-31", balance=50000, 
+#'                          ext_transactions = cashflows, ir=0.02)
+#' 
 #' @include CurrentAccount.R
 #' @export 
 bankAccount = function(start, balance = 0, accrued = 0, 

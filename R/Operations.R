@@ -60,10 +60,8 @@ setRefClass("Operations",
             ))
 
 ## -----------------------------------------------------------------
-# Child Classes of Operations & Constructors
-
+# Child Classes of Operations & Constructorsv
 #' @export
-#' @rdname ops-classes
 setRefClass("OperationalCF",
             contains = "Operations",
             fields = list(
@@ -71,16 +69,46 @@ setRefClass("OperationalCF",
               args = "list"
             ))
 
+## -----------------------------------------------------------------
+#' OperationalCF Contract class definition
+#' 
+#' An operational cash flows contract represents any operational activity 
+#' in monetary units within an organization. 
+#' 
+#' @param pattern A function evaluating the pattern of generated cash flows. 
+#'                The function must implement two arguments:
+#' \itemize{
+#' \item{model} {The \link{RiskFactorConnector} object used when evaluating the pattern}
+#' \item{args} {The \link{args} object used when evaluating the pattern}
+#' }
+#' 
+#' @param args The arguments used when evaluating the pattern
+#' 
+#' @usage OperationalCF(ContractID, pattern, args, ...)
+#' 
+#' @examples 
+#' times = timeSequence(from="2014-01-01", by="3 months", length.out=9)
+#' values = cumsum(c(1,rnorm(8,0.02,0.1)))
+#' idx <- Index(label = "PriceIndex", data = values, charvec = times)
+#'
+#' revenue <- function(idx, times) { 
+#'   idx$Data[as.character(times),] * 1000
+#' }
+#' revenue(idx=idx, times=times)
+#' OpCFs <- OperationalCF(
+#'   ContractID="Ops001", Currency="CHF",
+#'   pattern = revenue, 
+#'   args = list( # the argument of the function
+#'     idx = idx,  
+#'    times = as.character(times)))
+#' 
 #' @export
-#' @rdname ops-methods
 setGeneric(name = "OperationalCF",
            def = function(...){
              standardGeneric("OperationalCF")
            })
 
-## @include
 #' @export
-#' @rdname ct-methods
 setMethod(f = "OperationalCF",signature = c(),
           definition = function(...){
             object = new("OperationalCF")
@@ -112,9 +140,34 @@ setRefClass("Investments",
               pattern = "function",
               args = "list"
             ))
-
+## -----------------------------------------------------------------
+#' Investments Contract class definition
+#' 
+#' An Investments contract represents any operational activity 
+#' in monetary units within an organization related to investments.
+#' 
+#' @param pattern A function evaluating the pattern of generated investments. 
+#'                The function must implement two arguments:
+#' \itemize{
+#' \item{model} {The \link{RiskFactorConnector} object used when evaluating the pattern}
+#' \item{args} {The \link{args} object used when evaluating the pattern}
+#' }
+#' 
+#' @param args The arguments used when evaluating the pattern
+#' 
+#' @usage Investments(ContractID, pattern, args, ...)
+#' 
+#' @examples 
+#' times = timeSequence(from="2014-01-01", by="3 months", length.out=9)
+#' write.off <- function(times) {
+#'    timeSeries(seq(1000000, 0, length.out=9), times)
+#'    }
+#' invest <- Investments(
+#'               ContractID = "Ops002", Currency = "CHF", 
+#'               pattern = write.off, 
+#'               args = list(times = times))
+#' 
 #' @export
-#' @rdname ops-methods
 setGeneric(name = "Investments",
            def = function(...){
              standardGeneric("Investments")

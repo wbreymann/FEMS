@@ -34,7 +34,6 @@
 \alias{Nam,ANY-method}
 \alias{NegativeAmortizer}
 \alias{NegativeAmortizer,ANY-method}
-\alias{OperationalCF,ANY-method}
 \alias{Investments,ANY-method}
 \alias{Reserves,ANY-method}
 \alias{Optns}
@@ -117,8 +116,6 @@ NegativeAmortizer(...)
 
 \S4method{NegativeAmortizer}{ANY}(...)
 
-\S4method{OperationalCF}{ANY}(...)
-
 \S4method{Investments}{ANY}(...)
 
 \S4method{Reserves}{ANY}(...)
@@ -159,11 +156,7 @@ Swaps(...)
 \S4method{Swaps}{ANY}(...)
 }
 \arguments{
-\item{object}{If an object of class \code{jobjRef}, then 
-this parameter is expected to be a reference to a Java
-contract and a new R-object of the same class is 
-created and the Java reference attached as the classes'
-\code{jref}-field. If a character, then \code{object}
+\item{...}{If a character, then \code{object}
 is expected to be the R-class name of the contract to
 be instantiated.}
 }
@@ -184,24 +177,22 @@ implementing classes extending \code{ContractType}.
 }
 \examples{
 # example 1: create a new 'PAM' object
-pam = CT("PrincipalAtMaturity")
+pam <- CT("PrincipalAtMaturity")
 
 # example 2: attach the reference to a Java 'PAM' object to
 #            a new R-'PAM' object. Note, the new object will
 #            refer to the same Java contract.
-pam = Pam()
-set(pam, what=list(
-                   ContractID = "001",
-                   Currency = "CHF",
-                   ContractRole = "RPA",
-                   StatusDate       = "2012-12-31T00",
-                   ContractDealDate = "2012-12-31T00",
-                   InitialExchangeDate = "2013-01-01T00",
-                   MaturityDate = "2013-03-31T00",
-                   NotionalPrincipal = 1000, 
-                   NominalInterestRate = 0.01,
-                   DayCountConvention = "30E/360"))
-same.pam = CT(pam$jref)
+pam <- Pam()
+set(pam, list(ContractID = "001",
+              Currency = "CHF",
+              ContractRole = "RPA",
+              StatusDate       = "2012-12-31",
+              ContractDealDate = "2012-12-31",
+              InitialExchangeDate = "2013-01-01",
+              MaturityDate = "2013-03-31",
+              NotionalPrincipal = 1000, 
+              NominalInterestRate = 0.01,
+              DayCountConvention = "30E360"))
 
 }
 \seealso{

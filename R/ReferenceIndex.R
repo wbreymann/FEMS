@@ -49,18 +49,18 @@ setRefClass("ReferenceIndex", contains = "RiskFactor",
 ##############################################################
 #' \code{ReferenceIndex}-class constructor
 #'
-#' Create an instance of \code{ReferenceIndex} class. The 
-#' constructor will also create an instance of the respective
-#' Java class in the running JVM.
+#' Create an instance of \code{ReferenceIndex} class.
 #' 
-#' @param ...
+#' @param data numeric vector of values for the \code{ReferenceIndex}
+#' 
+#' @param charvec Date vector
+#' 
+#' @param label ID of the \code{ReferenceIndex} class
 #'
 #' @return An object of class \code{ReferenceIndex} 
-#'          containing the reference to the Java object
 #' 
 #' @seealso \code{\link{YieldCurve, ForeignExchangeRate}}
 #'
-## @include
 #' @export
 #' @docType methods
 #' @rdname ind-methods

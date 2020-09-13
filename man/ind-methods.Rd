@@ -12,16 +12,17 @@ Index(data, charvec, label, ...)
 \S4method{Index}{numeric,ANY,character}(data, charvec, label, ...)
 }
 \arguments{
-\item{...}{}
+\item{data}{numeric vector of values for the \code{ReferenceIndex}}
+
+\item{charvec}{Date vector}
+
+\item{label}{ID of the \code{ReferenceIndex} class}
 }
 \value{
-An object of class \code{ReferenceIndex} 
-         containing the reference to the Java object
+An object of class \code{ReferenceIndex}
 }
 \description{
-Create an instance of \code{ReferenceIndex} class. The 
-constructor will also create an instance of the respective
-Java class in the running JVM.
+Create an instance of \code{ReferenceIndex} class.
 }
 \seealso{
 \code{\link{YieldCurve, ForeignExchangeRate}}
