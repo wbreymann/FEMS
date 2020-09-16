@@ -9,8 +9,8 @@
 #' The events of a contract are directly derived from the legal obligations 
 #' defined therein. Events mark the exchange of a cash flow among the parties
 #' involved in the contract or changes in the inner states of the contract
-#' affecting cash flows to be exchanged in future. As such, events build the
-#' basic analytical results upon which many financial analyses build.
+#' affecting cash flows to be exchanged in future. As such, \code{events} generates the
+#' raw results that are the input for many financial analyses.
 #'
 #' @param object The \code{ContractType} for which to derive the events
 #'

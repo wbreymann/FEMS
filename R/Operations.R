@@ -17,7 +17,7 @@
 #' 
 #' @param Currency The currency in which \link{ReservingPattern}, \link{DepreciationPattern},
 #'                 \link{IncomePattern} are denominated
-#'
+#'                 
 #' @param Params A list containing parameters used in the \link{CashFlowPattern}, 
 #'               \link{InvestPattern}, and \link{ReservePattern} functions
 #' 
@@ -76,13 +76,8 @@ setRefClass("OperationalCF",
 #' in monetary units within an organization. 
 #' 
 #' @param pattern A function evaluating the pattern of generated cash flows. 
-#'                The function must implement two arguments:
-#' \itemize{
-#' \item{model} {The \link{RiskFactorConnector} object used when evaluating the pattern}
-#' \item{args} {The \link{args} object used when evaluating the pattern}
-#' }
 #' 
-#' @param args The arguments used when evaluating the pattern
+#' @param args The list of arguments used when evaluating the pattern
 #' 
 #' @usage OperationalCF(ContractID, pattern, args, ...)
 #' 
@@ -147,13 +142,8 @@ setRefClass("Investments",
 #' in monetary units within an organization related to investments.
 #' 
 #' @param pattern A function evaluating the pattern of generated investments. 
-#'                The function must implement two arguments:
-#' \itemize{
-#' \item{model} {The \link{RiskFactorConnector} object used when evaluating the pattern}
-#' \item{args} {The \link{args} object used when evaluating the pattern}
-#' }
 #' 
-#' @param args The arguments used when evaluating the pattern
+#' @param args The list of arguments used when evaluating the pattern
 #' 
 #' @usage Investments(ContractID, pattern, args, ...)
 #' 

@@ -131,18 +131,18 @@ setMethod(f = "YieldCurve",signature = c(),
 
 #' @export
 setGeneric(name = "MarketInterestRate",
-           def = function(rate, ref_date, ...){
+           def = function(rate, refDate, ...){
              standardGeneric("MarketInterestRate")
            })
 
 #' @export
 setMethod(f = "MarketInterestRate", signature = c("numeric","character"),
-          definition = function(rate, ref_date, label = "MarketInterestRate", ...){
+          definition = function(rate, refDate, label = "MarketInterestRate", ...){
             yc <- YieldCurve()
             tenors <- c("1W", "6M", "1Y", "5Y", "10Y", "50Y", "100Y")
             rates <- rep(1, length(tenors)) * rate
             set(yc, list(label = label,
-                        ReferenceDate = ref_date,
+                        ReferenceDate = refDate,
                         Tenors = tenors,
                         Rates = rates))
             return(yc)
