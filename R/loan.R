@@ -4,6 +4,40 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Christoph Auth (auth@zhaw.ch)
 #*******************************************************************************
+
+##############################################################
+#' \code{loan}
+#'
+#' Constructor method for simple LinearAmortizer contracts.
+#' 
+#' @param start a character reflecting the start date of the loan.
+#' 
+#' @param maturity a character reflecting the maturity of the loan, 
+#' default is "0 years".
+#' 
+#' @param nominal a numeric to set the notional principal of the loan, 
+#' default is 0.0.
+#'
+#' @param ir a numeric to set the nominal interest rate, default is 0.0.
+#'
+#' @param irFreq a character reflecting the frequency of interest rate payments, 
+#' default is "1 year". 
+#' 
+#' @param role a character reflecting the contract role. default is "long".
+#'  
+#' @param amortFreq a character reflecting the frequency of principal redemption 
+#' payments, default is "1 year". 
+#' 
+#' @param amort a numeric to set the amount of principal redemption.
+#' 
+#' @return a LinearAmortizer contrat with specified attributes. 
+#' 
+#' @usage loan(start, maturity, nominal, ir, irFreq, role, amortFreq, amort)
+#' 
+#' @examples
+#' l <- loan("2013-12-31", maturity = "5 years", nominal = 50000, 
+#'            ir = 0.02, irFreq = "1 years", amortFreq = "1 years")
+#'            
 #' @include LinearAmortizer.R
 #' @export 
 loan <- function(start, maturity = "0 years", nominal = 0, 

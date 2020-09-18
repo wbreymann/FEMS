@@ -15,14 +15,15 @@
 \alias{discountFactors,DynamicYieldCurve,character,character-method}
 \alias{missing-method}
 \title{Generic method to retrieve discount factors for specific
-tenor(s) from a \code{\link{DynamicYieldCurve}} object}
+tenor(s) from a \code{\link{YieldCurve}} or \code{\link{DynamicYieldCurve}} 
+object.}
 \usage{
-discountFactors(object, termEnd, termStart, ...)
+discountFactors(object, end, start, ...)
 
 \S4method{discountFactors}{YieldCurve,character,missing}(
   object,
-  termEnd,
-  termStart,
+  end,
+  start,
   method = "continuous",
   period = "Y",
   refdate = NULL,
@@ -31,8 +32,8 @@ discountFactors(object, termEnd, termStart, ...)
 
 \S4method{discountFactors}{YieldCurve,character,character}(
   object,
-  termEnd,
-  termStart,
+  end,
+  start,
   method = "continuous",
   period = "Y",
   refdate = NULL,
@@ -41,8 +42,8 @@ discountFactors(object, termEnd, termStart, ...)
 
 \S4method{discountFactors}{DynamicYieldCurve,character,missing}(
   object,
-  termEnd,
-  termStart,
+  end,
+  start,
   method = "continuous",
   period = "Y",
   refdate = NULL,
@@ -51,8 +52,8 @@ discountFactors(object, termEnd, termStart, ...)
 
 \S4method{discountFactors}{numeric,character,character}(
   object,
-  termEnd,
-  termStart,
+  end,
+  start,
   method = "continuous",
   period = "Y",
   refdate = NULL,
@@ -61,8 +62,8 @@ discountFactors(object, termEnd, termStart, ...)
 
 \S4method{discountFactors}{DynamicYieldCurve,character,character}(
   object,
-  termEnd,
-  termStart,
+  end,
+  start,
   method = "continuous",
   period = "Y",
   refdate = NULL,
@@ -70,58 +71,44 @@ discountFactors(object, termEnd, termStart, ...)
 )
 }
 \arguments{
-\item{object}{An object of class \code{DynamicYieldCurve} from 
-which to extract the discount factors}
+\item{object}{An object of class \code{\link{YieldCurve}} or 
+\code{DynamicYieldCurve} from which to extract the 
+discount factors.}
 
-\item{termEnd}{The discounting period end date (t2) 
+\item{end}{character reflecting the discounting period end date.
 Can be a single value or a vector of tenors.}
 
-\item{termStart}{(optional) The discounting period start
-date (t1). Is a single value. If combined 
-with a vector for termEnd, then termStart remains
-the same for all t2 defined in termEnd.}
+\item{start}{(optional) a character defining the discounting 
+period start date. If it is a single value combined 
+with a vector for 'end', then 'start' remains
+the same for all dates defined in 'end'.}
 
-\item{...}{Additional parameters:
+\item{...}{Additional parameters to be passed.
 \itemize{
- \item{"isDateEnd"}{logical indicating whether termEnd is 
+ \item{"isDateEnd"}{logical indicating whether 'end' is 
        of date (TRUE) or term (FALSE) format. Date format is
-       'YYYY-MM-DDTXX' with 'XX'=00 for beginning of day, or
-       24 for end of day, and term format is 'IP' with 'I' 
-       an integer and 'P' indicating the period (D=days, 
-       W=weeks, M=months, Q=quarters, H=halfyears, Y=years).
-       Default is isDateEnd=FALSE.}
+       'YYYY-MM-DD'. Default is isDateEnd = FALSE.}
 }}
 }
 \value{
-numeric The discount factor for the defined period
+numeric vector of discount factors for the defined periods.
 }
 \description{
-Discount factors for \code{t2}-tenors are extracted from a 
-\code{\link{DynamicYieldCurve}} object according to 
-\code{df(t0,t1,t2)=exp(-yf(t1,t2)*yield(t1,t2))} where
-\itemize{
- \item{"t0"}{is the 'ReferenceDate' of the yield curve}
- \item{"t1"}{marks the discounting period start. If t1>t0, 
-             we are in a forward-mode (default: t0=t1, i.e. 
-             non-forward)}
- \item{"t2"}{marks the discounting period end}
- \item{"yf(t1,t2)"}{indicates the the year fraction using 
-                   Actual/Actual between times t1 and t2}
- \item{"yield(t1,t2)"}{refers to the yield from t1 to t2 
-                   implied by the yield curve (forward 
-                   rate/yield if t1>t0)}
-}
+Discount factors for specified tenors are extracted from a 
+\code{\link{YieldCurve}} or \code{\link{DynamicYieldCurve}} 
+object according to the compounding method specified.
 }
 \examples{
-yc <- DynamicYieldCurve()
 tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
 rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
-set(yc, what = list(MarketObjectCode = "YC_Prim",
-  Nodes = list(ReferenceDate = "2015-01-01T00", Tenors = tenors, Rates = rates)))
+yc <- DynamicYieldCurve(label = "YC_Prim",
+                        ReferenceDate = "2015-01-01",
+                        Tenors = tenors,
+                        Rates = rates)
 
 discountFactors(yc, "1Y")
-discountFactors(yc, "2016-01-01T00", isDateEnd=TRUE)
-discountFactors(yc, "1Y", "2015-07-01T00")
+discountFactors(yc, "2016-01-01", isDateEnd = TRUE)
+discountFactors(yc, "1Y", "2015-07-01")
 
 }
 \seealso{

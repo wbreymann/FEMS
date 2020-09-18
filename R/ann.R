@@ -5,6 +5,37 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
+
+##############################################################
+#' \code{annuity}
+#'
+#' Constructor method for simple Annuity contracts. If interest payments are set, the 
+#' cycle of interest rate payments is the same as the cycle for annuity payments.
+#' 
+#' @param start a character reflecting a start date of the annuity.
+#' 
+#' @param nominal a numeric to set the notional principal of the annuity, 
+#' default is 0.0.
+#'
+#' @param ir a numeric to set the nominal interest rate, default is 0.0.
+#' 
+#' @param annuity a numeric to set the next principal redemption payment.
+#'  
+#' @param annuityFreq a character reflecting the frequency of redemption payments, 
+#' default is "1 year". 
+#'  
+#' @param maturity a character reflecting the maturity of the annuity, 
+#' default is "0 years".
+#' 
+#' @param role a character reflecting the contract role, default is "long".
+#' 
+#' @return an Annuity contract with specified attributes. 
+#' 
+#' @usage annuity(start, nominal, ir, annuity, annuityFreq, maturity, role)
+#' 
+#' @examples
+#' ann <- annuity("2013-12-31", nominal = 50000, ir = 0.02, maturity = "5 years")
+#' 
 #' @include Annuity.R
 #' @export 
 annuity <- function(start, nominal=0.0, ir=0.0, annuity=NULL, 

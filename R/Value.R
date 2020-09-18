@@ -344,7 +344,7 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "D
                 } else {
                   cfs = evs.sub$values
                   dts = as.character(evs.sub$times)
-                  dfs = FEMS::discountFactors(dc, termStart=ad, termEnd=dts, isDateEnd=TRUE)
+                  dfs = FEMS::discountFactors(dc, start=ad, end=dts, isDateEnd=TRUE)
                   return( as.numeric (cfs%*%dfs ))
                 }
               })
