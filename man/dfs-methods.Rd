@@ -85,7 +85,7 @@ the same for all dates defined in 'end'.}
 
 \item{...}{Additional parameters to be passed.
 \itemize{
- \item{"isDateEnd"}{logical indicating whether 'end' is 
+ \item{"isDateEnd"} {logical indicating whether 'end' is 
        of date (TRUE) or term (FALSE) format. Date format is
        'YYYY-MM-DD'. Default is isDateEnd = FALSE.}
 }}
