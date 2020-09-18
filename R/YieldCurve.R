@@ -129,22 +129,42 @@ setMethod(f = "YieldCurve",signature = c(),
             return(yc)
             })
 
+##############################################################
+#' \code{MarketInterestRate}
+#'
+#' Constructor method for a \code{\link{YieldCurve}} object with constant
+#' rates across all tenors.
+#' 
+#' @param rate a numeric to set the constant market rate.
+#' 
+#' @param date a character indicating the reference date.
+#' 
+#' @param label a character to name the \code{\link{YieldCurve}} object.
+#'
+#' @return an object of type \code{\link{YieldCurve}}. 
+#' 
+#' @usage MarketInterestRate(rate, refDate, label, ...)
+#' 
+#' @examples
+#' yc_flat <- MarketInterestRate(0.05, "2015-01-01", "MarketRate")
+#' 
 #' @export
 setGeneric(name = "MarketInterestRate",
-           def = function(rate, refDate, ...){
+           def = function(rate, date, ...){
              standardGeneric("MarketInterestRate")
            })
 
 #' @export
 setMethod(f = "MarketInterestRate", signature = c("numeric","character"),
-          definition = function(rate, refDate, label = "MarketInterestRate", ...){
+          definition = function(rate, date, label = "MarketInterestRate", ...){
             yc <- YieldCurve()
             tenors <- c("1W", "6M", "1Y", "5Y", "10Y", "50Y", "100Y")
             rates <- rep(1, length(tenors)) * rate
             set(yc, list(label = label,
-                        ReferenceDate = refDate,
+                        ReferenceDate = date,
                         Tenors = tenors,
                         Rates = rates))
+            set(yc, list(...))
             return(yc)
           })
 
@@ -172,7 +192,7 @@ setMethod(f = "set", signature = c("YieldCurve", "list"),
                          object$TenorDates <- computeTenorDates(object$ReferenceDate, value)
                        },
                        DayCountConvention = {
-                         object$DayCountConvention <- tolower(value)
+                         object$DayCountConvention <- value
                        },
                        label = {
                          object$label <- value
@@ -537,6 +557,7 @@ setMethod(f = "show", signature = c("YieldCurve"),
             cat(paste0("DayCountConvention: ", object$DayCountConvention,"\n"))
             if (length(unique(object$Rates))==1) {
               cat(paste0("MarketInterestRate: ", round(object$Rates[1]*100, 2),"%","\n"))
+              cat("Constant for all tenors/terms.")
             } else {
               curve <- object$Rates
               names(curve) <- object$Tenors
