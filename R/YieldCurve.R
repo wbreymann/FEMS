@@ -535,10 +535,14 @@ setMethod(f = "show", signature = c("YieldCurve"),
             cat(paste0("Label: ", object$label,"\n"))
             cat(paste0("ReferenceDate: ", object$ReferenceDate,"\n"))
             cat(paste0("DayCountConvention: ", object$DayCountConvention,"\n"))
-            curve <- object$Rates
-            names(curve) <- object$Tenors
-            print("Curve:")
-            print(curve)
+            if (length(unique(object$Rates))==1) {
+              cat(paste0("MarketInterestRate: ", round(object$Rates[1]*100, 2),"%","\n"))
+            } else {
+              curve <- object$Rates
+              names(curve) <- object$Tenors
+              print("Curve:")
+              print(curve)
+            }
           })
 
 ## @include
