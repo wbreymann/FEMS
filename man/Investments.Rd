@@ -7,14 +7,9 @@
 Investments(ContractID, pattern, args, ...)
 }
 \arguments{
-\item{pattern}{A function evaluating the pattern of generated investments. 
-               The function must implement two arguments:
-\itemize{
-\item{model} {The \link{RiskFactorConnector} object used when evaluating the pattern}
-\item{args} {The \link{args} object used when evaluating the pattern}
-}}
+\item{pattern}{A function evaluating the pattern of generated investments.}
 
-\item{args}{The arguments used when evaluating the pattern}
+\item{args}{The list of arguments used when evaluating the pattern}
 }
 \description{
 An Investments contract represents any operational activity 

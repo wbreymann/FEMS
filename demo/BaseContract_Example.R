@@ -49,7 +49,6 @@ discountFactors(yc, "1Y", "2015-07-01")
 
 bc2 <- BaseContract(Dates=c("2016-01-01","2017-01-01"),
                     CashFlows=c(-95,100))
-
 # value before the first cash flow
 vals_bef <- value(bc2, by = "2015-01-01", curve = yc) 
 vals_at <- value(bc2, by = "2017-01-01", curve = yc) 
@@ -98,3 +97,12 @@ exp(0.05*(364+31+29+31+30+31+30)/365)
 # relative error
 (exp(0.05*(364+31+29+31+30+31+30)/365) - app.fact.cont[1])/app.fact.cont[1]
 
+
+eng <- DcEngine(RiskFactorObject=yc_flat, DiscountingSpread=0)
+class(b1)
+ev <- events(b1, "2015-01-01")
+
+value(b1, "2015-01-01", type="markToModel", method=eng)
+value(ev, "2015-01-01", type="markToModel", method=eng)
+value(b1, "2015-01-01", type="nominal")
+value(ev, "2015-01-01", type="nominal")
