@@ -669,68 +669,54 @@ setMethod(f = "rates",
 
 ##############################################################
 #' Generic method to retrieve discount factors for specific
-#' tenor(s) from a \code{\link{DynamicYieldCurve}} object
+#' tenor(s) from a \code{\link{YieldCurve}} or \code{\link{DynamicYieldCurve}} 
+#' object.
 #'
-#' Discount factors for \code{t2}-tenors are extracted from a 
-#' \code{\link{DynamicYieldCurve}} object according to 
-#' \code{df(t0,t1,t2)=exp(-yf(t1,t2)*yield(t1,t2))} where
-#' \itemize{
-#'  \item{"t0"}{is the 'ReferenceDate' of the yield curve}
-#'  \item{"t1"}{marks the discounting period start. If t1>t0, 
-#'              we are in a forward-mode (default: t0=t1, i.e. 
-#'              non-forward)}
-#'  \item{"t2"}{marks the discounting period end}
-#'  \item{"yf(t1,t2)"}{indicates the the year fraction using 
-#'                    Actual/Actual between times t1 and t2}
-#'  \item{"yield(t1,t2)"}{refers to the yield from t1 to t2 
-#'                    implied by the yield curve (forward 
-#'                    rate/yield if t1>t0)}
-#' }
+#' Discount factors for specified tenors are extracted from a 
+#' \code{\link{YieldCurve}} or \code{\link{DynamicYieldCurve}} 
+#' object according to the compounding method specified. 
 #' 
-#' @param object An object of class \code{DynamicYieldCurve} from 
-#'        which to extract the discount factors
+#' @param object An object of class \code{\link{YieldCurve}} or 
+#'        \code{DynamicYieldCurve} from which to extract the 
+#'        discount factors.
 #'        
-#' @param termEnd The discounting period end date (t2) 
+#' @param end character reflecting the discounting period end date.
 #'        Can be a single value or a vector of tenors.
 #' 
-#' @param termStart (optional) The discounting period start
-#'        date (t1). Is a single value. If combined 
-#'        with a vector for termEnd, then termStart remains
-#'        the same for all t2 defined in termEnd.
+#' @param start (optional) a character defining the discounting 
+#'        period start date. If it is a single value combined 
+#'        with a vector for 'end', then 'start' remains
+#'        the same for all dates defined in 'end'.
 #' 
-#' @param ... Additional parameters:
+#' @param ... Additional parameters to be passed.
 #' \itemize{
-#'  \item{"isDateEnd"}{logical indicating whether termEnd is 
+#'  \item{"isDateEnd"} {logical indicating whether 'end' is 
 #'        of date (TRUE) or term (FALSE) format. Date format is
-#'        'YYYY-MM-DDTXX' with 'XX'=00 for beginning of day, or
-#'        24 for end of day, and term format is 'IP' with 'I' 
-#'        an integer and 'P' indicating the period (D=days, 
-#'        W=weeks, M=months, Q=quarters, H=halfyears, Y=years).
-#'        Default is isDateEnd=FALSE.}
+#'        'YYYY-MM-DD'. Default is isDateEnd = FALSE.}
 #' }
 #' 
-#' @return numeric The discount factor for the defined period
+#' @return numeric vector of discount factors for the defined periods.
 #' 
 #' @seealso \code{\link{rates}}
 #' 
 #' @examples
-#' yc <- DynamicYieldCurve()
 #' tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
 #' rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
-#' set(yc, what = list(MarketObjectCode = "YC_Prim",
-#'   Nodes = list(ReferenceDate = "2015-01-01T00", Tenors = tenors, Rates = rates)))
+#' yc <- DynamicYieldCurve(label = "YC_Prim",
+#'                         ReferenceDate = "2015-01-01",
+#'                         Tenors = tenors,
+#'                         Rates = rates)
 #' 
 #' discountFactors(yc, "1Y")
-#' discountFactors(yc, "2016-01-01T00", isDateEnd=TRUE)
-#' discountFactors(yc, "1Y", "2015-07-01T00")
+#' discountFactors(yc, "2016-01-01", isDateEnd = TRUE)
+#' discountFactors(yc, "1Y", "2015-07-01")
 #'
-## @include
 #' @export
 #' @docType methods
 #' @rdname dfs-methods
 ## @aliases
 setGeneric(name = "discountFactors",
-           def = function(object, termEnd, termStart, ...){
+           def = function(object, end, start, ...){
              standardGeneric("discountFactors")
            })
 
@@ -739,9 +725,9 @@ setGeneric(name = "discountFactors",
 #' @aliases discountFactors, YieldCurve, character, character-method
 setMethod(f = "discountFactors",
           signature = c("YieldCurve", "character", "missing"),
-          definition = function(object, termEnd, termStart, method = "continuous", 
+          definition = function(object, end, start, method = "continuous", 
                                 period = "Y", refdate = NULL, ...) {
-            return(discountFactors(to.dynamic(object), termEnd, 
+            return(discountFactors(to.dynamic(object), end, 
                                    method = method, period = period, refdate = refdate, ...))
           })
 
@@ -750,9 +736,9 @@ setMethod(f = "discountFactors",
 #' @aliases discountFactors, YieldCurve, character, character-method
 setMethod(f = "discountFactors",
           signature = c("YieldCurve", "character", "character"),
-          definition = function(object, termEnd, termStart, method = "continuous", 
+          definition = function(object, end, start, method = "continuous", 
                                 period = "Y", refdate = NULL, ...) {
-            return(discountFactors(to.dynamic(object), termEnd, termStart, 
+            return(discountFactors(to.dynamic(object), end, start, 
                                    method = method, period = period, refdate = refdate, ...))
           })
 
@@ -762,10 +748,10 @@ setMethod(f = "discountFactors",
 #' @aliases discountFactors, DynamicYieldCurve, character, character-method
 setMethod(f = "discountFactors",
           signature = c("DynamicYieldCurve", "character", "missing"),
-          definition = function(object, termEnd, termStart, method = "continuous", 
+          definition = function(object, end, start, method = "continuous", 
                                 period = "Y", refdate = NULL, ...) {
-            termStart <- object$ReferenceDate
-            return(discountFactors(object, termEnd, termStart, method, period, refdate = refdate, ...))
+            start <- object$ReferenceDate
+            return(discountFactors(object, end, start, method, period, refdate = refdate, ...))
           })
 
 #' @export
@@ -773,10 +759,10 @@ setMethod(f = "discountFactors",
 #' @aliases discountFactors, DynamicYieldCurve, character, character-method
 setMethod(f = "discountFactors",
           signature = c("numeric", "character", "character"),
-          definition = function(object, termEnd, termStart, method = "continuous", 
+          definition = function(object, end, start, method = "continuous", 
                                 period = "Y", refdate = NULL, ...) {
-            yc <- MarketInterestRate(object, min(termStart,termEnd))
-            return(discountFactors(yc, termEnd, termStart, method, period, refdate = refdate, ...))
+            yc <- MarketInterestRate(object, min(start,end))
+            return(discountFactors(yc, end, start, method, period, refdate = refdate, ...))
           })
 
 
@@ -786,24 +772,24 @@ setMethod(f = "discountFactors",
 #' @aliases discountFactors, DynamicYieldCurve, character, missing-method
 setMethod(f = "discountFactors",
           signature = c("DynamicYieldCurve", "character", "character"),
-          definition = function(object, termEnd, termStart,
+          definition = function(object, end, start,
                                 method = "continuous", period = "Y", refdate = NULL, ...){
             # To consider: Implementierung von Unterjährigen Zinsen bei Bruchteilen von Perioden
             
-            # test dates and convert possible termEnd to date type
-            test.dates(termStart)
-            err_testing <- tryCatch(test.dates(termEnd), error = function(e) e)
+            # test dates and convert possible end to date type
+            test.dates(start)
+            err_testing <- tryCatch(test.dates(end), error = function(e) e)
             if (any(class(err_testing) == "error")) {
-              endDate <- computeTenorDates(termStart, termEnd)
+              endDate <- computeTenorDates(start, end)
             } else {
-              endDate <- termEnd
+              endDate <- end
             }
             
             # calcluate year fraction
-            yearFraction <- yearFraction(termStart, endDate, object$DayCountConvention)
+            yearFraction <- yearFraction(start, endDate, object$DayCountConvention)
             
             # get the required rate from the yield curve
-            rates <- getRateAt(object, termStart, endDate, method = method, period = period, refdate = refdate)
+            rates <- getRateAt(object, start, endDate, method = method, period = period, refdate = refdate)
             
             # return requested discount factors
             if (method == "linear") {
@@ -868,7 +854,6 @@ setMethod(f = "names", signature = c("DynamicYieldCurve"),
           definition = function(x){
             return(names(x$getRefClass()$fields()))
           })
-
 
 # WHAT are these two for???
 ## @include

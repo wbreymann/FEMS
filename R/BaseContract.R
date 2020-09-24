@@ -1,3 +1,4 @@
+
 #' @include ContractType.R
 #' @export
 setRefClass("BaseContract", 
@@ -5,6 +6,25 @@ setRefClass("BaseContract",
             fields = list(Dates = "character",
                           CashFlows = "numeric"))
 
+##############################################################
+#' \code{BaseContract}
+#'
+#' Constructor method for classes of type BaseContract representing cash flows. 
+#' The class contains the fields 'Dates' and 'CashFlows', representing the 
+#' dates, as well as values of the cash flows.
+#' 
+#' @param Dates a character vector representing dates.
+#' 
+#' @param CashFlows a numeric vector representing cash flow values
+#'
+#' @return a contract type of class BaseContract. 
+#' 
+#' @usage BaseContract(Dates, CashFlows, ...)
+#' 
+#' @examples
+#' bc <- BaseContract(Dates = c("2019-12-31","2020-12-31"),
+#'                    CashFlows = c(-90,100))
+#'                    
 #' @export
 setGeneric(name = "BaseContract",
            def = function(...){
