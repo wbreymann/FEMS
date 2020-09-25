@@ -46,6 +46,7 @@
 #'                            contract will be evaluated
 #' 
 #' @return
+#' 
 #' @include FEMSContract.R
 #' @export
 #' @rdname ops-classes
@@ -242,7 +243,6 @@ setMethod(f = "initialize", signature="Reserves",
 
 ## @include
 #' @export
-#' @rdname ct-methods
 # setMethod(f = "Operations",signature = c(),
 #           definition = function(...){
 #               object = new("Operations")

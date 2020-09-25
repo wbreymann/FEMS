@@ -13,8 +13,8 @@
 \alias{set,ValuationEngineModel,list-method}
 \alias{set,jobjRef,list-method}
 \alias{set,ContractType,ValuationEngine-method}
-\alias{set,ContractType,RiskFactorConnector-method}
 \alias{set,ContractType,ContractModel-method}
+\alias{set,ContractType,RiskFactorConnector-method}
 \alias{set,Portfolio,list-method}
 \alias{set,Portfolio,RiskFactorConnector-method}
 \alias{set,EventSeries,list-method}

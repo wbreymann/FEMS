@@ -6,14 +6,7 @@
 \alias{VEM}
 \alias{VEM,jobjRef-method}
 \alias{VEM,character-method}
-\alias{terms,ValuationEngine-method}
-\alias{VEM,}
-\alias{character-method}
-\alias{terms,ContractType-method}
-\alias{terms,ValuationEngineModel-method}
-\alias{terms,jobjRef-method}
 \alias{DcModel}
-\alias{DcEngine}
 \alias{CapmModel}
 \alias{CapmModel,ANY-method}
 \alias{XfxDcModel}
@@ -22,11 +15,7 @@
 \usage{
 VEM(object)
 
-\S4method{terms}{ValuationEngine}(object)
-
 DcModel(...)
-
-DcEngine(rf, ...)
 
 CapmModel(...)
 
