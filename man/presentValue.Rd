@@ -31,5 +31,12 @@ contract types.
 b <- bond("2013-12-31", maturity = "5 years", nominal = 50000, 
            coupon = 0.02, couponFreq = "1 years")
 npv <- presentValue(b, yield = 2) # result: 0 due to same coupon as yield
+evs <- events(b, "2013-12-31")
+npv <- presentValue(evs, yield = 1)
+ts <- timeSeries(data = c(-50000, 1000, 1000, 1000, 1000, 51000),
+                 charvec = c("2013-12-31", "2014-12-31", "2015-12-31", 
+                 "2016-12-31", "2017-12-31", "2018-12-31"),
+                 units = "Value")
+npv <- presentValue(ts, yield = 1)
 
 }

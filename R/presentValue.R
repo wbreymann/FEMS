@@ -12,7 +12,8 @@
 #' Function which calculates the Net Present Value (NPV) for passed
 #' contract types.
 #' 
-#' @param x a contract type, for which to calculate the NPV.
+#' @param x a contract type, for which to calculate the NPV. This can also be 
+#'          a timeSeries or EventSeries object.
 #' 
 #' @param yield a numeric, indicating the percentage yield used to discount.
 #' 
@@ -22,7 +23,7 @@
 #'
 #' @param from a character indicating the date as for which the NPV is calculated.
 #'  
-#' @param isPercentage a logical, indicating if the 'yield' is inserted as percentage or not.
+#' @param isPercentage a logical, indicating if the 'yield' is passed as percentage or not.
 #'                     (default is TRUE). 
 #' 
 #' @return a numeric, representing the Net Present Value (NPV) of the contract. 
@@ -33,6 +34,13 @@
 #' b <- bond("2013-12-31", maturity = "5 years", nominal = 50000, 
 #'            coupon = 0.02, couponFreq = "1 years")
 #' npv <- presentValue(b, yield = 2) # result: 0 due to same coupon as yield
+#' evs <- events(b, "2013-12-31")
+#' npv <- presentValue(evs, yield = 1)
+#' ts <- timeSeries(data = c(-50000, 1000, 1000, 1000, 1000, 51000),
+#'                  charvec = c("2013-12-31", "2014-12-31", "2015-12-31", 
+#'                  "2016-12-31", "2017-12-31", "2018-12-31"),
+#'                  units = "Value")
+#' npv <- presentValue(ts, yield = 1)
 #' 
 #' @include cashFlows.R DynamicYieldCurve.R YieldCurve.R
 #' @export 
@@ -57,14 +65,35 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, isPercentage
     return(pv)
   }
   
-  # date as from which 'yieldCurve' is valid 
-  # (and hence, as from which we calculate present value)
-  if(is.null(from)) {
-    from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
-  }
-  
   # compute cash flows of instrument
-  cf <- cashFlows(x, from=from)
+  if (class(x)=="timeSeries") {
+    cf <- x
+    if (!("Time" %in% colnames(cf))) {
+      cf$Time <- yearFraction(rownames(ts)[1], rownames(ts))
+    }
+  } else if (class(x)=="EventSeries") {
+    if(is.null(from)) {
+      from <- as.character(evs$evs$Date[1])
+    }
+    evs <- as.data.frame(x)[,c("Date","Value","Type","Time")]
+    evs <- evs[evs$Date>=from,]
+    #evs[evs$Type%in%c("RR","RRY","SC","PRY"),"Value"] <- 0
+    evs <- evs[!(evs$Type%in%c("IPCI","DPR","PRF","RR","RRY","SC","PRY")),]
+    evs <- evs[!((evs$Type %in% "AD0") & (evs$Value==0)),]
+    if (evs$Type[dim(evs)[1]]!="MD" & evs$Value[dim(evs)[1]]==0){
+      evs <- evs[1:dim(evs)[1]-1,]
+    }
+    evs.ts <- timeSeries(evs[,c("Value","Time")], charvec=substring(evs$Date,1,10))
+    evs.ts$Time <- as.numeric(evs.ts$Time)
+    evs.ts$Value <- as.numeric(evs.ts$Value)
+    cf <- aggregate(evs.ts, time(evs.ts), "sum")
+    cf$Time <- evs.ts[row.names(cf),]$Time
+  } else {
+    if(is.null(from)) {
+      from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
+    }
+    cf <- cashFlows(x, from=from)
+  }
   
   # compute discount factors for cash flow dates
   if(is.null(yield)) {
