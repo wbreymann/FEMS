@@ -5,20 +5,45 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
-#' @include cashFlows.R
+
+##############################################################
+#' \code{yield}
+#'
+#' Function which calculates the yield to maturity (YTM) for passed
+#' contract types.
+#' 
+#' @param x a contract type, for which to calculate the YTM.
+#' 
+#' @param price a numeric, indicating the price used for calculating the YTM.
+#'  
+#' @param isPercentage a logical, indicating if the 'price' is inserted as percentage or not.
+#'                     (default is TRUE). 
+#'                     
+#' @param from a character indicating the date as for which the YTM is calculated.
+#' 
+#' @return a numeric, representing the yield to maturity (YTM) of the contract. 
+#' 
+#' @usage yield(x, price, isPercentage, from)
+#' 
+#' @examples
+#' b <- bond("2013-12-31", maturity = "5 years", nominal = 50000, 
+#'            coupon = 0.02, couponFreq = "1 years")
+#' ytm <- yield(b, price = 100) 
+#' 
+#' @include cashFlows.R util.R
 #' @export 
-yield <- function(x, price, isPercentage=TRUE, per=NULL) {
+yield <- function(x, price, isPercentage=TRUE, from=NULL) {
   
-  # date as per which 'price' is valid 
-  # (and hence, as per which we calculate yield)
-  if(is.null(per)) {
-    per <- as.character(FEMS:::get(x,"InitialExchangeDate"))
+  # date as from which 'price' is valid 
+  # (and hence, as from which we calculate yield)
+  if(is.null(from)) {
+    from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
   }
   
   # compute cash flows of bond instrument
-  cf <- cashFlows(x,per=per)
+  cf <- cashFlows(x, from=from)
   
-  # scale factor for annualized yield (i.e. number of coupons per year)
+  # scale factor for annualized yield (i.e. number of coupons from year)
   scale <- couponsPerYear(x)
   
   if(isPercentage) {
