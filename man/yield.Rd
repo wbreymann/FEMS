@@ -11,7 +11,7 @@ yield(x, price, isPercentage, from)
 
 \item{price}{a numeric, indicating the price used for calculating the YTM.}
 
-\item{isPercentage}{a logical, indicating if the 'price' is inserted as percentage or not.
+\item{isPercentage}{a logical, indicating if the 'price' is passed as percentage or not.
 (default is TRUE).}
 
 \item{from}{a character indicating the date as for which the YTM is calculated.}

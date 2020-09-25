@@ -7,11 +7,12 @@
 priceVsYieldTable(x, prices, isPercentage, from)
 }
 \arguments{
-\item{x}{a contract type, for which to calculate the YTMs.}
+\item{x}{a contract type, for which to calculate the YTMs. This can also be 
+a timeSeries or EventSeries object.}
 
 \item{prices}{a numeric vector, indicating the price used for calculating the YTMs.}
 
-\item{isPercentage}{a logical, indicating if the 'price' is inserted as percentage or not.
+\item{isPercentage}{a logical, indicating if the 'price' is passed as percentage or not.
 (default is TRUE).}
 
 \item{from}{a character indicating the date as for which the YTM is calculated.}

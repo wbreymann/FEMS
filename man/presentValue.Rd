@@ -7,7 +7,8 @@
 presentValue(x, yield, yieldCurve, from, isPercentage)
 }
 \arguments{
-\item{x}{a contract type, for which to calculate the NPV.}
+\item{x}{a contract type, for which to calculate the NPV. This can also be 
+a timeSeries or EventSeries object.}
 
 \item{yield}{a numeric, indicating the percentage yield used to discount.}
 
@@ -17,7 +18,7 @@ factors from.}
 
 \item{from}{a character indicating the date as for which the NPV is calculated.}
 
-\item{isPercentage}{a logical, indicating if the 'yield' is inserted as percentage or not.
+\item{isPercentage}{a logical, indicating if the 'yield' is passed as percentage or not.
 (default is TRUE).}
 }
 \value{
