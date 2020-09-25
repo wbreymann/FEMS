@@ -9,16 +9,10 @@ irr(object, curve, method, period, ...)
 \arguments{
 \item{object}{a timeSeries object representing cash flows.}
 
-\item{curve}{an object of type \code{\link{YieldCurve}} or 
-\code{\link{DynamicYieldCurve}} used for discounting the cash
-flows.}
-
 \item{method}{(optional) character indicating the type of discounting. Can be
 one of "continuous", "compound" or "linear".}
 
-\item{period}{(optional) character indicating periods of interest payments. 
-Can be "Y", "M", "W" or "D" for yearly, monthly, weekly or daily
-interest payments.}
+\item{period}{(optional) character indicating the day count convention.}
 }
 \value{
 the internal rate of return calculated from the cash flows.
@@ -33,8 +27,18 @@ being strictly positive, or the first cash flow is positive and all of the
 followings are non-positive with at least one of them being strictly negative.
 }
 \examples{
-yc_flat <- MarketInterestRate(0.05, "2015-01-01")
-cfs <- timeSeries(data = c(5, 5, 105), charvec = c("2015-01-01","2016-01-01","2017-01-01"))
-r <- irr(cfs, yc_flat)
+# timeSeries object
+cfs <- timeSeries(data = c(-100, 5, 5, 105), 
+                  charvec = c("2014-01-01","2015-01-01","2016-01-01","2017-01-01"))
+r <- irr(cfs)
 
+# Bond
+b <- bond("2013-12-31", maturity = "5 years", nominal = 50000, 
+           coupon = 0.02, couponFreq = "1 years")
+irr(b)
+
+# Annuity
+ann <- annuity("2013-12-31", nominal = 50000, ir = 0.02, maturity = "5 years")
+irr(ann)
+          
 }

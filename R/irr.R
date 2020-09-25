@@ -11,10 +11,6 @@
 #' 
 #' @param object a timeSeries object representing cash flows.
 #' 
-#' @param curve an object of type \code{\link{YieldCurve}} or 
-#'              \code{\link{DynamicYieldCurve}} used for discounting the cash
-#'              flows.
-#' 
 #' @param method (optional) character indicating the type of discounting. Can be
 #'               one of "continuous", "compound" or "linear".
 #' 
@@ -22,45 +18,52 @@
 #'               Can be "Y", "M", "W" or "D" for yearly, monthly, weekly or daily
 #'               interest payments.
 #' 
+#' @param period (optional) character indicating the day count convention.
+#' 
 #' @return the internal rate of return calculated from the cash flows.
 #' 
 #' @usage irr(object, curve, method, period, ...)
 #' 
 #' @examples
-#' yc_flat <- MarketInterestRate(0.05, "2015-01-01")
-#' cfs <- timeSeries(data = c(5, 5, 105), charvec = c("2015-01-01","2016-01-01","2017-01-01"))
-#' r <- irr(cfs, yc_flat)
+#' # timeSeries object
+#' cfs <- timeSeries(data = c(-100, 5, 5, 105), 
+#'                   charvec = c("2014-01-01","2015-01-01","2016-01-01","2017-01-01"))
+#' r <- irr(cfs)
 #' 
-#' @include BaseContract.R YieldCurve.R DynamicYieldCurve.R yearFraction.R Value.R
+#' # Bond
+#' b <- bond("2013-12-31", maturity = "5 years", nominal = 50000, 
+#'            coupon = 0.02, couponFreq = "1 years")
+#' irr(b)
+#' 
+#' # Annuity
+#' ann <- annuity("2013-12-31", nominal = 50000, ir = 0.02, maturity = "5 years")
+#' irr(ann)
+#'           
 #' @export
 setGeneric(name = "irr",
-           def = function(object, curve, ...){
+           def = function(object, ...){
              standardGeneric("irr")
            })
 
 #' @export
 setMethod(f = "irr",
-          signature = c("timeSeries", "YieldCurve"),
-          definition = function(object, curve, ...) {
-            return(irr(object,to.dynamic(curve), ...))
+          signature = c("ContractType"),
+          definition = function(object, method = "compound", period = "Y", convention = "30E360", ...) {
+            browser()
+            if (!any(is(object) %in% c("PrincipalAtMaturity","Annuity"))) {
+              stop("irr currently only defined for bonds and annuities!")
+            }
+            cfs <- cashFlows(object)
+            return(irr(cfs, method = method, period = period, convention = convention, ...))
           })
 
 #' @export
 setMethod(f = "irr",
-          signature = c("timeSeries", "DynamicYieldCurve"),
-          definition = function(object, curve, method = "compound", period = "Y", ...) {
+          signature = c("timeSeries"),
+          definition = function(object, method = "compound", period = "Y", convention = "30E360", ...) {
 
-            # construct a BaseContract object, since value is already defined for it
-            bc <- BaseContract(Dates = rownames(object),
-                               CashFlows = as.numeric(object))
-            
-            # get net present value of the cash flows at the first date
-            val <- value(bc, by = bc$Dates[1], curve = curve, compound = method, period = period)
-            
-            # extract dates and cash flows, adjsuted for initial NPV (for function definition)
-            dts <- yearFraction(bc$Dates[1], bc$Dates, convention = curve$DayCountConvention)
-            cfs <- bc$CashFlows
-            cfs[1] <- cfs[1] - as.numeric(val)
+            cfs <- as.numeric(object)
+            dts <- yearFraction(rownames(object)[1], rownames(object), convention = convention)
             
             # define the function for which to find roots
             f <- function(r) {
