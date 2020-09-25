@@ -5,10 +5,40 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
+
+##############################################################
+#' \code{presentValue}
+#'
+#' Function which calculates the Net Present Value (NPV) for passed
+#' contract types.
+#' 
+#' @param x a contract type, for which to calculate the NPV.
+#' 
+#' @param yield a numeric, indicating the percentage yield used to discount.
+#' 
+#' @param yieldCurve an object of type \code{\link{YieldCurve}} or 
+#'                    \code{\link{DynamicYieldcurve}} to calculate discount 
+#'                    factors from.
+#'
+#' @param from a character indicating the date as for which the NPV is calculated.
+#'  
+#' @param isPercentage a logical, indicating if the 'yield' is inserted as percentage or not.
+#'                     (default is TRUE). 
+#' 
+#' @return a numeric, representing the Net Present Value (NPV) of the contract. 
+#' 
+#' @usage presentValue(x, yield, yieldCurve, from, isPercentage)
+#' 
+#' @examples
+#' b <- bond("2013-12-31", maturity = "5 years", nominal = 50000, 
+#'            coupon = 0.02, couponFreq = "1 years")
+#' npv <- presentValue(b, yield = 2) # result: 0 due to same coupon as yield
+#' 
 #' @include cashFlows.R DynamicYieldCurve.R YieldCurve.R
 #' @export 
-presentValue <- function(x, yield=NULL, yieldCurve=NULL, per=NULL, isPercentage=TRUE) {
-  
+
+presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, isPercentage=TRUE) {
+  browser()
   if(is.null(yield) && is.null(yieldCurve)) {
     stop("please provide either yield or yieldCurve to compute the present value!")
   }
@@ -23,18 +53,18 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, per=NULL, isPercentage=
     }
     pv <- 0
     for(i in 1:length(cts)) pv <- 
-      pv + presentValue(cts[[i]], yield[i], yieldCurve, per, isPercentage)
+      pv + presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage)
     return(pv)
   }
   
-  # date as per which 'yieldCurve' is valid 
-  # (and hence, as per which we calculate present value)
-  if(is.null(per)) {
-    per <- as.character(FEMS:::get(x,"InitialExchangeDate"))
+  # date as from which 'yieldCurve' is valid 
+  # (and hence, as from which we calculate present value)
+  if(is.null(from)) {
+    from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
   }
   
   # compute cash flows of instrument
-  cf <- cashFlows(x, per=per)
+  cf <- cashFlows(x, from=from)
   
   # compute discount factors for cash flow dates
   if(is.null(yield)) {
