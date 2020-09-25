@@ -8,7 +8,7 @@
 #' @include cashFlows.R presentValue.R yieldToMaturity.R util.R DynamicYieldCurve.R YieldCurve.R
 #' @export 
 duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL, 
-                     isPercentage=TRUE, per=NULL) {
+                     isPercentage=TRUE, from=NULL) {
 
   if(type=="gen"&&is.null(yieldCurve)) {
     stop("for the general duration type, please provide a yield curve!")  
@@ -30,12 +30,12 @@ duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL,
     }
     d <- numeric(length(cts))
     for(i in 1:length(cts)) {
-      d[i] <- duration(cts[[i]], type, yield[i], yieldCurve, price[i], isPercentage, per)
+      d[i] <- duration(cts[[i]], type, yield[i], yieldCurve, price[i], isPercentage, from)
     }
     if(is.null(price[1])) {
       price <- numeric(length(cts))
       for(i in 1:length(cts)) {
-        price[i] <- presentValue(cts[[i]], yield[i], yieldCurve, per, isPercentage)
+        price[i] <- presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage)
       }
     }
     return(as.numeric(t(price/sum(price))%*%d))
@@ -44,7 +44,7 @@ duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL,
     
     if(type!="gen") {
       if(is.null(yield)) {
-        yield <- yield(x, price=price, isPercentage=isPercentage, per=per)
+        yield <- yield(x, price=price, isPercentage=isPercentage, from=from)
       }
       if(isPercentage) {
         yield <- yield/100
@@ -53,12 +53,12 @@ duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL,
     
     # if no date provided, we use initial exchange date such that initial cash flow will not be 
     # considered for duration calculation
-    if(is.null(per)) {
-      per <- as.character(FEMS:::get(x,"InitialExchangeDate"))
+    if(is.null(from)) {
+      from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
     }
     
     # compute cash flows
-    cf <- cashFlows(x, per=per)
+    cf <- cashFlows(x, from=from)
     # extract times (in years) from cash flows
     t <- cf$Time
     if(type=="gen") {

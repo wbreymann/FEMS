@@ -8,16 +8,16 @@
 #' @include cashFlows.R util.R
 #' @export 
 convexity <- function(x, yield=NULL, price=NULL, 
-                      isPercentage=TRUE, per=NULL) {
+                      isPercentage=TRUE, from=NULL) {
   
   # if no date provided, we use initial exchange date such that initial cash flow will not be 
   # considered for duration calculation
-  if(is.null(per)) {
-    per <- as.character(FEMS:::get(x,"InitialExchangeDate"))
+  if(is.null(from)) {
+    from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
   }
   
   # compute cash flows
-  cf <- cashFlows(x, per=per)
+  cf <- cashFlows(x, from=from)
   
   # number of coupon payments per year
   m <- couponsPerYear(x)
@@ -27,7 +27,7 @@ convexity <- function(x, yield=NULL, price=NULL,
     stop("please provide either 'price' or 'yield' information!")
   }
   if(is.null(yield)) {
-    yield <- yield(x, price=price, isPercentage=isPercentage, per=per)
+    yield <- yield(x, price=price, isPercentage=isPercentage, from=from)
   } else if(isPercentage) {
     yield <- yield/100
   }
