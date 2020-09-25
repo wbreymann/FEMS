@@ -16,7 +16,7 @@
 #' 
 #' @param price a numeric, indicating the price used for calculating the YTM.
 #'  
-#' @param isPercentage a logical, indicating if the 'price' is inserted as percentage or not.
+#' @param isPercentage a logical, indicating if the 'price' is passed as percentage or not.
 #'                     (default is TRUE). 
 #'                     
 #' @param from a character indicating the date as for which the YTM is calculated.
@@ -38,6 +38,11 @@ yield <- function(x, price, isPercentage=TRUE, from=NULL) {
   # (and hence, as from which we calculate yield)
   if(is.null(from)) {
     from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
+  }
+  
+  # if from is InitialExchangeDate, then add 1 day. 
+  if (from == as.character(FEMS:::get(x,"InitialExchangeDate"))) {
+    from <- as.character(ymd(from) %m+% days(1))
   }
   
   # compute cash flows of bond instrument
