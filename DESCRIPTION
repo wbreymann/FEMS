@@ -96,7 +96,6 @@ Collate:
     'export.R'
     'immunization.R'
     'import.R'
-    'yearFraction.R'
     'irr.R'
     'loan.R'
     'onAttach.R'
@@ -105,4 +104,5 @@ Collate:
     'shiftVsPresentValue.R'
     'solve.R'
     'testClosure.R'
+    'yearFraction.R'
     'yieldCurveOperations.R'

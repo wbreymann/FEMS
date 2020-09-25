@@ -67,16 +67,26 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, isPercentage
   
   # compute cash flows of instrument
   if (class(x)=="timeSeries") {
+    if(is.null(from)) {
+      from <- as.character(rownames(x)[1])
+    }
     cf <- x
     if (!("Time" %in% colnames(cf))) {
       cf$Time <- yearFraction(rownames(ts)[1], rownames(ts))
+    }
+    if (from == rownames(cf)[1]) {
+      cf <- cf[2:nrow(cf),]
     }
   } else if (class(x)=="EventSeries") {
     if(is.null(from)) {
       from <- as.character(evs$evs$Date[1])
     }
     evs <- as.data.frame(x)[,c("Date","Value","Type","Time")]
-    evs <- evs[evs$Date>=from,]
+    if (evs[evs$Date==from,"Type"]=="IED") {
+      evs <- evs[evs$Date>from,]
+    } else {
+      evs <- evs[evs$Date>=from,]
+    }
     #evs[evs$Type%in%c("RR","RRY","SC","PRY"),"Value"] <- 0
     evs <- evs[!(evs$Type%in%c("IPCI","DPR","PRF","RR","RRY","SC","PRY")),]
     evs <- evs[!((evs$Type %in% "AD0") & (evs$Value==0)),]
@@ -91,6 +101,9 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, isPercentage
   } else {
     if(is.null(from)) {
       from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
+    }
+    if (from == as.character(FEMS:::get(x,"InitialExchangeDate"))) {
+      from <- as.character(ymd(from) %m+% days(1))
     }
     cf <- cashFlows(x, from=from)
   }
