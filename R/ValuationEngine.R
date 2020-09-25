@@ -117,21 +117,6 @@ setGeneric(name = "VE",
 
 ## @include
 #' @export
-#' @rdname ve-methods
-#' @aliases VE,character-method
-# setMethod(f = "VE", signature = c("jobjRef"),
-#           definition = function(object) {
-#             refString <- .jcall(object, "S", "toString")
-#             longClassName <- strsplit(refString, "@", fixed=TRUE)[[1]][1]
-#             longClassNameSplit <- strsplit(longClassName, ".", fixed=TRUE)
-#             shortClassName <- longClassNameSplit[[1]][length(longClassNameSplit[[1]])]
-#             out <- new(shortClassName)
-#             out$jref <- object
-#             return(out)
-#           })
-
-## @include
-#' @export
 #' @docType methods
 #' @rdname ve-methods
 #' @aliases VE,jobjRef-method
@@ -195,32 +180,6 @@ setGeneric(name = "VEM",
            def = function(object){
              standardGeneric("VEM")
            })
-
-## @include
-#' @export
-#' @rdname vem-methods
-#' @aliases VEM, character-method
-# setMethod(f = "VEM", signature = c("jobjRef"),
-#           definition = function(object) {
-#             refString <- .jcall(object, "S", "toString")
-#             longClassName <- strsplit(refString, "@", fixed=TRUE)[[1]][1]
-#             longClassNameSplit <- strsplit(longClassName, ".", fixed=TRUE)
-#             shortClassName <- longClassNameSplit[[1]][length(longClassNameSplit[[1]])]
-#             out <- new(shortClassName)
-#             out$jref <- object
-#             return(out)
-#           })
-
-## @include
-#' @export
-#' @docType methods
-#' @rdname vem-methods
-#' @aliases VEM,jobjRef-method
-# setMethod(f = "VEM", signature = c("character"),
-#           definition = function(object) {
-#             out <- new(object)
-#             return(out)
-#           })
 
 ## @include
 #' @export

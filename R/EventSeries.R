@@ -456,7 +456,6 @@ as.data.frame.EventSeries <- function(x) {
 
 #' @export
 #' @docType methods
-#' @rdname as.df.list-methods
 as.data.frame.eventList = function (x) {
   out=do.call("rbind",lapply(x,
                              FUN = function(evs){

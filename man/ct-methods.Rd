@@ -8,10 +8,6 @@
 \alias{CT}
 \alias{CT,jobjRef-method}
 \alias{CT,character-method}
-\alias{terms,ContractType-method}
-\alias{terms,ContractModel-method}
-\alias{terms,ValuationEngine-method}
-\alias{terms,jobjRef-method}
 \alias{Ann}
 \alias{Ann,ANY-method}
 \alias{Annuity}
@@ -55,8 +51,6 @@
 CT(contract_name)
 
 \S4method{CT}{character}(contract_name)
-
-\S4method{terms}{ContractType}(object)
 
 Ann(...)
 

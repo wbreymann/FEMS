@@ -3,6 +3,7 @@
 # Please see accompanying distribution file for license.
 #*************************************************************
 
+
 ##############################################################
 #' Generate a graphical representation of an 
 #' \code{\link{EventSeries}}

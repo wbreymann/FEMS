@@ -6,6 +6,7 @@
 \alias{VE}
 \alias{VE,jobjRef-method}
 \alias{VE,character-method}
+\alias{DcEngine}
 \alias{DcEngine,missing-method}
 \alias{DcEngine,RiskFactorConnector-method}
 \alias{CapmEngine}
@@ -17,6 +18,8 @@
 VE(object)
 
 \S4method{VE}{character}(object)
+
+DcEngine(rf, ...)
 
 \S4method{DcEngine}{missing}(rf, ...)
 

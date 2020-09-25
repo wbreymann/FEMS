@@ -48,22 +48,6 @@ setGeneric(name = "DcModel",
 
 ## @include
 #' @export
-#' @rdname vem-methods
-# setMethod(f = "DcModel",signature = c(),
-#           definition = function(...){
-#               model <- new("DiscountingModel")
-#               pars <- list(...)
-#               if(length(pars)==0){
-#               }else if(is.list(pars[[1]])){
-#                   set(object=model, what=pars[[1]])
-#               }else{
-#                   set(object=model, what=pars)
-#               }
-#               return(model)
-#           })
-
-## @include
-#' @export
 #' @rdname ve-methods
 setGeneric(name = "DcEngine",
            def = function(rf, ...){

@@ -95,28 +95,6 @@ setMethod(f = "CT", signature = c("character"),
 
 ## @include
 #' @export
-#' @docType methods
-#' @rdname ct-methods
-#' @aliases CT,jobjRef-method
-# setMethod(f = "CT", signature = c("character"),
-#           definition = function(object) {
-#             out <- new(longName(object))
-#             return(out)
-#           })
-
-## @include
-#' @export
-#' @docType methods
-#' @rdname ct-methods
-# setMethod(f = "CT", signature = c("list"),
-#           definition = function(object) {
-#             out <- new(longName(object$ContractType))
-#             FEMS::set(out,what=object)
-#             return(out)
-#           })
-
-## @include
-#' @export
 #' @rdname trms-methods
 #' @aliases terms,ContractModel-method
 #' @aliases terms,ContractType-method
@@ -156,22 +134,6 @@ setMethod(f = "get", signature = c("ContractType","character"),
             return(out)
           })
 
-
-#' @include ContractModel.R
-#' @export
-#' @rdname set-methods
-#' @aliases set,ContractType,list-method
-#' @aliases set,ContractType,ValuationEngine-method
-#' @aliases set,ContractType,RiskFactorConnector-method
-#' @aliases set,YieldCurve,list-method
-#' @aliases set,ReferenceIndex,list-method
-#' @aliases set,ForeignExchangeRate,list-method
-#' @aliases set,ValuationEngineModel,list-method
-# setMethod(f = "set", signature = c("ContractType","ContractModel"),
-#           definition = function(object, what){
-#             jhelper <- .jnew("org/rfl/ractus/contracttypes/ContractModelHelper")
-#             .jcall(jhelper, "V", "setContractModel", object$jref, what$jref)
-#           })
 
 #' @include ValuationEngine.R
 #' @export
