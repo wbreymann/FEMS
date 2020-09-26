@@ -494,9 +494,33 @@ setMethod(f = "liquidity", signature = c("CurrentAccount", "timeDate", "characte
 #' @include Value.R
 #' @export
 #' @rdname val-methods
+setMethod(f = "value", signature = c("CurrentAccount", "timeDate", "character", "missing"),
+          definition = function(object, by, type, method, end_date, ...){
+            val <- value(object, as.character(by), type, end_date=end_date)
+            return(val)
+          })
+
+#' @include Value.R
+#' @export
+#' @rdname val-methods
 setMethod(f = "value", signature = c("CurrentAccount", "character", "character", "missing"),
           definition = function(object, by, type, method, end_date, ...){
-            val <- value(object, by, type, object$RiskFactorConnector, end_date=end_date)
+            if(type=="nominal") {
+              return(FEMS::value(FEMS::events(object, by[1], end_date=by[length(by)]), by, "nominal", ...))
+            } else if (type %in% c("markToModel","markToMarket")) {
+              stop("Need argument 'method' in order to evaluate 'markToModel'-type value!")
+            } else {
+              stop(paste("Value type '", type, "' not recognized!", sep=""))
+            }
+            return(val)
+          })
+
+#' @include Value.R
+#' @export
+#' @rdname val-methods
+setMethod(f = "value", signature = c("CurrentAccount", "timeDate", "character", "ValuationEngine"),
+          definition = function(object, by, type, method, end_date, ...){
+            val <- value(object, as.character(by), type, method, end_date=end_date)
             return(val)
           })
 
@@ -514,6 +538,7 @@ setMethod(f = "value", signature = c("CurrentAccount", "character", "character",
             }
             return(val)
           })
+
 
 
 
