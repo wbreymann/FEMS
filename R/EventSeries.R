@@ -160,7 +160,48 @@ setMethod(f = "EventSeries", signature = c("Portfolio", "AD0"),
               temp_idx <- temp_df$Type %in% c("IPCI")
               temp_df[temp_idx,"Value"] <- temp_df[temp_idx,"NominalValue"] - 
                                               temp_df[c(temp_idx[2:length(temp_idx)],FALSE),"NominalValue"]
-              evs_list[[i]] <- temp_df[temp_df$Date>=as.character(ad), ]
+              
+              # need to add an AD0 event 
+              idx <- length(temp_df$Date) - sum(temp_df$Date>=as.character(ad))
+              if (idx == 0) {
+                temp_df <- rbind(data.frame(
+                  # ContractID = evs_raw[[i]]$contractId,
+                  Date = as.character(ad),
+                  Value = 0,
+                  Type = "AD0",
+                  Currency = unique(getEventAttributes(evs_raw[[i]]$events, "currency")),
+                  Time = yearFraction(substring(time[1], 1, 10), as.character(ad), convention = "30E360"),
+                  NominalValue = 0,
+                  NominalRate = 0,
+                  NominalAccrued = 0), temp_df)
+              } else {
+                if (any(temp_df$Date==as.character(ad))) {
+                  temp_idx_df <- which(temp_df$Date==as.character(ad))
+                  temp_df <- rbind(data.frame(
+                    Date = as.character(ad),
+                    Value = 0,
+                    Type = "AD0",
+                    Currency = unique(getEventAttributes(evs_raw[[i]]$events, "currency")),
+                    Time = yearFraction(substring(time[1], 1, 10), as.character(ad), convention = "30E360"),
+                    NominalValue = temp_df[temp_idx_df,"NominalValue"],
+                    NominalRate = temp_df[temp_idx_df,"NominalRate"],
+                    NominalAccrued = temp_df[temp_idx_df,"NominalAccrued"]),
+                            temp_df[temp_df$Date>=as.character(ad), ])
+                } else {
+                  temp_df <- rbind(data.frame(
+                    Date = as.character(ad),
+                    Value = 0,
+                    Type = "AD0",
+                    Currency = unique(getEventAttributes(evs_raw[[i]]$events, "currency")),
+                    Time = yearFraction(substring(time[1], 1, 10), as.character(ad), convention = "30E360"),
+                    NominalValue = temp_df[idx,"NominalValue"],
+                    NominalRate = temp_df[idx,"NominalRate"],
+                    NominalAccrued = NaN),
+                        temp_df[temp_df$Date>=as.character(ad), ])
+                }
+              }
+              evs_list[[i]] <- temp_df
+              # evs_list[[i]] <- temp_df[temp_df$Date>=as.character(ad), ]
               id_list[[i]] <- evs_raw[[i]]$contractId
               ct_list[[i]] <- object$contracts[[evs_raw[[i]]$contractId]]$ContractTerms$ContractType
             }
