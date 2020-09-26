@@ -459,6 +459,23 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
                                       NominalRate=0.0,
                                       NominalAccrued=0.0))
             }
+            # If there is a salvage value (write-off no till 0)
+            # we add a last event of type MD and the remaining value
+            if ( tail(ops,1) > 0 ) {
+              tmp <- tail(ops,1)
+              events <- rbind(events,
+                              data.frame(Date=as.character(time(tmp)),
+                              Value=as.numeric(series(tmp)),
+                              Type="MD",
+                              Level="P",
+                              Currency=object$Currency,
+                              Time=yearFraction(as.character(ad), 
+                                                as.character(time(tmp)), 
+                                                convention = "30E360"), # This should not be hardcoded!!!
+                              NominalValue=0,
+                              NominalRate=0.0,
+                              NominalAccrued=0.0))
+            }
             # evaluate reserving pattern
             # Should be generalized, cf. above
             if (class(object)=="Reserves") {
