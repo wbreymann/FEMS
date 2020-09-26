@@ -56,12 +56,11 @@ setMethod(f = "irr",
           signature = c("ContractType"),
           definition = function(object, method = "compound", period = "Y", 
                                 convention = "30E360", isPercentage=TRUE, ...) {
-            # browser()
             if (!any(is(object) %in% c("PrincipalAtMaturity","Annuity"))) {
               stop("irr currently only defined for bonds and annuities!")
             }
             cfs <- cashFlows(object)
-            return(irr(cfs, method = method, period = period, convention = convention, 
+            return(irr(cfs[,"Value"], method = method, period = period, convention = convention, 
                        isPercentage=isPercentage, ...))
           })
 
