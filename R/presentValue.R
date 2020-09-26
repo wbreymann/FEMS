@@ -23,12 +23,16 @@
 #'
 #' @param from a character indicating the date as for which the NPV is calculated.
 #'  
-#' @param isPercentage a logical, indicating if the 'yield' is passed as percentage or not.
-#'                     (default is TRUE). 
+#' @param isPercentage a logical, indicating if the 'yield' is passed as percentage 
+#'                     (TRUE) or as fraction (FALSE) (default is TRUE). 
+#'                     
+#' @param isPrice a logical indicating whether the result should be a price
+#'                in the case of a cash flow pattern where the initial cash flow
+#'                is negative and the others are positive (default is FALSE).                     
 #' 
 #' @return a numeric, representing the Net Present Value (NPV) of the contract. 
 #' 
-#' @usage presentValue(x, yield, yieldCurve, from, isPercentage)
+#' @usage presentValue(x, yield, yieldCurve, from, isPercentage=TRUE, isPrice=FALSE)
 #' 
 #' @examples
 #' b <- bond("2013-12-31", maturity = "5 years", nominal = 50000, 
@@ -45,7 +49,8 @@
 #' @include cashFlows.R DynamicYieldCurve.R YieldCurve.R
 #' @export 
 
-presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, isPercentage=TRUE) {
+presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, 
+                         isPercentage=TRUE, isPrice=FALSE) {
 
   if(is.null(yield) && is.null(yieldCurve)) {
     stop("please provide either yield or yieldCurve to compute the present value!")
@@ -74,7 +79,7 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, isPercentage
     if (!("Time" %in% colnames(cf))) {
       cf$Time <- yearFraction(rownames(ts)[1], rownames(ts))
     }
-    if (from == rownames(cf)[1]) {
+    if (isPrice && from == rownames(cf)[1]) {
       cf <- cf[2:nrow(cf),]
     }
   } else if (class(x)=="EventSeries") {
@@ -82,7 +87,7 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, isPercentage
       from <- as.character(evs$evs$Date[1])
     }
     evs <- as.data.frame(x)[,c("Date","Value","Type","Time")]
-    if (evs[evs$Date==from,"Type"]=="IED") {
+    if (isPrice && evs[evs$Date==from,"Type"]=="IED") {
       evs <- evs[evs$Date>from,]
     } else {
       evs <- evs[evs$Date>=from,]
@@ -102,7 +107,7 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, isPercentage
     if(is.null(from)) {
       from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
     }
-    if (from == as.character(FEMS:::get(x,"InitialExchangeDate"))) {
+    if (isPrice && from == as.character(FEMS:::get(x,"InitialExchangeDate"))) {
       from <- as.character(ymd(from) %m+% days(1))
     }
     cf <- cashFlows(x, from=from)

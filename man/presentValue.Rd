@@ -4,7 +4,7 @@
 \alias{presentValue}
 \title{\code{presentValue}}
 \usage{
-presentValue(x, yield, yieldCurve, from, isPercentage)
+presentValue(x, yield, yieldCurve, from, isPercentage=TRUE, isPrice=FALSE)
 }
 \arguments{
 \item{x}{a contract type, for which to calculate the NPV. This can also be 
@@ -18,8 +18,12 @@ factors from.}
 
 \item{from}{a character indicating the date as for which the NPV is calculated.}
 
-\item{isPercentage}{a logical, indicating if the 'yield' is passed as percentage or not.
-(default is TRUE).}
+\item{isPercentage}{a logical, indicating if the 'yield' is passed as percentage 
+(TRUE) or as fraction (FALSE) (default is TRUE).}
+
+\item{isPrice}{a logical indicating whether the result should be a price
+in the case of a cash flow pattern where the initial cash flow
+is negative and the others are positive (default is FALSE).}
 }
 \value{
 a numeric, representing the Net Present Value (NPV) of the contract.

@@ -2,20 +2,26 @@
 % Please edit documentation in R/irr.R
 \name{irr}
 \alias{irr}
-\title{\code{irr}}
+\title{Internal Rate of Return (\code{irr})}
 \usage{
-irr(object, curve, method, period, ...)
+irr(object, method = "compound", period = "Y", convention = "30E360E", ...)
 }
 \arguments{
 \item{object}{a timeSeries object representing cash flows.}
 
-\item{method}{(optional) character indicating the type of discounting. Can be
+\item{...}{additional arguments passed on to \code{\link{uniroot}}.}
+
+\item{method}{character indicating the type of discounting. Can be
 one of "continuous", "compound" or "linear".}
 
-\item{period}{(optional) character indicating the day count convention.}
+\item{period}{character indicating periods of interest payments. 
+Can be "Y", "M", "W" or "D" for yearly, monthly, weekly or daily
+interest payments.}
+
+\item{convention}{character indicating the day count convention.}
 }
 \value{
-the internal rate of return calculated from the cash flows.
+The internal rate of return calculated from the cash flows.
 }
 \description{
 Function computing the internal rate of return of a series of cash flows.

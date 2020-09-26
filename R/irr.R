@@ -1,5 +1,5 @@
 ##############################################################
-#' \code{irr}
+#' Internal Rate of Return (\code{irr})
 #'
 #' Function computing the internal rate of return of a series of cash flows.
 #' Computation of the internal rate of return requires the numerical
@@ -11,18 +11,20 @@
 #' 
 #' @param object a timeSeries object representing cash flows.
 #' 
-#' @param method (optional) character indicating the type of discounting. Can be
+#' @param method character indicating the type of discounting. Can be
 #'               one of "continuous", "compound" or "linear".
 #' 
-#' @param period (optional) character indicating periods of interest payments. 
+#' @param period character indicating periods of interest payments. 
 #'               Can be "Y", "M", "W" or "D" for yearly, monthly, weekly or daily
 #'               interest payments.
 #' 
-#' @param period (optional) character indicating the day count convention.
+#' @param convention character indicating the day count convention.
 #' 
-#' @return the internal rate of return calculated from the cash flows.
+#' @param ... additional arguments passed on to \code{\link{uniroot}}.
+#'
+#' @return The internal rate of return calculated from the cash flows.
 #' 
-#' @usage irr(object, curve, method, period, ...)
+#' @usage irr(object, method = "compound", period = "Y", convention = "30E360E", ...)
 #' 
 #' @examples
 #' # timeSeries object
