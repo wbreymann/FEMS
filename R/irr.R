@@ -22,9 +22,13 @@
 #' 
 #' @param ... additional arguments passed on to \code{\link{uniroot}}.
 #'
+#' @param isPercentage a logical, indicating if the results is returned as percentage 
+#'                     (TRUE) or as fraction (FALSE) (default is TRUE). 
+#'                     
 #' @return The internal rate of return calculated from the cash flows.
 #' 
-#' @usage irr(object, method = "compound", period = "Y", convention = "30E360E", ...)
+#' @usage irr(object, method = "compound", period = "Y", convention = "30E360E", 
+#'        isPercentage=TRUE, ...)
 #' 
 #' @examples
 #' # timeSeries object
@@ -50,19 +54,22 @@ setGeneric(name = "irr",
 #' @export
 setMethod(f = "irr",
           signature = c("ContractType"),
-          definition = function(object, method = "compound", period = "Y", convention = "30E360", ...) {
+          definition = function(object, method = "compound", period = "Y", 
+                                convention = "30E360", isPercentage=TRUE, ...) {
             browser()
             if (!any(is(object) %in% c("PrincipalAtMaturity","Annuity"))) {
               stop("irr currently only defined for bonds and annuities!")
             }
             cfs <- cashFlows(object)
-            return(irr(cfs, method = method, period = period, convention = convention, ...))
+            return(irr(cfs, method = method, period = period, convention = convention, 
+                       isPercentage=isPercentage, ...))
           })
 
 #' @export
 setMethod(f = "irr",
           signature = c("timeSeries"),
-          definition = function(object, method = "compound", period = "Y", convention = "30E360", ...) {
+          definition = function(object, method = "compound", period = "Y", 
+                                convention = "30E360", isPercentage=TRUE, ...) {
 
             cfs <- as.numeric(object)
             dts <- yearFraction(rownames(object)[1], rownames(object), convention = convention)
@@ -95,6 +102,7 @@ setMethod(f = "irr",
             }
             
             # find root of function & return
-            irr <- uniroot(f, interval = int, tol = t, ...)
-            return(irr$root)
+            irr <- uniroot(f, interval = int, tol = t, ...)$root
+            if (isPercentage) irr <- 100*irr
+            return(irr)
           })

@@ -4,7 +4,8 @@
 \alias{irr}
 \title{Internal Rate of Return (\code{irr})}
 \usage{
-irr(object, method = "compound", period = "Y", convention = "30E360E", ...)
+irr(object, method = "compound", period = "Y", convention = "30E360E", 
+       isPercentage=TRUE, ...)
 }
 \arguments{
 \item{object}{a timeSeries object representing cash flows.}
@@ -19,6 +20,9 @@ Can be "Y", "M", "W" or "D" for yearly, monthly, weekly or daily
 interest payments.}
 
 \item{convention}{character indicating the day count convention.}
+
+\item{isPercentage}{a logical, indicating if the results is returned as percentage 
+(TRUE) or as fraction (FALSE) (default is TRUE).}
 }
 \value{
 The internal rate of return calculated from the cash flows.

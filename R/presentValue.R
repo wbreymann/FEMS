@@ -75,6 +75,7 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
     if(is.null(from)) {
       from <- as.character(rownames(x)[1])
     }
+    colnames(x) <- rep("Value", ncol(x))
     cf <- x
     if (!("Time" %in% colnames(cf))) {
       cf$Time <- yearFraction(rownames(ts)[1], rownames(ts))
