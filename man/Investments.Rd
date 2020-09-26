@@ -15,13 +15,20 @@ Investments(ContractID, pattern, args, ...)
 An Investments contract represents any operational activity 
 in monetary units within an organization related to investments.
 }
+\details{
+The \code{pattern} describes the value of the initial investment 
+and the write-off pattern as \code{\link{timeSeries}} object. If the write-off
+does not go down to zere the remaining value is interpreted as salvage value.
+This is represented by a last event of type MD with a cash inflow of this
+amount so that the \code{\link{EventSeries}} ends with a nominal value of zero.
+}
 \examples{
 times = timeSequence(from="2014-01-01", by="3 months", length.out=9)
 write.off <- function(times) {
    timeSeries(seq(1000000, 0, length.out=9), times)
    }
 invest <- Investments(
-              ContractID = "Ops002", Currency = "CHF", 
+              ContractID = "Invest01", Currency = "CHF", 
               pattern = write.off, 
               args = list(times = times))
 
