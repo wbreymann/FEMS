@@ -421,93 +421,96 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             # ops <- object$CashFlowPattern(object$RiskFactorConnector, object$params)
             # code is generalized so that an arbitrary function with arbitrary
             # arguments can be passed.
+# ATTENTION: ONLY ONE OF THESE CASES SHOULD BE EXECUTED!!!!!
             if (class(object)=="OperationalCF") {
               ops <- do.call(object$pattern, object$args)
-            } else {
-              ops <- NULL
-            }
-            if(!is.null(ops)) {
-              vals <- as.numeric(series(ops))
-              events <- rbind(events,
-                           data.frame(Date=as.character(time(ops)),
-                                      Value=c(vals[1],vals[2:length(vals)]),
-                                      Type="OPS",
-                                      Level="P",
-                                      Currency=object$Currency,
-                                      Time=yearFraction(as.character(ad), 
-                                                        as.character(time(ops)), 
-                                                        convention = "30E360"),
-                                      NominalValue=0.0,
-                                      NominalRate=0.0,
-                                      NominalAccrued=0.0))
-            }
-            # evaluate invest pattern
-            # Should be generalized, cf. above
-            # ops <- object$InvestPattern(object$RiskFactorConnector,object$params)
-            if (class(object)=="Investments") {
+            # } else {
+            #   ops <- NULL
+            # }
+              if(!is.null(ops)) {
+                vals <- as.numeric(series(ops))
+                events <- rbind(events,
+                             data.frame(Date=as.character(time(ops)),
+                                        Value=c(vals[1],vals[2:length(vals)]),
+                                        Type="OPS",
+                                        Level="P",
+                                        Currency=object$Currency,
+                                        Time=yearFraction(as.character(ad), 
+                                                          as.character(time(ops)), 
+                                                          convention = "30E360"),
+                                        NominalValue=0.0,
+                                        NominalRate=0.0,
+                                        NominalAccrued=0.0))
+              }
+              # evaluate invest pattern
+              # Should be generalized, cf. above
+              # ops <- object$InvestPattern(object$RiskFactorConnector,object$params)
+            } else if (class(object)=="Investments") {
               ops <- do.call(object$pattern, object$args)
-            } else {
-              ops <- NULL
-            }
-            if(!is.null(ops)) {
-              if (length(ops)<2) stop("An investment pattern needs to have length>1!")
-              vals <- c(ops[1,],diff(ops)[-1,])
-              events <- rbind(events,
-                           data.frame(Date=as.character(time(ops)),
-                                      Value=c(-vals[1],vals[2:length(vals)]),
-                                      Type=c("IED",rep("DPR",length(ops)-1)),
-                                      Level="P",
-                                      Currency=object$Currency,
-                                      Time=yearFraction(as.character(ad), 
-                                                        as.character(time(ops)), 
-                                                        convention = "30E360"),
-                                      NominalValue=vals,
-                                      NominalRate=0.0,
-                                      NominalAccrued=0.0))
-            }
-            # If there is a salvage value (write-off no till 0)
-            # we add a last event of type MD and the remaining value
-            if ( tail(ops,1) > 0 ) {
-              tmp <- tail(ops,1)
-              vals <- as.numeric(series(tmp))
-              events <- rbind(events, 
-                              data.frame(Date=as.character(time(tmp)),
-                                         Value=vals,
-                                         Type="MD",
-                                         Level="P",
-                                         Currency=object$Currency,
-                                         Time=yearFraction(as.character(ad), 
-                                                           as.character(time(tmp)), 
-                                                           convention = "30E360"), # This should not be hardcoded!!!
-                                         NominalValue=-vals,
-                                         NominalRate=0.0,
-                                         NominalAccrued=0.0))
-            }
+            # } else {
+            #   ops <- NULL
+            # }
+              if(!is.null(ops)) {
+                if (length(ops)<2) stop("An investment pattern needs to have length>1!")
+                vals <- c(ops[1,],diff(ops)[-1,])
+                events <- rbind(events,
+                             data.frame(Date=as.character(time(ops)),
+                                        Value=c(-vals[1],vals[2:length(vals)]),
+                                        Type=c("IED",rep("DPR",length(ops)-1)),
+                                        Level="P",
+                                        Currency=object$Currency,
+                                        Time=yearFraction(as.character(ad), 
+                                                          as.character(time(ops)), 
+                                                          convention = "30E360"),
+                                        NominalValue=vals,
+                                        NominalRate=0.0,
+                                        NominalAccrued=0.0))
+              }
+              # If there is a salvage value (write-off no till 0)
+              # we add a last event of type MD and the remaining value
+              if ( tail(ops,1) > 0 ) {
+                tmp <- tail(ops,1)
+                vals <- as.numeric(series(tmp))
+                events <- rbind(events, 
+                                data.frame(Date=as.character(time(tmp)),
+                                           Value=vals,
+                                           Type="MD",
+                                           Level="P",
+                                           Currency=object$Currency,
+                                           Time=yearFraction(as.character(ad), 
+                                                             as.character(time(tmp)), 
+                                                             convention = "30E360"), # This should not be hardcoded!!!
+                                           NominalValue=-vals,
+                                           NominalRate=0.0,
+                                           NominalAccrued=0.0))
+              }
             # evaluate reserving pattern
             # Should be generalized, cf. above
-            if (class(object)=="Reserves") {
+            } else if (class(object)=="Reserves") {
               ops <- object$pattern(object$RiskFactorConnector, object$args)
+              # } else {
+              #   ops <- NULL
+              # }
+              if(!is.null(ops)) {
+                # compute change in nominal value, note, reserves are liabilities so interprete
+                # nominal positions as (-1) * nominal
+                vals <- diff(-ops)[-1]
+                events <- rbind(events,
+                             data.frame(Date=as.character(time(ops))[-1],
+                                        Value=vals,
+                                        Type="RES",
+                                        Level="P",
+                                        Currency=object$Currency,
+                                        Time=yearFraction(as.character(ad), 
+                                                          as.character(time(ops))[-1], 
+                                                          convention = "30E360"),
+                                        NominalValue=vals,
+                                        NominalRate=0.0,
+                                        NominalAccrued=0.0))
+              }
             } else {
-              ops <- NULL
+              stop("No known Contract Type.")
             }
-            if(!is.null(ops)) {
-              # compute change in nominal value, note, reserves are liabilities so interprete
-              # nominal positions as (-1) * nominal
-              vals <- diff(-ops)[-1]
-              events <- rbind(events,
-                           data.frame(Date=as.character(time(ops))[-1],
-                                      Value=vals,
-                                      Type="RES",
-                                      Level="P",
-                                      Currency=object$Currency,
-                                      Time=yearFraction(as.character(ad), 
-                                                        as.character(time(ops))[-1], 
-                                                        convention = "30E360"),
-                                      NominalValue=vals,
-                                      NominalRate=0.0,
-                                      NominalAccrued=0.0))
-            }
-            
             # convert to (sorted) timeSeries
             # Note: AD0 event needs to be after all other events of the same instant
             tms <- paste0(events$Date,"T00:00:00")
