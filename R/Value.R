@@ -334,7 +334,8 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "D
                 # In the next line: it should be a ">", not ">="
                 # Otherwise inconsistent with result from same method
                 # computed from Contract
-                evs.sub = subset(evs, times > timeDate(ad))
+                evs.sub = subset(evs, times >= timeDate(ad))
+                evs.sub <- subset(evs.sub, !(evs.sub$types %in% c("DPR","IPCI")))
                 if( nrow(evs.sub)==0 | sum(evs.sub$types %in% c("IED","PRD")) > 0
                     # | evs.sub["times", evs.sub$types=="IED"] > ad
                 ) {

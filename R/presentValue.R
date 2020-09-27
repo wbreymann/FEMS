@@ -104,6 +104,17 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
     evs.ts$Value <- as.numeric(evs.ts$Value)
     cf <- aggregate(evs.ts, time(evs.ts), "sum")
     cf$Time <- evs.ts[row.names(cf),]$Time
+  } else if (any(is(x) %in% c("CurrentAccount","Operations"))) {
+    if(is.null(from)) {
+      from <- as.character(FEMS:::get(x, "ContractDealDate"))
+      if(is.null(from)){
+        stop("Argument 'from' has to be provided !!!")
+      }
+    }
+    if (isPrice && from == as.character(FEMS:::get(x,"ContractDealDate"))) {
+      from <- as.character(ymd(from) %m+% days(1))
+    }
+    cf <- cashFlows(x, from=from)
   } else {
     if(is.null(from)) {
       from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
