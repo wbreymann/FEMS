@@ -51,7 +51,7 @@
 
 presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, 
                          isPercentage=TRUE, isPrice=FALSE) {
-browser()
+
   if(is.null(yield) && is.null(yieldCurve)) {
     stop("please provide either yield or yieldCurve to compute the present value!")
   }
