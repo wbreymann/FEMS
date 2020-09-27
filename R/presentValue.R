@@ -51,7 +51,7 @@
 
 presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, 
                          isPercentage=TRUE, isPrice=FALSE) {
-
+browser()
   if(is.null(yield) && is.null(yieldCurve)) {
     stop("please provide either yield or yieldCurve to compute the present value!")
   }
@@ -78,7 +78,7 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
     colnames(x) <- rep("Value", ncol(x))
     cf <- x
     if (!("Time" %in% colnames(cf))) {
-      cf$Time <- yearFraction(rownames(ts)[1], rownames(ts))
+      cf$Time <- yearFraction(rownames(cf)[1], rownames(cf))
     }
     if (isPrice && from == rownames(cf)[1]) {
       cf <- cf[2:nrow(cf),]
