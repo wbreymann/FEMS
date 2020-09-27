@@ -27,7 +27,9 @@
 \alias{value,eventList,character,character,missing-method}
 \alias{value,eventList,character,character,DiscountingEngine-method}
 \alias{value,eventList,character,character,list-method}
+\alias{value,CurrentAccount,timeDate,character,missing-method}
 \alias{value,CurrentAccount,character,character,missing-method}
+\alias{value,CurrentAccount,timeDate,character,ValuationEngine-method}
 \alias{value,CurrentAccount,character,character,ValuationEngine-method}
 \alias{value,Node,timeBuckets,character,ANY-method}
 \alias{value,Operations,AD0,character,missing-method}
@@ -87,7 +89,11 @@ value(object, by, type, method, ...)
 
 \S4method{value}{eventList,character,character,list}(object, by, type, method, ...)
 
+\S4method{value}{CurrentAccount,timeDate,character,missing}(object, by, type, method, end_date, ...)
+
 \S4method{value}{CurrentAccount,character,character,missing}(object, by, type, method, end_date, ...)
+
+\S4method{value}{CurrentAccount,timeDate,character,ValuationEngine}(object, by, type, method, end_date, ...)
 
 \S4method{value}{CurrentAccount,character,character,ValuationEngine}(object, by, type, method, end_date, ...)
 
