@@ -52,9 +52,10 @@ loan <- function(start, maturity = "0 years", nominal = 0,
     maturity <- as.character(timeSequence(timeDate(start), 
                                           by=maturity, length.out=2)[2])
   }
+
   statusDate <- as.character(timeDate(start)-24*3600)
   contractDealDate <- as.character(timeDate(start)-24*3600)
-  initialExchangeDate <- contractDealDate
+  initialExchangeDate <- start
   ir_freq_bef <- irFreq
   if(is.null(irFreq) || irFreq=="NULL") {
     irFreq <- NULL
