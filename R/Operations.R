@@ -601,76 +601,76 @@ ops.liquidity = function(object, by, type, digits=2){
             return(round(liq, digits))
 }
 
-#' ## -----------------------------------------------------------------
-#' ## income methods for Operations contract
-#' #' @export
-#' #' @rdname inc-methods
-#' setMethod(f = "income", signature = c("Operations", "timeDate", "missing"),
-#'           definition = function(object, by, type, ...){
-#'             return(income(object, by, type="marginal", ...))
-#'           })
-#' 
-#' #' @export
-#' #' @include TimeBuckets.R
-#' #' @rdname inc-methods
-#' setMethod(f = "income", signature = c("Operations", "timeBuckets", "missing"),
-#'           definition = function(object, by, type, ...){
-#'             inc <- income(object, as.timeDate(by), type="marginal", ...)
-#'             names(inc) <- by@bucketLabs
-#'             return(inc)
-#'           })
-#' 
-#' 
-#' #' @export
-#' #' @rdname liq-methods
-#' setMethod(f = "income", signature = c("Operations", "timeDate", "character"),
-#'           definition = function(object, by, type, ...){
-#'             rflSimulation:::ops.income(object, by, type, ...)
-#'           })
-#' 
-#' #' @export
-#' #' @include TimeBuckets.R
-#' #' @rdname inc-methods
-#' setMethod(f = "income", signature = c("Operations", "timeBuckets", "character"),
-#'           definition = function(object, by, type, ...){
-#'             inc <- income(object, as.timeDate(by), type=type, ...)
-#'             names(inc) <- by@bucketLabs
-#'             return(inc)
-#'           })
-#' 
-#' 
-#' # internal income calculation function
-#' #
-#' # @param object an Operations contract
-#' # @param by the by argument to a income method
-#' # @param type the type argument to a income method
-#' ops.income = function(object, by, type, digits=2){
-#'   if (!type %in% c("marginal", "cumulative")) {
-#'     stop(paste("Income type '", type, "' not recognized!", sep=""))
-#'   }
-#'   
-#'   # compute events
-#'   events <- events(object, by[1])
-#'   
-#'   # compute marginal income
-#'   evs <- FEMS:::get(events, "evs")
-#'   # filter by income-category events
-#'   evs <- subset(evs, Type %in% c("AD0", "OPS", "DPR", "RES"))
-#'   # compute aggregate cash flows for remaining events
-#'   inc <- timeSeries(rep(0, length(by)), charvec=by)
-#'   cf.raw <- timeSeries(evs$Value,
-#'                     charvec=substring(evs$Date, 1, 10))
-#'   cf.aggr=aggregate(cf.raw, by, FUN=sum)
-#'   inc[time(cf.aggr),] <- cf.aggr
-#'   inc <- as.numeric(series(inc))[-1]
-#'   
-#'   # compute cumulative
-#'   if(type=="cumulative") {
-#'     inc <- cumsum(inc)
-#'   }
-#'     
-#'   return(round(inc, digits))
-#' }
+## -----------------------------------------------------------------
+## income methods for Operations contract
+#' @export
+#' @rdname inc-methods
+setMethod(f = "income", signature = c("Operations", "timeDate", "missing"),
+          definition = function(object, by, type, ...){
+            return(income(object, by, type="marginal", ...))
+          })
+
+#' @export
+#' @include TimeBuckets.R
+#' @rdname inc-methods
+setMethod(f = "income", signature = c("Operations", "timeBuckets", "missing"),
+          definition = function(object, by, type, ...){
+            inc <- income(object, as.timeDate(by), type="marginal", ...)
+            names(inc) <- by@bucketLabs
+            return(inc)
+          })
+
+
+#' @export
+#' @rdname liq-methods
+setMethod(f = "income", signature = c("Operations", "timeDate", "character"),
+          definition = function(object, by, type, ...){
+            FEMS:::ops.income(object, by, type, ...)
+          })
+
+#' @export
+#' @include TimeBuckets.R
+#' @rdname inc-methods
+setMethod(f = "income", signature = c("Operations", "timeBuckets", "character"),
+          definition = function(object, by, type, ...){
+            inc <- income(object, as.timeDate(by), type=type, ...)
+            names(inc) <- by@bucketLabs
+            return(inc)
+          })
+
+
+# internal income calculation function
+#
+# @param object an Operations contract
+# @param by the by argument to a income method
+# @param type the type argument to a income method
+ops.income = function(object, by, type, digits=2){
+  if (!type %in% c("marginal", "cumulative")) {
+    stop(paste("Income type '", type, "' not recognized!", sep=""))
+  }
+
+  # compute events
+  events <- events(object, by[1])
+
+  # compute marginal income
+  evs <- FEMS:::get(events, "evs")
+  # filter by income-category events
+  evs <- subset(evs, Type %in% c("AD0", "OPS", "RES"))
+  # compute aggregate cash flows for remaining events
+  inc <- timeSeries(rep(0, length(by)), charvec=by)
+  cf.raw <- timeSeries(evs$Value,
+                    charvec=substring(evs$Date, 1, 10))
+  cf.aggr=aggregate(cf.raw, by, FUN=sum)
+  inc[time(cf.aggr),] <- cf.aggr
+  inc <- as.numeric(series(inc))[-1]
+
+  # compute cumulative
+  if(type=="cumulative") {
+    inc <- cumsum(inc)
+  }
+
+  return(round(inc, digits))
+}
 
 
 ## -----------------------------------------------------------------
@@ -801,7 +801,7 @@ ops.marketValue = function(object, by, method, digits=2) {
   evs <- FEMS:::get(object,"evs")[, c("Date", "Value","Type")]
   colnames(evs) <- c("times", "values", "types")
   evs$times <- timeDate(evs$times)
-  evs <- subset(evs, types %in% c("OPS", "PR"))
+  evs <- subset(evs, types %in% c("OPS", "PR", "IED", "MD"))
   
   # iterate through valuation times and compute present value of remaining 
   # cashflows
