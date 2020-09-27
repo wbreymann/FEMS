@@ -697,6 +697,8 @@ setMethod(f = "rates",
 #' 
 #' @return numeric vector of discount factors for the defined periods.
 #' 
+#' @usage discountFactors(object, end, start, method = "continuous", period = "Y", refdate = NULL, ...)
+#' 
 #' @seealso \code{\link{rates}}
 #' 
 #' @examples
