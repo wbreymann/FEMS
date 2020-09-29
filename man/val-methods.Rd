@@ -131,16 +131,6 @@ A \code{numeric} object representing the contract's value
 Different value-concepts can be derived from a financial instrument
 or the resulting EventSeries, respectively. Currentently, these are
 Nominal value and Mark-to-Model value.
-
-#' @export
-#' @include TimeBuckets.R
-#' @rdname inc-methods
-setMethod(f = "income", signature = c("Operations", "timeBuckets", "missing"),
-          definition = function(object, by, type, ...){
-            inc <- income(object, as.timeDate(by), type="marginal", ...)
-            names(inc) <- by@bucketLabs
-            return(inc)
-          })
 }
 \details{
 Nominal value is the value of a Maturity instrument that is currently 
@@ -160,8 +150,6 @@ instrument is illiquid.
 In order for a mark-to-model value to be derived, the CT algorithm must have
 been processed and an appropriate \code{ValuationEngine} either assigned in 
 advance or past as method argument 'method'.
-
-
 }
 \examples{
 pam <- Pam()
