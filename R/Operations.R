@@ -801,7 +801,7 @@ ops.marketValue = function(object, by, method, digits=2) {
   evs <- FEMS:::get(object,"evs")[, c("Date", "Value","Type")]
   colnames(evs) <- c("times", "values", "types")
   evs$times <- timeDate(evs$times)
-  evs <- subset(evs, types %in% c("OPS", "PR", "MD"))
+  evs <- subset(evs, types %in% c("OPS", "PR", "MD", "IED"))
   
   # iterate through valuation times and compute present value of remaining 
   # cashflows

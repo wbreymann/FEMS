@@ -238,6 +238,16 @@ setMethod(f = "EventSeries", signature = c("EventSeries", "missing"),
           })
 
 
+## @include
+#' @export
+#' @docType methods
+#' @rdname print-methods
+if (!isGeneric("print"))
+  setGeneric(name = "print", 
+             def = function(x, ...) {
+               standardGeneric("print")
+             })
+
 ##############################################################
 #' \code{EventSeries}-print method
 #'
@@ -287,7 +297,9 @@ setMethod("print", signature = "EventSeries",
             if (type == "raw") {
               x
             } else {
-              y = FEMS::get(object=x, what="evs")
+              # y = FEMS::get(object=x, what="evs")
+              y = evs$evs
+      # print("print: pretty")
               if (!missing(indices)){ 
                 y = y[,indices] 
               }
