@@ -75,11 +75,16 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
     if(is.null(from)) {
       from <- as.character(rownames(x)[1])
     }
-    colnames(x) <- rep("Value", ncol(x))
+    #colnames(x) <- rep("Value", ncol(x))
     cf <- x
     if (!("Time" %in% colnames(cf))) {
+      t <- timeSeries(data=yearFraction(rownames(cf)[1], rownames(cf)),
+                      charvec=rownames(cf),
+                      units = "Time")
+      cf <- cbind(cf, t)
       cf$Time <- yearFraction(rownames(cf)[1], rownames(cf))
     }
+    colnames(cf)[1:ncol(cf)-1] <- rep("Value", ncol(cf)-1)
     if (isPrice && from == rownames(cf)[1]) {
       cf <- cf[2:nrow(cf),]
     }
@@ -137,5 +142,10 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
   }
   
   # compute and return present value
-  return (as.numeric(t(cf$Value)%*%df))
+  out <- c()
+  for (i in 1:(ncol(cf)-1)) {
+    cf_temp <- cf[,c(i,ncol(cf))]
+    out <- c(out, as.numeric(t(cf_temp$Value)%*%df))
+  }
+  return (out)
 }
