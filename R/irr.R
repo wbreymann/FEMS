@@ -69,39 +69,42 @@ setMethod(f = "irr",
           signature = c("timeSeries"),
           definition = function(object, method = "compound", period = "Y", 
                                 convention = "30E360", isPercentage=TRUE, ...) {
-
-            cfs <- as.numeric(object)
             dts <- yearFraction(rownames(object)[1], rownames(object), convention = convention)
-            
-            # define the function for which to find roots
-            f <- function(r) {
-              if (method == "linear") {
-                sum(cfs * (1 + r*dts)^(-1))
-              } else if (method == "compound") {
-                m_period <- convert.rate.period(period)
-                sum(cfs * (1 + r/m_period)^(-dts*m_period))
-              } else if (method == "continuous") {
-                sum(cfs * exp(-r*dts))
-              } else {
-                stop("Compounding method does not exist. Must be one of 'continuous', 'compound' or 'linear'!")
+            irr_out <- c()
+            for (i in 1:ncol(object)) {
+              cfs <- as.numeric(object[,i])
+              
+              # define the function for which to find roots
+              f <- function(r) {
+                if (method == "linear") {
+                  sum(cfs * (1 + r*dts)^(-1))
+                } else if (method == "compound") {
+                  m_period <- convert.rate.period(period)
+                  sum(cfs * (1 + r/m_period)^(-dts*m_period))
+                } else if (method == "continuous") {
+                  sum(cfs * exp(-r*dts))
+                } else {
+                  stop("Compounding method does not exist. Must be one of 'continuous', 'compound' or 'linear'!")
+                }
               }
+              
+              # check if "interval" and "tol" is part of args and pass to uniroot
+              args <- list(...)
+              if ("interval" %in% args) {
+                int <- args[["interval"]]
+              } else {
+                int <- c(-1, 1)
+              }
+              if ("tol" %in% args) {
+                t <- args[["tol"]]
+              } else {
+                t <- 1e-9
+              }
+              
+              # find root of function & return
+              irr <- uniroot(f, interval = int, tol = t, ...)$root
+              if (isPercentage) irr <- 100*irr
+              irr_out <- c(irr_out, irr)
             }
-            
-            # check if "interval" and "tol" is part of args and pass to uniroot
-            args <- list(...)
-            if ("interval" %in% args) {
-              int <- args[["interval"]]
-            } else {
-              int <- c(-1, 1)
-            }
-            if ("tol" %in% args) {
-              t <- args[["tol"]]
-            } else {
-              t <- 1e-9
-            }
-            
-            # find root of function & return
-            irr <- uniroot(f, interval = int, tol = t, ...)$root
-            if (isPercentage) irr <- 100*irr
-            return(irr)
+            return(irr_out)
           })
