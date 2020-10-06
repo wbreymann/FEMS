@@ -8,8 +8,18 @@ a1 <- annuity("2020-01-01", nominal = 10000, ir = 0.05, maturity = "5 years",
 l1 <- loan("2020-01-01", nominal = 10000, ir = 0.05, maturity = "5 years",
            , ContractID="003")
 
+ctnames(b1) # ok
+as.name(ctnames(b1))
 
-p1 <- Portfolio(b1,a1) # Error: Doesn't work
+p1 <- Portfolio(b1, a1) # ok
+ctnames(p1)
+ll <- list(b01=b1, a01=a1)
+sum(names(ll) == "")
+
+p1 <- Portfolio(b01=b1, a01=a1) # Error: Doesn't work. Now ok!!
+
+ctnames(p1)
+class(p1)
 
 ll <- list(b01=b1, a02=a1)
 names(ll)
