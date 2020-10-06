@@ -41,6 +41,7 @@ Collate:
     'ContractModel.R'
     'RiskFactor.R'
     'RiskFactorConnector.R'
+    'ContractABC.R'
     'AnalysisDate.R'
     'ValuationEngine.R'
     'ContractType.R'
