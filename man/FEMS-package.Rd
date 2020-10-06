@@ -117,10 +117,3 @@ to provide with a future release of this package a method that
 allows to e.g. import a CT's Attributes from a file and write its
 Contract Events to a file rather than using the \pkg{rJava}-interface.
 }
-\seealso{
-Useful links:
-\itemize{
-  \item \url{http://www.actusfrf.org}
-}
-
-}
