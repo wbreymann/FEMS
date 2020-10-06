@@ -106,3 +106,4 @@ Collate:
     'testClosure.R'
     'yearFraction.R'
     'yieldCurveOperations.R'
+    'Portfolio2.R'

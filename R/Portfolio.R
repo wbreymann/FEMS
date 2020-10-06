@@ -75,6 +75,7 @@ setMethod(f = "Portfolio", signature = c(),
                 import(object = new.portfolio, source = source, pars)
               )
             }
+            new.portfolio$contracts <- pars
             return(new.portfolio)
           })
 
@@ -540,8 +541,8 @@ setMethod(f = "summary", signature = c("Portfolio"),
 # @docType methods
 # @rdname add-methods
 # @aliases 
-setMethod(f = "show", signature = c("Portfolio"),
-          definition = function(object){
+# setMethod(f = "show", signature = c("Portfolio"),
+          # definition = function(object){
             # nContr <- length(FEMS::get(object=object,what="contracts"))
             # cts <- FEMS::get(object=object, what="contracts")
             # if(nContr==1) {
@@ -553,8 +554,8 @@ setMethod(f = "show", signature = c("Portfolio"),
             # print(table(unlist(types)))
             # 
             # invisible(NULL)
-            print(CTterms(object))
-          })
+          #   print(CTterms(object))
+          # })
 
 ## @include
 #' @export
