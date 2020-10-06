@@ -17,10 +17,11 @@
 #'
 ## @examples
 #' 
-#' @include ContractModel.R ValuationEngine.R RiskFactorConnector.R AnalysisDate.R 
+#' @include ContractModel.R ValuationEngine.R RiskFactorConnector.R AnalysisDate.R ContractABC.R
 #' @export
 #' @rdname ct-classes
 setRefClass("ContractType",
+            contains = "ContractABC",
             fields = list(
               ContractTerms = "list",
               rf_connector = "RiskFactorConnector",

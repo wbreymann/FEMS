@@ -121,6 +121,14 @@ cashFlows <- function(x, from=NULL, to=NULL, riskfactors=NULL, variableRate=data
   #cf[cf$Type%in%c("RR","RRY","SC","PRY"),"Value"] <- 0
   cf <- cf[!(cf$Type%in%c("IPCI","DPR","PRF","RR","RRY","SC","PRY")),]
   cf <- cf[!((cf$Type %in% "AD0") & (cf$Value==0)),]
+  # return 0 if nothing is there...
+  if (dim(cf)[1]==0) {
+    ts <- timeSeries(cbind(0,0), 
+                     charvec = from, 
+                     units = c("Value","Time"))
+    return(ts)
+  }
+  
   if (cf$Type[dim(cf)[1]]!="MD" & cf$Value[dim(cf)[1]]==0){
     cf <- cf[1:dim(cf)[1]-1,]
   }

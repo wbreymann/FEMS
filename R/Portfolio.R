@@ -65,20 +65,29 @@ setGeneric(name = "Portfolio",
 # @aliases
 setMethod(f = "Portfolio", signature = c(),
           definition = function(...){
-
             new.portfolio = new("Portfolio")
             pars = list(...)
-            if ("source" %in% tolower(names(pars))) {
-              source = pars[["source"]]
-              pars[["source"]] = NULL
-              print(
-                import(object = new.portfolio, source = source, pars)
-              )
-            }
-            new.portfolio$contracts <- pars
+            if (length(pars) != 0) {
+              if (is.list(pars[[1]])) {
+                l <- pars[[1]]
+                for (i in 1:length(l)) {
+                  if (!("ContractABC" %in% is(l[[i]]))) {
+                    stop("If list is supplied, list entries must be contracts !!!")
+                  }
+                  set(l[[i]], list("ContractID" = names(l)[i]))
+                  add(new.portfolio, l[[i]])
+                }
+              } else {
+                if ("source" %in% tolower(names(pars))) {
+                  source = pars[["source"]]
+                  pars[["source"]] = NULL
+                  print(
+                    import(object = new.portfolio, source = source, pars)
+                  )
+                }
+            }}
             return(new.portfolio)
           })
-
 
 ## @include
 ## @export
@@ -706,6 +715,15 @@ setMethod("[[", signature = c("Portfolio", "ANY"),
           }
 )
 
+#' @export
+setMethod("[[<-", signature = c("Portfolio", "ANY"),
+          definition = function(x, i, value) {
+            set(value, list("ContractID" = i))
+            add (x, value)
+            x
+          }
+)
+
 ## @include
 #' @export
 setMethod("[", signature = c("Portfolio", "ANY", "missing"),
@@ -760,6 +778,13 @@ setMethod(f = "ids", signature = c("Portfolio"),
               )
             }
             ids
+          })
+
+#' @export
+setMethod(f = "ctnames", signature = c("Portfolio"),
+          definition = function(object) {
+            name <- as.character(get(object, "ids"))
+            return(name)
           })
 
 
