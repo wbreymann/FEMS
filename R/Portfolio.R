@@ -622,6 +622,7 @@ setMethod("CTterms", signature = c("Portfolio", "numeric", "character"),
                 # print(class(ct))
                 # print(paste0("vars = ", vars))
                 cVars = FEMS:::get(ct, vars)
+                
                 # print(cVars)
                 # out = rbind(out, as.data.frame(FEMS:::get(ct, vars)))
                 out = rbind(out, as.data.frame(cVars))
@@ -692,6 +693,7 @@ extractVariablesFromPortfolio = function(cts, vars) {
       out = rbind(out, df)
     }
   }
+  colnames(out)<-.defaults$shortNames[colnames(out)]
   return(out)
 }
 
@@ -796,12 +798,38 @@ setMethod(f = "ids", signature = c("Portfolio"),
           })
 
 #' @export
+setGeneric(name = "ctnames",
+           def = function(object){
+             standardGeneric("ctnames")
+           })
+
+#' @export
 setMethod(f = "ctnames", signature = c("Portfolio"),
           definition = function(object) {
             name <- as.character(get(object, "ids"))
             return(name)
           })
 
+#' @export
+setMethod(f = "ctnames", signature = c("ContractABC"),
+          definition = function(object) {
+            name <- as.character(get(object, "ContractID"))
+            return(name)
+          })
+
+#' @export
+setGeneric(name = "ctnames<-",
+           def = function(...){
+             standardGeneric("ctnames<-")
+           })
+
+#' @export
+setMethod(f = "ctnames<-", signature = c(),
+          definition = function(...) {
+            pars <- list(...)
+            # this pars does not contain all relevant info necessary to perform this operation...
+            stop("Not clear how to implement this yet !!!")
+          })
 
 is.rf.in.rf_conn <- function(temp_rf, rf_conn) {
 

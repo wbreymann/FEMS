@@ -7,9 +7,11 @@
 #*******************************************************************************
 
 
-shortNames = c("ID", "Date", "Value", "Type", "Level" , "Curr", "Time" ,  "Nominal", "IR", "Accrued")
+shortNames = c("ID", "Date", "Value", "Type", "Level" , "Curr", "Time" ,  "Nominal", "IR", "Accrued",
+               "Type","Role","IED","MD","Notional","IR")
 names(shortNames) = c("ContractID", "Date", "Value", "Type", "Level","Currency", "Time" , "NominalValue", 
-                      "NominalRate", "NominalAccrued")
+                      "NominalRate", "NominalAccrued","ContractType", "ContractRole", "InitialExchangeDate", 
+                      "MaturityDate", "NotionalPrincipal", "NominalInterestRate")
 .defaults = list("shortNames" = shortNames)
 .defaults$shortNames
 
