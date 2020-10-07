@@ -65,28 +65,32 @@ setGeneric(name = "Portfolio",
 # @aliases
 setMethod(f = "Portfolio", signature = c(),
           definition = function(...){
-            new.portfolio = new("Portfolio")
+            ptf = new("Portfolio")
             pars = list(...)
             if (length(pars) != 0) {
-              if (is.list(pars[[1]])) {
-                l <- pars[[1]]
-                for (i in 1:length(l)) {
-                  if (!("ContractABC" %in% is(l[[i]]))) {
-                    stop("If list is supplied, list entries must be contracts !!!")
-                  }
-                  set(l[[i]], list("ContractID" = names(l)[i]))
-                  add(new.portfolio, l[[i]])
-                }
+              if ("source" %in% tolower(names(pars))) {
+                source = pars[["source"]]
+                pars[["source"]] = NULL
+                print(
+                  import(object = ptf, source = source, pars)
+                )
               } else {
-                if ("source" %in% tolower(names(pars))) {
-                  source = pars[["source"]]
-                  pars[["source"]] = NULL
-                  print(
-                    import(object = new.portfolio, source = source, pars)
-                  )
+                if (is.list(pars[[1]])) {
+                pars <- pars[[1]]
                 }
-            }}
-            return(new.portfolio)
+                if ( is.null(names(pars)) ) {
+                  names(pars) <- unlist(lapply(pars, function(x) get(x, "ContractID")))
+                } else if (sum(names(pars)=="")>0) {
+                  message("Not all contract are named. ContractID are used as names.")
+                  names(pars) <- unlist(lapply(pars, function(x) get(x, "ContractID")))
+                }
+                if (sum("ContractABC" == unlist(lapply(pars, function(x) is(x)))) < length(pars) )
+                  stop("If list is supplied, list entries must be contracts !!!")
+                sapply(names(pars), function(ch) set(pars[[ch]], list("ContractID"=ch)))
+                add(ptf, pars)
+              }
+            }
+            return(ptf)
           })
 
 ## @include
@@ -111,15 +115,18 @@ setMethod("generateEvents", signature = c("Portfolio"),
               ContractTerms <- object$contracts[[i]]$ContractTerms
               
               # erase NULL elements & convert dates in character formats
-              contract_list <- ContractTerms[rapply(ContractTerms, function(x) length(grep("^NULL$",x)) == 0)]
+              contract_list <- ContractTerms[
+                rapply(ContractTerms, function(x) length(grep("^NULL$",x)) == 0)]
               
               # reformat the dates to reflect java format
               contract_list <- lapply(contract_list, function(x) {
                 if (is.character(x)) {
                   x_vec <- unlist(strsplit(x, ", "))
-                  if (!is.na(as.Date(as.character(x_vec[1]), format = "%Y-%m-%d")) & grepl("T00$",x_vec[1])) {
+                  if (!is.na(as.Date(as.character(x_vec[1]), format = "%Y-%m-%d")) & 
+                      grepl("T00$",x_vec[1])) {
                     x <- paste(paste0(x_vec,":00:00"), collapse=", ") 
-                  } else if (!is.na(as.Date(as.character(x_vec[1]), format = "%Y-%m-%d")) & !grepl("T00:00:00$",x_vec[1])) {
+                  } else if (!is.na(as.Date(as.character(x_vec[1]), format = "%Y-%m-%d")) & 
+                             !grepl("T00:00:00$",x_vec[1])) {
                     x <- paste(paste0(x_vec,"T00:00:00"), collapse=", ") 
                   } else {x}
                 } else {x}
@@ -550,8 +557,8 @@ setMethod(f = "summary", signature = c("Portfolio"),
 # @docType methods
 # @rdname add-methods
 # @aliases 
-setMethod(f = "show", signature = c("Portfolio"),
-          definition = function(object){
+# setMethod(f = "show", signature = c("Portfolio"),
+          # definition = function(object){
             # nContr <- length(FEMS::get(object=object,what="contracts"))
             # cts <- FEMS::get(object=object, what="contracts")
             # if(nContr==1) {
@@ -563,8 +570,8 @@ setMethod(f = "show", signature = c("Portfolio"),
             # print(table(unlist(types)))
             # 
             # invisible(NULL)
-            print(CTterms(object))
-          })
+          #   print(CTterms(object))
+          # })
 
 ## @include
 #' @export
