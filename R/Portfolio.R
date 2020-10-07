@@ -718,8 +718,16 @@ setMethod("[[", signature = c("Portfolio", "ANY"),
 #' @export
 setMethod("[[<-", signature = c("Portfolio", "ANY"),
           definition = function(x, i, value) {
-            set(value, list("ContractID" = i))
-            add (x, value)
+            if (is.null(value)) {
+              if (is.character(i)) {
+                remove(x, i)
+              } else {
+                remove(x, ctnames(x)[i])
+              }
+            } else {
+              set(value, list("ContractID" = i))
+              add (x, value)
+            }
             x
           }
 )
