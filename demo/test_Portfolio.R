@@ -13,11 +13,12 @@ as.name(ctnames(b1))
 
 p1 <- Portfolio(b1, a1) # ok
 ctnames(p1)
+p1
 ll <- list(b01=b1, a01=a1)
 sum(names(ll) == "")
 
 p1 <- Portfolio(b01=b1, a01=a1) # Error: Doesn't work. Now ok!!
-
+p1
 ctnames(p1)
 class(p1)
 
@@ -108,3 +109,5 @@ p.mixed[["inv"]] # error: no access
 p.mixed[[2]] # ok
 p.mixed[["b01"]] # ok
 all.equal(p.mixed[[1]], p.mixed[["b01"]])
+p.mixed # Doesn't work
+summary(p.mixed) # ok
