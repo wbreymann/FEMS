@@ -12,7 +12,7 @@ setMethod(f = "get", signature = "FEMSContract",
             if(what[[1]]=="all") what=FEMS:::terms(object)
             fields <- sapply(what,function(x) {
               if (class(try(object$field(x), silent=TRUE))=="try-error") {
-                "N/A"
+                "NA"
               } else {
                 object$field(x)
               }
