@@ -819,17 +819,20 @@ setMethod(f = "ctnames", signature = c("ContractABC"),
 
 #' @export
 setGeneric(name = "ctnames<-",
-           def = function(...){
+           def = function(x, value){
              standardGeneric("ctnames<-")
            })
 
 #' @export
-setMethod(f = "ctnames<-", signature = c(),
-          definition = function(...) {
-            # this pars does not contain all relevant info necessary to perform this operation...
-            pars <- list(...)
-            browser()
-            stop("Not clear how to implement this yet !!!")
+setMethod(f = "ctnames<-", signature = c("Portfolio","ANY"),
+          definition = function(x, value) {
+            if (length(x) != length(value)) {
+              stop('Something went wrong. Please check indices are correct !!!')
+            }
+            for (i in 1:length(x)){
+              set(x$contracts[[i]], list("ContractID"=value[i]))
+            }
+            x
           })
 
 is.rf.in.rf_conn <- function(temp_rf, rf_conn) {
