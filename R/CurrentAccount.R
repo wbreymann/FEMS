@@ -74,14 +74,6 @@ setMethod(f = "set", signature = c("CurrentAccount", "RiskFactorConnector"),
           })
 
 #' @export
-setMethod(f = "get", signature = "CurrentAccount",
-          function(object, what, ...){
-            # currently not working to return timeSeriess
-            fields <- sapply(what,function(x) object$field(x))
-            return(fields)
-          })
-
-#' @export
 setGeneric(name = "add.cashflow",
            def = function(object, added_cf, ...){
              standardGeneric("add.cashflow")

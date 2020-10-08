@@ -301,25 +301,6 @@ setMethod(f = "terms", signature = "Operations",
           })
 
 ## -----------------------------------------------------------------
-## getter
-## @include 
-#' @export
-## @rdname
-setMethod(f = "get", signature = "Operations",
-          function(object, what, ...){
-            if(what[[1]]=="all") what=FEMS:::terms(object)
-            #fields = sapply(what,function(x) object$field(x))
-            fields <- sapply(what,function(x) {
-              if (class(try(object$field(x), silent=TRUE))=="try-error") {
-                "N/A"
-              } else {
-                object$field(x)
-              }
-            })
-            return(as.list(fields))
-          })
-
-## -----------------------------------------------------------------
 ## setter
 ## @include 
 #' @export
