@@ -32,9 +32,9 @@
 #'
 #' @param by time as per which to compute the value
 #'
-#' @param type A character representing the type of value (either 'nominal' or 'markToModel')
+#' @param type A character representing the type of value (either 'nominal' or 'market')
 #' 
-#' @param method (optional) for type='markToModel' a 'ValuationEngine' can be specified according to which the value is computed
+#' @param method (optional) for type='market' a 'ValuationEngine' can be specified according to which the value is computed
 #' 
 #' @param ... Currently unused
 #' 
@@ -77,12 +77,12 @@
 #'                   DiscountingSpread=0.0))
 #' set(dcEngine,rf)
 #' set(pam,dcEngine)
-#' value(pam,by=ad,type="markToModel")
+#' value(pam,by=ad,type="market")
 #' 
 #' # again with a different engine
 #' set(dcEngine,list(RiskFactorObjectLink="RiskFreeCurve",
 #'                   DiscountingSpread=0.1))
-#' value(pam,by=ad,type="markToModel",method=dcEngine)
+#' value(pam,by=ad,type="market",method=dcEngine)
 #' 
 #' @include EventSeries.R Portfolio.R DiscountingEngine.R
 #' @export
@@ -97,10 +97,11 @@ setGeneric(name = "value", def = function(object, by, type, method, ...){
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "character", "character", "missing"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             if (type == "nominal") {
               val <- FEMS::value(events(object, by[1]), by , "nominal", ...) 
-            } else if (type %in% c("markToModel","markToMarket")) {
-              stop("Please specify argument 'method' when computing 'markToModel' for an EventSeries!")
+            } else if (type %in% c("market")) {
+              stop("Please specify argument 'method' when computing 'market' for an EventSeries!")
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep = ""))
             }
@@ -112,11 +113,12 @@ setMethod(f = "value", signature = c("ContractType", "character", "character", "
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "AD0", "character", "missing"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             if (type == "nominal") {
               # AD0 has only a single element
               val <- FEMS::value(FEMS::events(object, by), as.character(by), type, ...)
-            } else if (type %in% c("markToModel", "markToMarket")) {  
-              stop("Please specify argument 'method' when computing 'markToModel' for an EventSeries!")
+            } else if (type %in% c("market")) {  
+              stop("Please specify argument 'method' when computing 'market' for an EventSeries!")
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep = ""))
             }
@@ -128,6 +130,7 @@ setMethod(f = "value", signature = c("ContractType", "AD0", "character", "missin
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "timeDate", "character", "missing"),
           definition = function(object, by, type, ...){
+            type <- temp.func.type.deprecated(type)
             return(FEMS::value(object, as.character(by), type, ...))
           })
 
@@ -148,6 +151,7 @@ setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character",
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character", "YieldCurve"),
           definition = function(object, by, type, method, spread = 0, ...){
+            type <- temp.func.type.deprecated(type)
             eng <- DcEngine()
             set(eng, what = list(DiscountingSpread = spread,
                                  RiskFactorObject = method))
@@ -162,10 +166,11 @@ setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character",
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "character", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             if (type == "nominal") {
               val <- FEMS::value(FEMS::events(object, by[1]), by, "nominal", method, ...)
-          } else if (type %in% c("markToModel", "markToMarket") ) {
-              val <- FEMS::value(FEMS::events(object, by[1]), by, "markToModel", method, ...)
+          } else if (type %in% c("market") ) {
+              val <- FEMS::value(FEMS::events(object, by[1]), by, "market", method, ...)
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
             }
@@ -177,6 +182,7 @@ setMethod(f = "value", signature = c("ContractType", "character", "character", "
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "timeDate", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             return(FEMS::value(object, as.character(by), type, method, ...))
           })
 
@@ -186,6 +192,7 @@ setMethod(f = "value", signature = c("ContractType", "timeDate", "character", "V
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             val <- FEMS::value(object, as.character(by), type, method, ...)
             names(val) <- by@breakLabs
             return(val)
@@ -196,9 +203,10 @@ setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character",
 #' @rdname val-methods
 setMethod(f = "value", signature = c("ContractType", "AD0", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             if (type == "nominal") {
               val <- FEMS::value(FEMS::events(object,ad), as.character(by), type, ...)
-            } else if (type %in% c("markToModel","markToMarket")) {
+            } else if (type %in% c("market")) {
               val <- FEMS::value(FEMS::events(object, by), as.character(by), type, method, ...)
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep = ""))
@@ -213,6 +221,7 @@ setMethod(f = "value", signature = c("ContractType", "AD0", "character", "Valuat
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "AD0", "character", "missing"),
           definition = function(object, by, type, method, ...) {
+            type <- temp.func.type.deprecated(type)
             return(FEMS::value(object, as.character(by), type, ...))        
           })
 
@@ -225,6 +234,7 @@ setMethod(f = "value", signature = c("EventSeries", "AD0", "character", "missing
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "missing"),
           definition = function(object, by, type, ...){
+            type <- temp.func.type.deprecated(type)
             return(FEMS::value(object, as.character(by), type, ...) )
           })
 
@@ -234,6 +244,7 @@ setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "mi
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "timeBuckets", "character", "missing"),
           definition = function(object, by, type, ...){
+            type <- temp.func.type.deprecated(type)
             val <- FEMS::value(object, as.character(by), type, ...)
             names(val) <- by@breakLabs
             return(val)
@@ -247,6 +258,7 @@ setMethod(f = "value", signature = c("EventSeries", "timeBuckets", "character", 
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "DiscountingEngine"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             return(FEMS::value(object, as.character(by), type, method, ...) )
           })
 
@@ -256,6 +268,7 @@ setMethod(f = "value", signature = c("EventSeries", "timeDate", "character", "Di
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "timeBuckets", "character", "DiscountingEngine"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             val <- FEMS::value(object, as.character(by), type, method, ...)
             names(val) <- by@breakLabs
             return(val)
@@ -270,6 +283,7 @@ setMethod(f = "value", signature = c("EventSeries", "timeBuckets", "character", 
 setMethod("value", 
           signature = c("eventList", "timeDate", "character", "missing"), 
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             return(FEMS::value(object, as.character(by), type, ...))
           })
 
@@ -280,6 +294,7 @@ setMethod("value",
 setMethod("value", 
           signature = c("eventList", "timeBuckets", "character", "missing"), 
           definition = function(object, by, type, ...){
+            type <- temp.func.type.deprecated(type)
             val = FEMS::value(object, as.character(by), type, ...)
             names(val) = by@breakLabs
             return(val)
@@ -292,6 +307,7 @@ setMethod("value",
 setMethod("value", 
           signature = c("eventList", "timeDate", "character", "DiscountingEngine"), 
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             return(FEMS::value(object, as.character(by), type, method, ...))
           })
 
@@ -302,6 +318,7 @@ setMethod("value",
 setMethod("value", 
           signature = c("eventList", "timeBuckets", "character", "DiscountingEngine"), 
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             val = FEMS::value(object, as.character(by), type, method, ...)
             names(val) = by@breakLabs
             return(val)
@@ -315,10 +332,10 @@ setMethod("value",
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "character", "character", "DiscountingEngine"),
           definition = function(object, by, type, method, digits = 2, ...){
-            
+            type <- temp.func.type.deprecated(type)
             if(type=="nominal") {
               val = FEMS::value(object, by, "nominal", digits=digits, ...)
-            } else if ( type %in% c("markToModel", "markToMarket") ) {
+            } else if (type %in% c("market")) {
               # add spread to interest rate
               spread <- FEMS::get(method, "DiscountingSpread")
               dc <- FEMS::get(method, "RiskFactorObject")
@@ -363,7 +380,7 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "D
 #' @rdname val-methods
 setMethod(f = "value", signature = c("EventSeries", "character", "character", "missing"),
           definition = function(object, by, type, digits = 2, ...){
-            
+            type <- temp.func.type.deprecated(type)
             if(type=="nominal") {
               val = sapply(by, function(ad) {
                 evs = data.frame(
@@ -380,8 +397,8 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "m
                 evs.last = evs.sub[which(evs.sub$times==max(evs.sub$times)),]
                 return(evs.last$values[nrow(evs.last)])
               })
-            } else if( type %in% c("markToModel","markToMarket") ) {
-              stop("Please specify argument 'method' when computing 'markToModel' for an EventSeries!")
+            } else if( type %in% c("market") ) {
+              stop("Please specify argument 'method' when computing 'market' for an EventSeries!")
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
             }
@@ -397,6 +414,7 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "m
 setMethod("value", 
           signature = c("eventList", "character", "character", "missing"), 
           definition = function(object, by, type,  ...){
+            type <- temp.func.type.deprecated(type)
             # print("signature:")
             # print(c("eventList", "character", "character", "missing"))
             pars = list(...)
@@ -432,8 +450,8 @@ setMethod("value",
               } else {
                 out = apply(out, 2, sum)
               }
-            } else if (type=="markToModel") {
-              stop("Please specify 'method' in order to compute 'markToModel'-value for a list of 'EventSeries'-objects!")
+            } else if (type=="market") {
+              stop("Please specify 'method' in order to compute 'market'-value for a list of 'EventSeries'-objects!")
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep = ""))
             }
@@ -448,11 +466,12 @@ setMethod("value",
 setMethod("value", 
           signature = c("eventList", "character", "character", "DiscountingEngine"), 
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             # print("signature:")
             # print(c("Portfolio", "character", "character", "ValuationEngine"))
             if (type=="nominal") {
               out = value(object, by, type, ...)
-            } else if (type=="markToModel") {
+            } else if (type=="market") {
               pars = list(...)
 
               if ("digits" %in% names(pars)) {
@@ -501,11 +520,12 @@ setMethod("value",
 setMethod("value", 
           signature = c("eventList", "character", "character", "list"), 
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             # print("signature:")
             # print(c("eventList", "character", "character", "list"))
             if (type=="nominal") {
               out = value(object, by, type, ...)
-            } else if (type=="markToModel") {
+            } else if (type=="market") {
               pars = list(...)
               if ("digits" %in% names(pars)) {
                 digits = pars$digits
@@ -543,21 +563,16 @@ setMethod("value",
             return(out)
           })
 
-check.start.date <- function(start_dt, start_dt_evs) {
-  if (start_dt < start_dt_evs){
-    stop("ErrorIn::Value:: Value calculation cannot be performed before first event (InitialExchangeDate) !!! ")
-  }
-}
-
 #################################################################
 ##### Various methods with object of class Portfolio as Input...
 
 setMethod(f = "value", signature = c("Portfolio", "character", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             if (type == "nominal") {
               val <- FEMS::value(FEMS::events(object, by[1]), by, "nominal", method, ...)
-            } else if (type %in% c("markToModel", "markToMarket") ) {
-              val <- FEMS::value(FEMS::events(object, by[1]), by, "markToModel", method, ...)
+            } else if (type %in% c("market") ) {
+              val <- FEMS::value(FEMS::events(object, by[1]), by, "market", method, ...)
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
             }
@@ -566,12 +581,14 @@ setMethod(f = "value", signature = c("Portfolio", "character", "character", "Val
 
 setMethod(f = "value", signature = c("Portfolio", "character", "character", "missing"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             val <- FEMS::value(FEMS::events(object, by[1]), by, type, ...)
             return(val)
           })
 
 setMethod(f = "value", signature = c("Portfolio", "timeBuckets", "character", "missing"),
           definition = function(object, by, type, ...){
+            type <- temp.func.type.deprecated(type)
             val <- FEMS::value(object, as.character(by), type, ...)
             names(val) <- by@breakLabs
             return(val)
@@ -579,6 +596,7 @@ setMethod(f = "value", signature = c("Portfolio", "timeBuckets", "character", "m
 
 setMethod(f = "value", signature = c("Portfolio", "timeBuckets", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             val <- FEMS::value(object, as.character(by), type, method, ...)
             names(val) <- by@breakLabs
             return(val)
@@ -592,7 +610,23 @@ setMethod(f = "value", signature = c("Portfolio", "timeDate", "character", "miss
 
 setMethod(f = "value", signature = c("Portfolio", "timeDate", "character", "ValuationEngine"),
           definition = function(object, by, type, method, ...){
+            type <- temp.func.type.deprecated(type)
             val <- FEMS::value(object, as.character(by), type, method, ...)
             return(val)
           })
 
+
+check.start.date <- function(start_dt, start_dt_evs) {
+  if (start_dt < start_dt_evs){
+    stop("ErrorIn::Value:: Value calculation cannot be performed before first event (InitialExchangeDate) !!! ")
+  }
+}
+
+temp.func.type.deprecated <- function(type) {
+  if (type %in% c("markToModel", "markToMarket")) {
+    cat("The type 'markToModel' or 'markToMarket' will be deprecated in future releases.\n")
+    cat("Please use 'market' instead.\n")
+    type <- "market"
+  }
+  return(type)
+}
