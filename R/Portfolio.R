@@ -826,8 +826,9 @@ setGeneric(name = "ctnames<-",
 #' @export
 setMethod(f = "ctnames<-", signature = c(),
           definition = function(...) {
-            pars <- list(...)
             # this pars does not contain all relevant info necessary to perform this operation...
+            pars <- list(...)
+            browser()
             stop("Not clear how to implement this yet !!!")
           })
 
