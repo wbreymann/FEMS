@@ -66,7 +66,7 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
     }
     pv <- 0
     for(i in 1:length(cts)) pv <- 
-      pv + presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage)
+      pv + presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage, isPrice)
     return(pv)
   }
   
