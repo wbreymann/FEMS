@@ -42,14 +42,17 @@ p2p1[["a02"]]
 
 p0 <- Portfolio(list(l01=l1))
 length(p0)
-pc <- c(p1,p0) # error: contains only 1 contract instead of 3.
+pc <- c(p1,p0) # ok
+pc
 length(pc)
 ctnames(pc)
 
 
 p3 <- Portfolio(list(b01=b1, a02=a1, l01=l1))
+p3
 length(p3)
 length(p3[1:2])
+p3[1:2]
 all.equal(p3[1:2],p3[c("b01","a02")])  # OK
 
 # Replacement operator
@@ -59,9 +62,10 @@ p3[["l03"]] <- l1
 ctnames(p3)
 p3[[3]]$ContractTerms$ContractID  # ok
 l1$ContractTerms$ContractID
-ctnames(p3)[3] <- "l04"  # Error: Replacement doesn't work
-p3[[3]] <- NULL  # Error: doesn't work. No way to delete a contract.
-
+ctnames(p3)[3] <- "l04"  # ok
+p3
+p3[[3]] <- NULL  # ok
+p3
 ## ---- bank account -----------------------------------------------------------
 (cashflows <- timeSeries(
   c(1000,1000,30000,10000,-20000), units="CHF",

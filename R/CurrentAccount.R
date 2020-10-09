@@ -32,7 +32,7 @@ setGeneric(name = "CurrentAccount",
            })
 
 #' @export
-setMethod(f = "CurrentAccount",signature = c(),
+setMethod(f = "CurrentAccount", signature = c(),
           definition = function(...){
             object <- new("CurrentAccount")
             pars <- list(...,

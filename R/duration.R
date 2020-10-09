@@ -20,7 +20,7 @@ duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL,
   if(class(x)=="Portfolio") {
     cts <- FEMS:::get(x, "contracts")
     if(!is.null(yield) && length(yield)!=length(cts)) {
-      stop("please set 'yield=NULL' or provide 'yield' with lenght same as number of contracts in the Portfolio!")
+      stop("please set 'yield=NULL' or provide 'yield' with length same as number of contracts in the Portfolio!")
     }
     if(is.null(yield)) {
       yield <- rep(NULL, length(cts))
@@ -35,7 +35,7 @@ duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL,
     if(is.null(price[1])) {
       price <- numeric(length(cts))
       for(i in 1:length(cts)) {
-        price[i] <- presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage)
+        price[i] <- presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage, isPrice=TRUE)
       }
     }
     return(as.numeric(t(price/sum(price))%*%d))
@@ -59,6 +59,8 @@ duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL,
     
     # compute cash flows
     cf <- cashFlows(x, from=from)
+    if ( as.character(time(cf)[1,]) == from )
+      cf <- cf[-1,]
     # extract times (in years) from cash flows
     t <- cf$Time
     if(type=="gen") {
