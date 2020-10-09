@@ -88,7 +88,8 @@ setGeneric(name = "CT",
 setMethod(f = "CT", signature = c("character"),
           definition = function(contract_name) {
             if (!contract_name %in% names(actusDictionary$rflActus_attributes)) {
-              stop(paste("ErrorIn::ContractType:: Type of Contract ", contract_name, " does not exist !!!"))
+              stop(paste("ErrorIn::ContractType:: Type of Contract ", 
+                         contract_name, " does not exist !!!"))
             }
             out <- new(contract_name)
             return(out)
@@ -115,7 +116,7 @@ setMethod(f = "terms", signature = c("ContractType"),
 #' @aliases get,ForeignExchangeRate,character-method
 #' @aliases get,ValuationEngineModel,character-method
 #' @aliases get,jobjRef,character-method
-setMethod(f = "get", signature = c("ContractType","character"),
+setMethod(f = "get", signature = c("ContractType", "character"),
           definition = function(object, what){
             
             if (what[1] == "EventSeries" || what[1] == "ProcessedEventSeries") {
@@ -146,7 +147,7 @@ setMethod(f = "get", signature = c("ContractType","character"),
 #' @aliases set,ReferenceIndex,list-method
 #' @aliases set,ForeignExchangeRate,list-method
 #' @aliases set,ValuationEngineModel,list-method
-setMethod(f = "set", signature = c("ContractType","ValuationEngine"),
+setMethod(f = "set", signature = c("ContractType", "ValuationEngine"),
           definition = function(object, what){
             object$val_engine <- what
           })
@@ -161,7 +162,7 @@ setMethod(f = "set", signature = c("ContractType","ValuationEngine"),
 #' @aliases set,ReferenceIndex,list-method
 #' @aliases set,ForeignExchangeRate,list-method
 #' @aliases set,ValuationEngineModel,list-method
-setMethod(f = "set", signature = c("ContractType","list"),
+setMethod(f = "set", signature = c("ContractType", "list"),
           definition = function(object, what){
             for (i in 1:length(what)) {
               object$ContractTerms[names(what[i])] <- what[[i]]

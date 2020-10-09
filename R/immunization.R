@@ -7,17 +7,18 @@
 #*******************************************************************************
 #' @include duration.R presentValue.R 
 #' @export 
-immunize <- function(x, target, yield, isPercentage=TRUE, per=NULL) {
-  browser()
-  target.val <- presentValue(target, yield=yield, isPercentage=isPercentage, per=per)
-  target.dur <- duration(target, yield=yield, isPercentage=isPercentage, per=per)
-  
+immunize <- function(x, target, yield, isPercentage=TRUE, period=NULL, ...) {
+  # browser()
+  target.val <- presentValue(target, yield=yield, isPercentage=isPercentage, 
+                             isPrice=TRUE, ...)
+  target.dur <- duration(target, yield=yield, isPercentage=isPercentage, ...)
+
   cts <- FEMS:::get(x, "contracts")
   
   durations <- numeric(length(cts))
   for(i in 1:length(cts)) {
     durations[i] <- duration(cts[[i]], type="mac", yield=yield, yieldCurve=NULL, 
-                          price=NULL, isPercentage=isPercentage, per=per)
+                          price=NULL, isPercentage=isPercentage, ...)
   }
   
   if(max(range(durations))<target.dur || min(range(durations))>target.dur) {
@@ -26,7 +27,7 @@ immunize <- function(x, target, yield, isPercentage=TRUE, per=NULL) {
   
   price <- numeric(length(cts))
   for(i in 1:length(cts)) {
-    price[i] <- presentValue(cts[[i]], yield, yieldCurve=NULL, per, isPercentage)
+    price[i] <- presentValue(cts[[i]], yield, yieldCurve=NULL, isPercentage, isPrice=TRUE, ...)
   }
   
   d.low <- which(durations<target.dur, arr.ind=TRUE)
