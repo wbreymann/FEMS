@@ -118,9 +118,9 @@ value(object, by, type, method, ...)
 
 \item{by}{time as per which to compute the value}
 
-\item{type}{A character representing the type of value (either 'nominal' or 'markToModel')}
+\item{type}{A character representing the type of value (either 'nominal' or 'market')}
 
-\item{method}{(optional) for type='markToModel' a 'ValuationEngine' can be specified according to which the value is computed}
+\item{method}{(optional) for type='market' a 'ValuationEngine' can be specified according to which the value is computed}
 
 \item{...}{Currently unused}
 }
@@ -186,12 +186,12 @@ set(dcEngine,list(RiskFactorObjectLink="RiskFreeCurve",
                   DiscountingSpread=0.0))
 set(dcEngine,rf)
 set(pam,dcEngine)
-value(pam,by=ad,type="markToModel")
+value(pam,by=ad,type="market")
 
 # again with a different engine
 set(dcEngine,list(RiskFactorObjectLink="RiskFreeCurve",
                   DiscountingSpread=0.1))
-value(pam,by=ad,type="markToModel",method=dcEngine)
+value(pam,by=ad,type="market",method=dcEngine)
 
 }
 \seealso{
