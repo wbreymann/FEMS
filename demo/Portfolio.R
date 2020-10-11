@@ -43,6 +43,7 @@ duration(bnd1, type="macauley", yield=9)
 duration(bnd2, type="macauley", yield=9)
 duration(bnd3, type="macauley", yield=9)
 duration(ptf, type="macauley", yield=c(9,9,9))
+duration(ptf, type="macauley", yield=c(9,9,9),digits=1)
 
 # compute all possible portfolios consisting of two assets (bonds) which
 # immunize a future payment obligation, here the 'target'
