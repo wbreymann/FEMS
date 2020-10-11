@@ -97,7 +97,6 @@ setMethod("[", signature = c("Portfolio2", "ANY"),
 )
 
 ## @include
-#' @export
 #' 
 #' This version:
 #' 1) Takes the risk factor connector of the first argument.
@@ -105,6 +104,8 @@ setMethod("[", signature = c("Portfolio2", "ANY"),
 #' 2) The events are lost.
 #' It's difficult to collect them without an explicit loop over all
 #' portfolios.
+#' 
+#' @export
 #' 
 setMethod("c", signature = c("Portfolio2"),
           definition = function(x, ...) {

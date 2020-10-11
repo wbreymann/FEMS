@@ -13,7 +13,7 @@
 #' contract types.
 #' 
 #' @param x a contract type, for which to calculate the NPV. This can also be 
-#'          a timeSeries or EventSeries object.
+#'          a timeSeries, EventSeries or Portfolio object.
 #' 
 #' @param yield a numeric, indicating the percentage yield used to discount.
 #' 
@@ -28,11 +28,13 @@
 #'                     
 #' @param isPrice a logical indicating whether the result should be a price
 #'                in the case of a cash flow pattern where the initial cash flow
-#'                is negative and the others are positive (default is FALSE).                     
+#'                is negative and the others are positive (default is FALSE).   
+#'                
+#' @param digits an integer indicating the number of digits to round to. (default is 2)          
 #' 
 #' @return a numeric, representing the Net Present Value (NPV) of the contract. 
 #' 
-#' @usage presentValue(x, yield, yieldCurve, from, isPercentage=TRUE, isPrice=FALSE)
+#' @usage presentValue(x, yield, yieldCurve, from, isPercentage, isPrice, digits)
 #' 
 #' @examples
 #' b <- bond("2013-12-31", maturity = "5 years", nominal = 50000, 
@@ -50,7 +52,7 @@
 #' @export 
 
 presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, 
-                         isPercentage=TRUE, isPrice=FALSE) {
+                         isPercentage=TRUE, isPrice=FALSE, digits=2) {
 
   if(is.null(yield) && is.null(yieldCurve)) {
     stop("please provide either yield or yieldCurve to compute the present value!")
@@ -147,5 +149,5 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
     cf_temp <- cf[,c(i,ncol(cf))]
     out <- c(out, as.numeric(t(cf_temp$Value)%*%df))
   }
-  return (out)
+  return (round(out,digits))
 }

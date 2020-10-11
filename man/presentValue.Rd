@@ -4,11 +4,11 @@
 \alias{presentValue}
 \title{\code{presentValue}}
 \usage{
-presentValue(x, yield, yieldCurve, from, isPercentage=TRUE, isPrice=FALSE)
+presentValue(x, yield, yieldCurve, from, isPercentage, isPrice, digits)
 }
 \arguments{
 \item{x}{a contract type, for which to calculate the NPV. This can also be 
-a timeSeries or EventSeries object.}
+a timeSeries, EventSeries or Portfolio object.}
 
 \item{yield}{a numeric, indicating the percentage yield used to discount.}
 
@@ -24,6 +24,8 @@ factors from.}
 \item{isPrice}{a logical indicating whether the result should be a price
 in the case of a cash flow pattern where the initial cash flow
 is negative and the others are positive (default is FALSE).}
+
+\item{digits}{an integer indicating the number of digits to round to. (default is 2)}
 }
 \value{
 a numeric, representing the Net Present Value (NPV) of the contract.

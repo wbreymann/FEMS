@@ -5,6 +5,39 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
+#' \code{duration}
+#'
+#' Function which calculates the duration of a portfolio or single contracts.
+#' 
+#' @param x the contract or portfolio of contracts for which to calculate 
+#'          the duration.
+#' 
+#' @param type a character defining the type of duration; possible types are 
+#'             'gen', 'mac' and 'dol'. (default is 'gen').
+#'
+#' @param yield a numeric, indicating the percentage yield used to calculate duration.
+#' 
+#' @param yieldCurve Object of type \code{YieldCurve} or 
+#'                    \code{DynamicYieldCurve} for retrieving discount factors.
+#'  
+#' @param price a numeric, indicating the price used for calculating the yield to maturity
+#'              of each contract.
+#' 
+#' @param isPercentage a logical, indicating if the 'yield' is passed as percentage 
+#'                     (TRUE) or as fraction (FALSE) (default is TRUE). 
+#' 
+#' @param from a character indicating the date as for which the net present value
+#'             is calculated.
+#' 
+#' @return the duration of the contract or portfolio.
+#' 
+#' @usage duration(x, type, yield, yieldCurve, price, isPercentage, from)
+#' 
+#' @examples
+#' bnd1=bond(start="2015-01-01", maturity="30 years", nominal=1000, 
+#'           coupon=0.06, couponFreq="1 year", role="long", variable=FALSE)
+#' duration(bnd1, type="mac", yield=9)
+#' 
 #' @include cashFlows.R presentValue.R yieldToMaturity.R util.R DynamicYieldCurve.R YieldCurve.R
 #' @export 
 duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL, 
