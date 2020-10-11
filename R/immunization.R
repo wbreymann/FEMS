@@ -45,18 +45,18 @@
 #' 
 #' @include duration.R presentValue.R 
 #' @export 
-immunize <- function(x, target, yield, isPercentage=TRUE, period=NULL, type="macauley", ...) {
+immunize <- function(x, target, yield, isPercentage=TRUE, period=NULL, type="macaulay", ...) {
 
   target.val <- presentValue(target, yield=yield, isPercentage=isPercentage, 
-                             isPrice=TRUE, ...)
-  target.dur <- duration(target, yield=yield, isPercentage=isPercentage, ...)
+                             isPrice=TRUE, digits=6, ...)
+  target.dur <- duration(target, type=type, yield=yield, isPercentage=isPercentage, digits=6, ...)
 
   cts <- FEMS:::get(x, "contracts")
   
   durations <- numeric(length(cts))
   for(i in 1:length(cts)) {
-    durations[i] <- duration(cts[[i]], yield=yield, yieldCurve=NULL, 
-                          price=NULL, isPercentage=isPercentage, type)
+    durations[i] <- duration(cts[[i]], type=type, yield=yield, yieldCurve=NULL, 
+                          price=NULL, isPercentage=isPercentage, digits=6)
   }
   
   if(max(range(durations))<target.dur || min(range(durations))>target.dur) {
@@ -65,7 +65,7 @@ immunize <- function(x, target, yield, isPercentage=TRUE, period=NULL, type="mac
   
   price <- numeric(length(cts))
   for(i in 1:length(cts)) {
-    price[i] <- presentValue(cts[[i]], yield, yieldCurve=NULL, isPercentage, isPrice=TRUE, ...)
+    price[i] <- presentValue(cts[[i]], yield, yieldCurve=NULL, isPercentage, isPrice=TRUE, digits=6, ...)
   }
   
   d.low <- which(durations<target.dur, arr.ind=TRUE)

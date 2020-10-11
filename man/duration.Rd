@@ -4,7 +4,7 @@
 \alias{duration}
 \title{\code{duration}}
 \usage{
-duration(x, type="macauley", yield, yieldCurve, price, isPercentage=TRUE, from)
+duration(x, type="macaulay", yield, yieldCurve, price, isPercentage=TRUE, from)
 }
 \arguments{
 \item{x}{the contract or portfolio of contracts for which to calculate 
@@ -34,7 +34,7 @@ a \code{numeic} containing the calculated duration.
 Function which calculates the duration of a portfolio or a contract.
 }
 \details{
-For the Macauley duration, if \code{yield} is not provided, \code{price} should
+For the macaulay duration, if \code{yield} is not provided, \code{price} should
 be provided and is used to calculate the  \code{yield}.
 For the Fisher-Weil duration, \code{yieldCurve} must be specified. In this
 case the argument \code{price} has no effect.

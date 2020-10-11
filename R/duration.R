@@ -31,10 +31,10 @@
 #' 
 #' @return a \code{numeic} containing the calculated duration.  
 #' 
-#' @usage duration(x, type="macauley", yield, yieldCurve, price, isPercentage=TRUE, from)
+#' @usage duration(x, type="macaulay", yield, yieldCurve, price, isPercentage=TRUE, from)
 #' 
 #' @details 
-#' For the Macauley duration, if \code{yield} is not provided, \code{price} should
+#' For the Macaulay duration, if \code{yield} is not provided, \code{price} should
 #' be provided and is used to calculate the  \code{yield}.
 #' For the Fisher-Weil duration, \code{yieldCurve} must be specified. In this
 #' case the argument \code{price} has no effect. 
@@ -52,10 +52,14 @@ duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL
 
   if(type=="fisher-weil"&&is.null(yieldCurve)) {
     stop("for the general duration type, please provide a yield curve!")  
+  } else {
+    if(is.null(price)&&is.null(yield)) {
+      stop("for non-general duration types, please provide either 'price' or 'yield' information!")
+    } 
+    if ( !is.element(type, c("macaulay","dollar")) ) {
+      stop("Duration type not known.")
+    }
   }
-  if(type!="fisher-weil"&&is.null(price)&&is.null(yield)) {
-    stop("for non-general duration types, please provide either 'price' or 'yield' information!")
-  } 
   
   if(class(x)=="Portfolio") {
     cts <- FEMS:::get(x, "contracts")
@@ -75,7 +79,8 @@ duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL
     if(is.null(price[1])) {
       price <- numeric(length(cts))
       for(i in 1:length(cts)) {
-        price[i] <- presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage, isPrice=TRUE)
+        price[i] <- presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage, 
+                                 isPrice=TRUE, digits=digits+2)
       }
     }
     return(round(as.numeric(t(price/sum(price))%*%d),digits))
