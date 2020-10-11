@@ -121,5 +121,5 @@ duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL
         d <- d*sum(p.i)/100
       }
     }
-    return(as.numeric(d))
+    return(round(as.numeric(d), digits))
   }

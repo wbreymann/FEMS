@@ -42,6 +42,7 @@ presentValue(ptf, yield=c(9,9,9), isPrice=TRUE)
 duration(bnd1, type="macauley", yield=9)
 duration(bnd2, type="macauley", yield=9)
 duration(bnd3, type="macauley", yield=9)
+duration(bnd3, type="macauley", yield=9, digits=1)
 duration(ptf, type="macauley", yield=c(9,9,9))
 duration(ptf, type="macauley", yield=c(9,9,9),digits=1)
 
