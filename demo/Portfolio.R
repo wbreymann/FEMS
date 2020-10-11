@@ -1,5 +1,6 @@
 library(FEMS)
 
+rm(list=ls())
 devtools::load_all()
 
 # create simple fixed rate bond instruments
@@ -21,18 +22,22 @@ l1 <- loan("2020-01-01", nominal = 10000, ir = 0.05, maturity = "5 years",
 
 ptf = Portfolio(b1=bnd1,b2=bnd2,b3=bnd3)
 ptf
-FEMS:::get(ptf, "contracts")
+# FEMS:::get(ptf, "contracts")
 
 cashFlows(bnd1)
 cashFlows(bnd2)
 cashFlows(bnd3)
 cashFlows(ptf)
 
-presentValue(bnd1, yield=9, isPrice=TRUE)
-
+presentValue(bnd1, yield=9)
 presentValue(bnd2, yield=9)
 presentValue(bnd3, yield=9)
 presentValue(ptf, yield=c(9,9,9))
+
+presentValue(bnd1, yield=9, isPrice=TRUE)
+presentValue(bnd2, yield=9, isPrice=TRUE)
+presentValue(bnd3, yield=9, isPrice=TRUE)
+presentValue(ptf, yield=c(9,9,9), isPrice=TRUE)
 
 duration(bnd1, type="mac", yield=9)
 duration(bnd2, type="mac", yield=9)
@@ -58,3 +63,4 @@ res[[1]]$values[1]/sum(res[[1]]$values)*duration(bnd2, type="mac", yield=9)+
   res[[1]]$values[2]/sum(res[[1]]$values)*duration(bnd1, type="mac", yield=9)
 res[[2]]$values[1]/sum(res[[2]]$values)*duration(bnd3, type="mac", yield=9)+
   res[[2]]$values[2]/sum(res[[2]]$values)*duration(bnd1, type="mac", yield=9)
+
