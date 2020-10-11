@@ -7,26 +7,27 @@
 #*******************************************************************************
 #' \code{immunize}
 #'
-#' Immunization minimizes the interest rate risk of a bond portfolio by adjusting the 
-#' portfolio duration to match the investor's investment time horizon.
+#' Immunization minimizes the interest rate risk of a fixed-income portfolio by adjusting the 
+#' portfolio duration such that it matches the duration of the liabilities that
+#' should be covered with this portfolio. 
 #' 
-#' @param x the portfolio of contracts for which to calculate 
-#'          the immunization.
+#' @param x the portfolio of contracts that should be adjusted.
 #' 
-#' @param target the target contract or portfolio to match interest rate risk.
+#' @param target the liabilities (contract or portfolio) whose value and duration
+#' should be matched.
 #'
-#' @param yield a numeric, indicating the percentage yield used to calculate duration.
+#' @param yield a numeric, indicating the yield used to calculate the duration.
 #' 
-#' @param isPercentage a logical, indicating if the 'yield' is passed as percentage 
-#'                     (TRUE) or as fraction (FALSE) (default is TRUE).
+#' @param isPercentage a logical, indicating if the 'yield' is expressed as percentage 
+#'                     (TRUE) or as fraction (FALSE).
 #'  
 #' @param period argument currently not used.
 #' 
 #' @param ... additional parameters to be passed. 
 #' 
-#' @return the immunization of the contract or portfolio towards the target.
+#' @return the immunization of the contract or portfolio with respect to the target.
 #' 
-#' @usage immunize(x, target, yield, isPercentage, period, ...)
+#' @usage immunize(x, target, yield, isPercentage=TRUE, period, ...)
 #' 
 #' @examples
 #' bnd1 <- bond(start="2015-01-01", maturity="30 years", nominal=1000, 
@@ -44,7 +45,7 @@
 #' 
 #' @include duration.R presentValue.R 
 #' @export 
-immunize <- function(x, target, yield, isPercentage=TRUE, period=NULL, ...) {
+immunize <- function(x, target, yield, isPercentage=TRUE, period=NULL, type="macauley", ...) {
 
   target.val <- presentValue(target, yield=yield, isPercentage=isPercentage, 
                              isPrice=TRUE, ...)
@@ -54,8 +55,8 @@ immunize <- function(x, target, yield, isPercentage=TRUE, period=NULL, ...) {
   
   durations <- numeric(length(cts))
   for(i in 1:length(cts)) {
-    durations[i] <- duration(cts[[i]], type="mac", yield=yield, yieldCurve=NULL, 
-                          price=NULL, isPercentage=isPercentage, ...)
+    durations[i] <- duration(cts[[i]], yield=yield, yieldCurve=NULL, 
+                          price=NULL, isPercentage=isPercentage, type)
   }
   
   if(max(range(durations))<target.dur || min(range(durations))>target.dur) {

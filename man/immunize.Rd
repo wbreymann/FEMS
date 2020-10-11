@@ -4,29 +4,30 @@
 \alias{immunize}
 \title{\code{immunize}}
 \usage{
-immunize(x, target, yield, isPercentage, period, ...)
+immunize(x, target, yield, isPercentage=TRUE, period, ...)
 }
 \arguments{
-\item{x}{the portfolio of contracts for which to calculate 
-the immunization.}
+\item{x}{the portfolio of contracts that should be adjusted.}
 
-\item{target}{the target contract or portfolio to match interest rate risk.}
+\item{target}{the liabilities (contract or portfolio) whose value and duration
+should be matched.}
 
-\item{yield}{a numeric, indicating the percentage yield used to calculate duration.}
+\item{yield}{a numeric, indicating the yield used to calculate the duration.}
 
-\item{isPercentage}{a logical, indicating if the 'yield' is passed as percentage 
-(TRUE) or as fraction (FALSE) (default is TRUE).}
+\item{isPercentage}{a logical, indicating if the 'yield' is expressed as percentage 
+(TRUE) or as fraction (FALSE).}
 
 \item{period}{argument currently not used.}
 
 \item{...}{additional parameters to be passed.}
 }
 \value{
-the immunization of the contract or portfolio towards the target.
+the immunization of the contract or portfolio with respect to the target.
 }
 \description{
-Immunization minimizes the interest rate risk of a bond portfolio by adjusting the 
-portfolio duration to match the investor's investment time horizon.
+Immunization minimizes the interest rate risk of a fixed-income portfolio by adjusting the 
+portfolio duration such that it matches the duration of the liabilities that
+should be covered with this portfolio.
 }
 \examples{
 bnd1 <- bond(start="2015-01-01", maturity="30 years", nominal=1000, 

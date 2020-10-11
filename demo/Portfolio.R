@@ -39,10 +39,10 @@ presentValue(bnd2, yield=9, isPrice=TRUE)
 presentValue(bnd3, yield=9, isPrice=TRUE)
 presentValue(ptf, yield=c(9,9,9), isPrice=TRUE)
 
-duration(bnd1, type="mac", yield=9)
-duration(bnd2, type="mac", yield=9)
-duration(bnd3, type="mac", yield=9)
-duration(ptf, type="mac", yield=c(9,9,9))
+duration(bnd1, type="macauley", yield=9)
+duration(bnd2, type="macauley", yield=9)
+duration(bnd3, type="macauley", yield=9)
+duration(ptf, type="macauley", yield=c(9,9,9))
 
 # compute all possible portfolios consisting of two assets (bonds) which
 # immunize a future payment obligation, here the 'target'
@@ -53,14 +53,14 @@ res
 
 # check for the two resulting portfolios
 # 1. whether present value of target and immunizing portfolio assets match
-presentValue(target, yield=9, isPrice=TRUE)
+presentValue(target, yield=9, isPrice=TRUE, digits=0)
 sum(res[[1]]$values)
 sum(res[[2]]$values)
 
 # 2. whether duration of target and immunizing portfolio assets match
 duration(target, yield=9)
-res[[1]]$values[1]/sum(res[[1]]$values)*duration(bnd2, type="mac", yield=9)+
-  res[[1]]$values[2]/sum(res[[1]]$values)*duration(bnd1, type="mac", yield=9)
-res[[2]]$values[1]/sum(res[[2]]$values)*duration(bnd3, type="mac", yield=9)+
-  res[[2]]$values[2]/sum(res[[2]]$values)*duration(bnd1, type="mac", yield=9)
+res[[1]]$values[1]/sum(res[[1]]$values)*duration(bnd2, type="macauley", yield=9)+
+  res[[1]]$values[2]/sum(res[[1]]$values)*duration(bnd1, type="macauley", yield=9)
+res[[2]]$values[1]/sum(res[[2]]$values)*duration(bnd3, type="macauley", yield=9)+
+  res[[2]]$values[2]/sum(res[[2]]$values)*duration(bnd1, type="macauley", yield=9)
 

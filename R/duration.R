@@ -7,46 +7,53 @@
 #*******************************************************************************
 #' \code{duration}
 #'
-#' Function which calculates the duration of a portfolio or single contracts.
+#' Function which calculates the duration of a portfolio or a contract.
 #' 
 #' @param x the contract or portfolio of contracts for which to calculate 
 #'          the duration.
 #' 
-#' @param type a character defining the type of duration; possible types are 
-#'             'gen', 'mac' and 'dol'. (default is 'gen').
+#' @param type a \code{character} defining the type of duration; possible types are 
+#'             'fisher-weil', 'macaulay' (default) and 'dollar'. 
 #'
-#' @param yield a numeric, indicating the percentage yield used to calculate duration.
+#' @param yield a \code{numeric}, indicating the yield used to calculate the duration.
 #' 
-#' @param yieldCurve Object of type \code{YieldCurve} or 
-#'                    \code{DynamicYieldCurve} for retrieving discount factors.
+#' @param yieldCurve Object of class \code{YieldCurve} or 
+#'                    \code{DynamicYieldCurve} that describes the spot rate term structure.
 #'  
-#' @param price a numeric, indicating the price used for calculating the yield to maturity
+#' @param price a \code{numeric}, indicating the price used for calculating the yield to maturity
 #'              of each contract.
 #' 
-#' @param isPercentage a logical, indicating if the 'yield' is passed as percentage 
-#'                     (TRUE) or as fraction (FALSE) (default is TRUE). 
+#' @param isPercentage a \code{numeric}, indicating if the 'yield' is passed as percentage 
+#'                     (TRUE) or as fraction (FALSE). 
 #' 
-#' @param from a character indicating the date as for which the net present value
+#' @param from a \code{character} indicating the date as for which the net present value
 #'             is calculated.
 #' 
-#' @return the duration of the contract or portfolio.
+#' @return a \code{numeic} containing the calculated duration.  
 #' 
-#' @usage duration(x, type, yield, yieldCurve, price, isPercentage, from)
+#' @usage duration(x, type="macauley", yield, yieldCurve, price, isPercentage=TRUE, from)
+#' 
+#' @details 
+#' For the Macauley duration, if \code{yield} is not provided, \code{price} should
+#' be provided and is used to calculate the  \code{yield}.
+#' For the Fisher-Weil duration, \code{yieldCurve} must be specified. In this
+#' case the argument \code{price} has no effect. 
+#' 
 #' 
 #' @examples
 #' bnd1=bond(start="2015-01-01", maturity="30 years", nominal=1000, 
 #'           coupon=0.06, couponFreq="1 year", role="long", variable=FALSE)
-#' duration(bnd1, type="mac", yield=9)
+#' duration(bnd1, type="macaulay", yield=9)
 #' 
 #' @include cashFlows.R presentValue.R yieldToMaturity.R util.R DynamicYieldCurve.R YieldCurve.R
 #' @export 
-duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL, 
-                     isPercentage=TRUE, from=NULL) {
+duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL, 
+                     isPercentage=TRUE, from=NULL, digits=2) {
 
-  if(type=="gen"&&is.null(yieldCurve)) {
+  if(type=="fisher-weil"&&is.null(yieldCurve)) {
     stop("for the general duration type, please provide a yield curve!")  
   }
-  if(type!="gen"&&is.null(price)&&is.null(yield)) {
+  if(type!="fisher-weil"&&is.null(price)&&is.null(yield)) {
     stop("for non-general duration types, please provide either 'price' or 'yield' information!")
   } 
   
@@ -71,11 +78,11 @@ duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL,
         price[i] <- presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage, isPrice=TRUE)
       }
     }
-    return(as.numeric(t(price/sum(price))%*%d))
+    return(round(as.numeric(t(price/sum(price))%*%d),digits))
   }
     
     
-    if(type!="gen") {
+    if(type!="fisher-weil") {
       if(is.null(yield)) {
         yield <- yield(x, price=price, isPercentage=isPercentage, from=from)
       }
@@ -96,7 +103,7 @@ duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL,
       cf <- cf[-1,]
     # extract times (in years) from cash flows
     t <- cf$Time
-    if(type=="gen") {
+    if(type=="fisher-weil") {
       df <- discountFactors(yieldCurve, as.character(time(cf)), isDateEnd=TRUE)
       d <- sum(t*df*cf$Value)/t(cf$Value)%*%df
     } else {
@@ -107,10 +114,10 @@ duration <- function(x, type="mac", yield=NULL, yieldCurve=NULL, price=NULL,
       # compute macaulay duration
       d <- sum(t*p.i)/sum(p.i)
       # scale appropriately if modified or dollar duration
-      if(type!="mac") {
+      if(type!="macaulay") {
         d <- d/(1+yield/m)
       }
-      if(type=="dol") {
+      if(type=="dollar") {
         d <- d*sum(p.i)/100
       }
     }
