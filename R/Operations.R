@@ -391,8 +391,8 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
 
             # create event series object
             out <- new("EventSeries")
-            out$id <- FEMS:::get(object,"ContractID")
-            out$ct <- FEMS:::get(object,"ContractType")
+            out$id <- as.character(FEMS:::get(object,"ContractID"))
+            out$ct <- as.character(FEMS:::get(object,"ContractType"))
 
             # AD0 event
             events <- data.frame(Date=as.character(ad),

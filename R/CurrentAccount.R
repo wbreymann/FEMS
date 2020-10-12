@@ -208,15 +208,15 @@ setMethod(f = "events", signature = c("CurrentAccount", "character", "DynamicYie
 #' @export
 setMethod(f = "EventSeries", signature = c("CurrentAccount", "character"),
           definition = function(object, ad, model, end_date, ...){
-            
+
             if (class(model)=="YieldCurve"){
               model <- RFConn(model)
             }
             
             # create event series object
             out <- new("EventSeries")
-            out$id <- FEMS:::get(object,"ContractID")
-            out$ct <- FEMS:::get(object,"ContractType")
+            out$id <- as.character(FEMS:::get(object,"ContractID"))
+            out$ct <- as.character(FEMS:::get(object,"ContractType"))
             
             # evaluate reserving pattern
             out$evs <- currentaccount.evs(object, model, end_date, object$Compound, object$Period)
