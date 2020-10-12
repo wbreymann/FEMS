@@ -34,7 +34,7 @@ a \code{numeic} containing the calculated duration.
 Function which calculates the duration of a portfolio or a contract.
 }
 \details{
-For the macaulay duration, if \code{yield} is not provided, \code{price} should
+For the Macaulay duration, if \code{yield} is not provided, \code{price} should
 be provided and is used to calculate the  \code{yield}.
 For the Fisher-Weil duration, \code{yieldCurve} must be specified. In this
 case the argument \code{price} has no effect.
