@@ -215,8 +215,8 @@ setMethod(f = "EventSeries", signature = c("CurrentAccount", "character"),
             
             # create event series object
             out <- new("EventSeries")
-            out$id <- FEMS:::get(object,"ContractID")
-            out$ct <- FEMS:::get(object,"ContractType")
+            out$id <- as.character(FEMS:::get(object,"ContractID"))
+            out$ct <- as.character(FEMS:::get(object,"ContractType"))
             
             # evaluate reserving pattern
             out$evs <- currentaccount.evs(object, model, end_date, object$Compound, object$Period)
