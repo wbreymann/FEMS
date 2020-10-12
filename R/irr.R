@@ -69,6 +69,13 @@ setMethod(f = "irr",
           signature = c("timeSeries"),
           definition = function(object, method = "compound", period = "Y", 
                                 convention = "30E360", isPercentage=TRUE, ...) {
+            # drop the column called "Time".
+            if ("Time" %in% colnames(object)) {
+              cat("timeSeries object contains column with name 'Time'.\n")
+              cat("This column will be removed from the calculation.\n")
+              object <- object[,!(colnames(object) %in% "Time")]
+            }
+            
             dts <- yearFraction(rownames(object)[1], rownames(object), convention = convention)
             irr_out <- c()
             for (i in 1:ncol(object)) {
