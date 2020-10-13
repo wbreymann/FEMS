@@ -17,8 +17,8 @@ MarketInterestRate(rate, refDate, label, ...)
 an object of type \code{\link{YieldCurve}}.
 }
 \description{
-Constructor method for a \code{\link{YieldCurve}} object with constant
-rates across all tenors.
+Constructor for a \code{\link{YieldCurve}} object with constant
+rates for all tenors.
 }
 \examples{
 yc_flat <- MarketInterestRate(0.05, "2015-01-01", "MarketRate")

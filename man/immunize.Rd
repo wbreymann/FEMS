@@ -25,9 +25,15 @@ should be matched.}
 the immunization of the contract or portfolio with respect to the target.
 }
 \description{
-Immunization minimizes the interest rate risk of a fixed-income portfolio by adjusting the 
+Immunizes a fixed-income portfolio of investments against interest changes with
+  respect to a liability that should be covered by this portfolio, cf. section Details.
+}
+\details{
+\code{immunize} minimizes the interest rate risk of a fixed-income portfolio 
+by adjusting the 
 portfolio duration such that it matches the duration of the liabilities that
-should be covered with this portfolio.
+should be covered with this portfolio. 
+(NOT CORRECT, MUST BE UPDATED)
 }
 \examples{
 bnd1 <- bond(start="2015-01-01", maturity="30 years", nominal=1000, 

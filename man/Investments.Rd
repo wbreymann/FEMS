@@ -12,8 +12,9 @@ Investments(ContractID, pattern, args, ...)
 \item{args}{The list of arguments used when evaluating the pattern}
 }
 \description{
-An Investments contract represents any operational activity 
-in monetary units within an organization related to investments.
+This contract represents the financial side of a real investment. 
+In consists of an initial negative cash flow, a write-off period and a 
+final positive cash flow for the salvage value.
 }
 \details{
 The \code{pattern} describes the value of the initial investment 

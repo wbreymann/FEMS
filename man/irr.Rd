@@ -29,6 +29,8 @@ The internal rate of return calculated from the cash flows.
 }
 \description{
 Function computing the internal rate of return of a series of cash flows.
+}
+\details{
 Computation of the internal rate of return requires the numerical
 determination of the zeroes of a polynominal. In general these may be complex. 
 A unique real solution is ensured if the first cash flow is negative and

@@ -63,10 +63,14 @@ events(object, ad, model, ...)
 A \code{EventSeries} object containing the resulting events
 }
 \description{
+Method generating the \code{\link{EventSeries}} of a contract, cf. section Details.
+}
+\details{
 The events of a contract are directly derived from the legal obligations 
 defined therein. Events mark the exchange of a cash flow among the parties
 involved in the contract or changes in the inner states of the contract
-affecting cash flows to be exchanged in future. As such, \code{events} generates the
+affecting cash flows to be exchanged in future. 
+As such, \code{events} methods generates the
 raw results that are the input for many financial analyses.
 }
 \examples{
