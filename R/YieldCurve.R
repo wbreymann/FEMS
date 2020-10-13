@@ -132,8 +132,8 @@ setMethod(f = "YieldCurve",signature = c(),
 ##############################################################
 #' \code{MarketInterestRate}
 #'
-#' Constructor method for a \code{\link{YieldCurve}} object with constant
-#' rates across all tenors.
+#' Constructor for a \code{\link{YieldCurve}} object with constant
+#' rates for all tenors.
 #' 
 #' @param rate a numeric to set the constant market rate.
 #' 

@@ -139,8 +139,9 @@ setRefClass("Investments",
 ## -----------------------------------------------------------------
 #' Investments Contract class definition
 #' 
-#' An Investments contract represents any operational activity 
-#' in monetary units within an organization related to investments.
+#' This contract represents the financial side of a real investment. 
+#' In consists of an initial negative cash flow, a write-off period and a 
+#' final positive cash flow for the salvage value.
 #' 
 #' @param pattern A function evaluating the pattern of generated investments. 
 #' 

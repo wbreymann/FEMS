@@ -2,12 +2,6 @@
 #' Internal Rate of Return (\code{irr})
 #'
 #' Function computing the internal rate of return of a series of cash flows.
-#' Computation of the internal rate of return requires the numerical
-#' determination of the zeroes of a polynominal. In general these may be complex. 
-#' A unique real solution is ensured if the first cash flow is negative and
-#' all the following cash flows are non-negative with at least one of them 
-#' being strictly positive, or the first cash flow is positive and all of the
-#' followings are non-positive with at least one of them being strictly negative.
 #' 
 #' @param object a timeSeries object representing cash flows.
 #' 
@@ -29,6 +23,14 @@
 #' 
 #' @usage irr(object, method = "compound", period = "Y", convention = "30E360E", 
 #'        isPercentage=TRUE, ...)
+#' 
+#' @details 
+#' Computation of the internal rate of return requires the numerical
+#' determination of the zeroes of a polynominal. In general these may be complex. 
+#' A unique real solution is ensured if the first cash flow is negative and
+#' all the following cash flows are non-negative with at least one of them 
+#' being strictly positive, or the first cash flow is positive and all of the
+#' followings are non-positive with at least one of them being strictly negative.
 #' 
 #' @examples
 #' # timeSeries object
