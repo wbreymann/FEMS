@@ -208,7 +208,7 @@ setMethod(f = "events", signature = c("CurrentAccount", "character", "DynamicYie
 #' @export
 setMethod(f = "EventSeries", signature = c("CurrentAccount", "character"),
           definition = function(object, ad, model, end_date, ...){
-            
+
             if (class(model)=="YieldCurve"){
               model <- RFConn(model)
             }
