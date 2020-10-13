@@ -84,6 +84,16 @@ setMethod("show", signature=c("timeBuckets"),
             cat("breakLabs:", paste(object@breakLabs, collapse=", "))
           })
 
+## @include
+#' @export
+#' @docType methods
+#' @rdname print-methods
+if (!isGeneric("print"))
+  setGeneric(name = "print", 
+             def = function(x, ...) {
+               standardGeneric("print")
+             })
+
 #' \code{print} method for class \code{timeBuckets}.
 #' 
 #' @export
