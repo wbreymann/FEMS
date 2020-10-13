@@ -595,7 +595,7 @@ setGeneric(name = "CTterms",
 
 ## @include
 #' @export
-setMethod("CTterms", signature = c("Portfolio", "numeric", "missing"),
+setMethod("CTterms", signature = c("Portfolio", "ANY", "missing"),
           definition = function(x, i) {
             vars = c(
               "ContractID",
@@ -610,6 +610,23 @@ setMethod("CTterms", signature = c("Portfolio", "numeric", "missing"),
             CTterms(x, i, vars=vars)
           }
 )
+
+## @include
+# #' @export
+# setMethod("CTterms", signature = c("Portfolio", "character", "missing"),
+#           definition = function(x, i) {
+#             vars = c(
+#               "ContractID",
+#               "ContractType",
+#               "ContractRole", 
+#               "InitialExchangeDate",
+#               "MaturityDate",
+#               "NotionalPrincipal",
+#               "NominalInterestRate"
+#             )
+#             # ct = x$contracts[[i]]
+#             return (CTterms(x, i, vars=vars))
+#           })
 
 ## @include
 #' @export
@@ -631,23 +648,6 @@ setMethod("CTterms", signature = c("Portfolio", "numeric", "character"),
             out
           }
 )
-
-## @include
-#' @export
-setMethod("CTterms", signature = c("Portfolio", "character", "missing"),
-          definition = function(x, i) {
-            vars = c(
-              "ContractID",
-              "ContractType",
-              "ContractRole", 
-              "InitialExchangeDate",
-              "MaturityDate",
-              "NotionalPrincipal",
-              "NominalInterestRate"
-            )
-            # ct = x$contracts[[i]]
-            return (CTterms(x, i, vars=vars))
-          })
 
 ## @include
 #' @export
@@ -723,6 +723,43 @@ setMethod("[[", signature = c("Portfolio", "ANY"),
             ct
           }
 )
+
+## @include
+#' @export
+setMethod("CTterms", signature = c("Portfolio", "missing", "missing"),
+          definition = function(x) {
+            vars = c(
+              "ContractID",
+              "ContractType",
+              "ContractRole", 
+              "InitialExchangeDate",
+              "MaturityDate",
+              "NotionalPrincipal",
+              "NominalInterestRate"
+            )
+            CTterms(x, vars=vars)
+          }
+)
+
+# We use the CTterms method also for single accounts
+## @include
+#' @export
+setMethod("CTterms", signature = c("ContractABC", "missing", "missing"),
+          definition = function(x) {
+            vars = c(
+              "ContractID",
+              "ContractType",
+              "ContractRole", 
+              "InitialExchangeDate",
+              "MaturityDate",
+              "NotionalPrincipal",
+              "NominalInterestRate"
+            )
+            p <- Portfolio(x)
+            CTterms(p, vars=vars)
+          }
+)
+
 
 #' @export
 setMethod("[[<-", signature = c("Portfolio", "ANY"),

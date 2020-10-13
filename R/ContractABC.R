@@ -23,3 +23,18 @@ setMethod(f = "ctnames", signature = c("ContractABC"),
             return(name)
           })
 
+
+# And here we construct a simple "show" method for accounts
+#' @export
+setMethod(f = "show", signature = c("ContractABC"),
+          definition = function(object){
+            print(CTterms(object))
+          })
+
+# ... and a summary method identical to the show method.
+# This should be differentiated.
+#' @export
+setMethod(f = "summary", signature = c("ContractABC"),
+          definition = function(object){
+            print(CTterms(object))
+          })

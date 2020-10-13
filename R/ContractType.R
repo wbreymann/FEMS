@@ -187,23 +187,23 @@ setMethod(f = "set", signature = c("ContractType", "RiskFactorConnector"),
           })
 
 ## @include
-#' @export
-setMethod("show", signature = "ContractType",
-          definition = function(object){
-            df <- t(as.data.frame(object$ContractTerms))
-            colnames(df) <- "ContractTerms"
-            print(df)
-          })
+# #' @export
+# setMethod("show", signature = "ContractType",
+#           definition = function(object){
+#             df <- t(as.data.frame(object$ContractTerms))
+#             colnames(df) <- "ContractTerms"
+#             print(df)
+#           })
 
 
 ## @include
-#' @export
-setMethod("summary", signature=c(object = "ContractType"),
-  definition = function(object){
-    x = as.data.frame(object$ContractTerms)
-    cat(paste("ContractType: ", as.character(x["ContractType"]), "\n", sep=""))
-    cat(paste("ContractID: ", as.character(x["ContractID"]), "\n", sep=""))
-  })
+# #' @export
+# setMethod("summary", signature=c(object = "ContractType"),
+#   definition = function(object){
+#     x = as.data.frame(object$ContractTerms)
+#     cat(paste("ContractType: ", as.character(x["ContractType"]), "\n", sep=""))
+#     cat(paste("ContractID: ", as.character(x["ContractID"]), "\n", sep=""))
+#   })
 
 ##############################################################
 #' \code{ContractType}-subscript methods
