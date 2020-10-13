@@ -239,10 +239,10 @@ setMethod(f = "EventSeries", signature = c("EventSeries", "missing"),
 
 
 ## @include
-#' @export
-#' @docType methods
-#' @rdname print-methods
+# #' @docType methods
+# #' @rdname print-methods
 if (!isGeneric("print"))
+#' @export
   setGeneric(name = "print", 
              def = function(x, ...) {
                standardGeneric("print")

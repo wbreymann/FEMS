@@ -85,10 +85,10 @@ setMethod("show", signature=c("timeBuckets"),
           })
 
 ## @include
-#' @export
-#' @docType methods
-#' @rdname print-methods
 if (!isGeneric("print"))
+#  #' @docType methods
+#  #' @rdname print-methods
+#' @export
   setGeneric(name = "print", 
              def = function(x, ...) {
                standardGeneric("print")
@@ -137,7 +137,7 @@ setMethod("length", signature="timeBuckets",
 #' Since class timeBuckets provides a partition of a time interval, the value 
 #' returned is the sequences of timeBuckets for the minimal enclosing set
 #' of indices.
-#' @import timeDate
+# #' @import timeDate
 #' @export
 #' @docType methods
 #' @rdname subscript-methods
