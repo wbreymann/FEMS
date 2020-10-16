@@ -14,7 +14,7 @@
 \alias{rates,YieldCurve,character,character-method}
 \alias{rates,DynamicYieldCurve,character,missing-method}
 \alias{rates,DynamicYieldCurve,character,character-method}
-\title{Generic method to retrieve the rate(s) for a specific
+\title{Generic method to retrieve the rate(s) for (a) specific
 tenor(s) from a \code{\link{DynamicYieldCurve}} object}
 \usage{
 rates(object, termEnd, termStart, ...)

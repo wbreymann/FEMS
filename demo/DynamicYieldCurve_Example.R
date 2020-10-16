@@ -6,7 +6,8 @@ yc <- DynamicYieldCurve()
 rates <- setNames(data.frame(t(c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03))),
                   c("1W", "1M", "6M", "1Y", "2Y", "5Y"))
 rownames(rates) <- t
-                  
+rates                  
+
 # set function can be called as before...
 set(yc, what = list(
   label = "YC_Prim",
@@ -15,11 +16,12 @@ set(yc, what = list(
 rates2 <- setNames(data.frame(t(c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)))-0.001,
                   c("1W", "1M", "6M", "1Y", "2Y", "5Y"))
 rownames(rates2) <- "2011-12-31"
+rates2
 add(yc, rates2)
 yc
 
 # test the implementation of the interest I get at 
-rates(yc, "2012-06-30", "2011-12-31", isDateEnd=TRUE)
+rates(yc, to="2012-06-30", from="2011-12-31", isDateEnd=TRUE)
 
 # having dates overlapping two reference dates...
 rates(yc, "2013-05-31", "2012-06-30", isDateEnd=TRUE)

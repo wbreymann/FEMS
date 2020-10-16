@@ -6,8 +6,7 @@
 \alias{Interpolator}
 \title{A Reference Class}
 \description{
-A Reference Class
-
-A Reference Class
+It should be generalized by unsing splinefun. 
+In this case, defining a class has real value.
 }
 
