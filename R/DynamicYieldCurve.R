@@ -469,17 +469,18 @@ setMethod(f = "getRateAt",
             # get relevant reference date which is earlier than from & to
             ref_idx <- max(cumsum(object$ReferenceDate <= refdate))
             if (refdate <= min(c(from, to))) {# the minimum should always in 'from'
+              # get necessary year fractions
+              t1 <- yearFraction(object$ReferenceDate[ref_idx], 
+                                 from, object$DayCountConvention)
+              t2 <- yearFraction(object$ReferenceDate[ref_idx], 
+                                 to, object$DayCountConvention)
+
               # define the interpolator
               interpolator <- Interpolator(xValues = yearFraction(object$ReferenceDate[ref_idx], 
                                                                   as.character(object$TenorDates[ref_idx,]), 
                                                                   object$DayCountConvention), 
                                            yValues = as.numeric(object$Rates[ref_idx,]))
                 
-              # get necessary year fractions
-              t1 <- yearFraction(object$ReferenceDate[ref_idx], 
-                                 from, object$DayCountConvention)
-              t2 <- yearFraction(object$ReferenceDate[ref_idx], 
-                                 to, object$DayCountConvention)
               
               # get rates from interpolation
               s1 <- interpolator$getValueAt(t1)
