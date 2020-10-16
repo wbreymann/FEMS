@@ -475,17 +475,18 @@ setMethod(f = "getRateAt",
               t2 <- yearFraction(object$ReferenceDate[ref_idx], 
                                  to, object$DayCountConvention)
 
+              # ----------Hier Fallunterscheidung Funktion oder numerische Werte---------
               # define the interpolator
               interpolator <- Interpolator(xValues = yearFraction(object$ReferenceDate[ref_idx], 
                                                                   as.character(object$TenorDates[ref_idx,]), 
                                                                   object$DayCountConvention), 
                                            yValues = as.numeric(object$Rates[ref_idx,]))
                 
-              
               # get rates from interpolation
               s1 <- interpolator$getValueAt(t1)
               s2 <- interpolator$getValueAt(t2)
-                
+              # ----------Ende Fallunterscheidung-----------------------------------------
+              
               # calculate forward rate
               if (method == "linear") {
                 out <- ((1+s2*t2)/(1+s1*t1)-1)/(t2-t1)
