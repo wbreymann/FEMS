@@ -468,7 +468,7 @@ setMethod(f = "getRateAt",
             
             # get relevant reference date which is earlier than from & to
             ref_idx <- max(cumsum(object$ReferenceDate <= refdate))
-            if (refdate <= min(c(from, to))) {
+            if (refdate <= min(c(from, to))) {# the minimum should always in 'from'
               # define the interpolator
               interpolator <- Interpolator(xValues = yearFraction(object$ReferenceDate[ref_idx], 
                                                                   as.character(object$TenorDates[ref_idx,]), 
@@ -503,7 +503,7 @@ setMethod(f = "getRateAt",
               out <- rep(NA, length(from))
               for (k in 1:length(from)) {
                 
-                ref_idx_from <- max(cumsum(object$ReferenceDate <= from[k]))
+                ref_idx_from <- max(cumsum(object$ReferenceDate <= from[k])) # clipping of from vector 
                 
                 # pre-allocate memory for necessary rates and time deltas
                 rates <- rep(NA, ref_idx)
