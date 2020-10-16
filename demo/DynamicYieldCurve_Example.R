@@ -41,4 +41,28 @@ spot <- rates(yc, "2013-05-31", "2012-12-31", isDateEnd=TRUE)
 
 
 
+# Build another dynamic yield curve (used in exercises)...
+yld.strt <- c(0.06, 0.06, 0.1)
+yld.reduce <- seq(0.00, 0.02, 0.005)
+
+yld <- t(sapply(yld.reduce, function(x) yld.strt-x))
+yld <- rbind(yld, 
+             yld[nrow(yld),]+0.02, 
+             yld[nrow(yld),]+0.02)
+yld <- data.frame(yld)
+rownames(yld) <- c("2012-12-31","2013-06-30",
+                   "2013-12-31","2014-06-30",
+                   "2014-12-31","2015-06-30",
+                   "2015-12-31")
+colnames(yld) <- c("1D","10Y","30Y")
+(yc <- DynamicYieldCurve(Rates = yld))
+
+
+
+
+
+
+
+
+
 
