@@ -263,11 +263,10 @@ get.data.rate.reset <-  function(yc, anchor_dt, cycle, end_dt, ISO = TRUE){
   if (end_dt < anchor_dt) {
     return(NULL)
   }
-  times <- as.character(timeSequence(from = anchor_dt, 
-                                     to = timeSequence(end_dt, 
-                                                       by = convert.Duration(cycle, ISO), 
-                                                       length.out = 2)[2],
-                                     by = convert.Duration(cycle, ISO)))
+  times <- as.character(timeSequence(
+    from = anchor_dt,  
+    to = timeSequence(end_dt, by = convert.Duration(cycle, ISO), length.out = 2)[2],
+    by = convert.Duration(cycle, ISO)))
   if (class(yc) == "YieldCurve" || class(yc) == "DynamicYieldCurve") {
     data <- getRateAt(yc, times[2:length(times)], times[1:length(times)-1])
   } else {
@@ -310,5 +309,54 @@ get.dates.from.cycle <- function(anchor_date, cycle, end_date){
   return(as.character(tSeq))
 }
 
+##
+# A version of converting tenors to dates that avoids "switch"
+# However, there is no run time gain
 
+# helper functions
+quarters <- function(x) {3*months(x)}
+halfyear <- function(x) {6*months(x)}
+
+substrRight <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
+}
+
+# vector of function names to be used
+dayCountFcts <- c("days", "weeks", "months", "quarters", "halfyear", "years")
+names(dayCountFcts) <- c("D", "W", "M", "Q", "H", "Y")
+
+# convert character terms to dates relative to a refDate
+tenors2dates2 <- function(refDate, tenors, frame=FALSE){
+  
+  units <- substrRight(tenors, 1)
+  counts <- gsub('.{1}$', '', tenors)
+  ll <- as.list(data.frame(rbind(units,as.character(counts))))
+  
+  fct <- function(x, refDate) {
+    f <- dayCountFcts[x[1]]
+    n <- list(as.numeric(x[2]))
+    as.character(ymd(refDate) %m+% do.call(f, n) )
+  }
+  
+  relativeDates <- as.matrix(as.data.frame(lapply(ll, fct, refDate)))
+  dimnames(relativeDates) <- list(refDate, tenors)
+  
+  if (!frame) {
+    if (nrow(relativeDates)>1) {
+      stop("ErrorIn::tenors2dates:: If function should return array, only one reference date is allowed !!!")
+    }
+    out <- c(relativeDates)
+  } else {
+    out <- data.frame(relativeDates)
+    colnames(out) <- dimnames(relativeDates)[[2]]
+  }
+  return(out)
+}
+
+shiftDates2 <- function(dates, shift) {
+  # dates is a vector and shift is a scalar
+  units <- substrRight(shift, 1)
+  counts <- gsub('.{1}$', '', shift)
+  as.character(ymd(dates) %m+% do.call(dayCountFcts[units], list(as.numeric(counts)) ))
+}
 

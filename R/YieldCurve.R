@@ -125,7 +125,7 @@ setMethod(f = "YieldCurve",signature = c(),
             }
 
             test.dates(yc$ReferenceDate)
-            yc$TenorDates <- computeTenorDates(yc$ReferenceDate, yc$Tenors)
+            yc$TenorDates <- tenors2dates(yc$ReferenceDate, yc$Tenors)
             return(yc)
             })
 
@@ -189,7 +189,7 @@ setMethod(f = "set", signature = c("YieldCurve", "list"),
                        },
                        Tenors = {
                          object$Tenors <- value
-                         object$TenorDates <- computeTenorDates(object$ReferenceDate, value)
+                         object$TenorDates <- tenors2dates(object$ReferenceDate, value)
                        },
                        DayCountConvention = {
                          object$DayCountConvention <- value
@@ -346,7 +346,8 @@ is.valid.yieldcurve.field <- function(x) {
 }
 
 # convert character terms to dates relative to a refDate
-computeTenorDates <- function(refDate, tenors){
+# new function with extension in "DynamicYieldCurve
+tenors2dates <- function(refDate, tenors){
   
   relativeDates <- c("")
   for (i in 1:length(tenors)) {

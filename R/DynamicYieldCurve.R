@@ -99,7 +99,7 @@ setMethod(f = "DynamicYieldCurve",signature = c(),
               }
               
               if (is.data.frame(pars$Rates)) {
-                ill_fields$ReferenceDate <- rownames(pars$Rates)
+                fill_fields$ReferenceDate <- rownames(pars$Rates)
                 fill_fields$Tenors <- colnames(pars$Rates)
                 fill_fields$Rates <- pars$Rates
               } else if (length(names(pars)) > 1) {
@@ -131,7 +131,7 @@ setMethod(f = "DynamicYieldCurve",signature = c(),
             }
             
             test.dates(yc$ReferenceDate)
-            yc$TenorDates <- computeTenorDates(yc$ReferenceDate, yc$Tenors, frame=TRUE)
+            yc$TenorDates <- tenors2dates(yc$ReferenceDate, yc$Tenors, frame=TRUE)
             return(yc)
           })
 
@@ -153,19 +153,23 @@ setMethod(f = "set", signature = c("DynamicYieldCurve", "list"),
                            stop("ErrorIn::DynamicYieldCurve::set:: Field is not allowed to change dimensions !!!")
                          }
                          object$ReferenceDate <- value
-                         object$TenorDates <- computeTenorDates(object$ReferenceDate,object$Tenors,frame=TRUE)
+                         object$TenorDates <- tenors2dates(object$ReferenceDate,
+                                                                object$Tenors,frame=TRUE)
                        },
                        Rates = {
                          object$Rates <- value
                          object$Tenors <- colnames(value)
                          object$ReferenceDate <- rownames(value)
-                         object$TenorDates <- computeTenorDates(rownames(value),colnames(value),frame=TRUE)
+                         object$TenorDates <- tenors2dates(rownames(value),
+                                                                colnames(value),frame=TRUE)
                        },
                        Tenors = {
                          stop("Not yet implemented !!!")
                          object$Tenors <- value
-                         object$TenorDates <- computeTenorDates(yc$ReferenceDate, value, frame=TRUE)
-                         # here it would be necessary to also compute the rates again if I allow to change this!
+                         object$TenorDates <- tenors2dates(yc$ReferenceDate, 
+                                                                value, frame=TRUE)
+                         # here it would be necessary to also compute the rates again 
+                         # if I allow to change this!
                        },
                        DayCountConvention = {
                          object$DayCountConvention <- value
@@ -175,7 +179,8 @@ setMethod(f = "set", signature = c("DynamicYieldCurve", "list"),
                        }
                 )
               } else {
-                warning(paste("ErrorInDynamicYieldCurve:: Field ", i, " does not exist, cannot assign value!", sep = ""))
+                warning(paste("ErrorInDynamicYieldCurve:: Field ", i, 
+                              " does not exist, cannot assign value!", sep = ""))
               }
             }
             if (length(object$Tenors) != length(object$Rates)) {
@@ -207,7 +212,8 @@ setMethod(f = "get", signature = c("DynamicYieldCurve", "character"),
                                    TenorDates = object$TenorDates
                 )
               } else {
-                warning(paste("ErrorInDynamicYieldCurve::get:: Field ", i, " does not exist, cannot get value!", sep=""))
+                warning(paste("ErrorInDynamicYieldCurve::get:: Field ", i, 
+                              " does not exist, cannot get value!", sep=""))
               }
             }
             if (length(out) == 1) {
@@ -228,7 +234,8 @@ setMethod(f = "add", signature = c("DynamicYieldCurve", "data.frame"),
             # order by row names
             object$Rates <- object$Rates[ order(rownames(object$Rates)), ]
             object$ReferenceDate <- rownames(object$Rates)
-            object$TenorDates <- computeTenorDates(object$ReferenceDate, colnames(object$Rates), frame=TRUE)
+            object$TenorDates <- tenors2dates(object$ReferenceDate, 
+                                                   colnames(object$Rates), frame=TRUE)
           })
 
 #' @export
@@ -268,7 +275,7 @@ setMethod(f = "add", signature = c("DynamicYieldCurve", "YieldCurve"),
             return(add(object,to.dynamic(what)))
           })
 
-#########################################################################################
+################################################################################
 #' Computes the forward rate from time t1 to time t2.
 #' 
 #' This function still needs documentation, yes.
@@ -282,9 +289,11 @@ setGeneric(name = "getRateAt_old",
 #' @export
 setMethod(f = "getRateAt_old",
           signature = c("YieldCurve", "character", "character"),
-          definition = function(object, from, to, method = "continuous", period = "Y", ...){
+          definition = function(object, from, to, method = "continuous", 
+                                period = "Y", ...){
             # convert YieldCurve to dynamic first...
-            return(getRateAt(to.dynamic(object), from, to, method = method, period = period, ...))
+            return(getRateAt(to.dynamic(object), from, to, method = method, 
+                             period = period, ...))
           })
 
 #########################################################################################
@@ -449,7 +458,7 @@ setMethod(f = "getRateAt",
             }
             
             # due to discountfactor, from > to is also allowed, but values should be the same, so switch
-            for (i in 1:length(from)) {
+            for (i in 1:length(from)) { # exchange from and to
               if (from[i] > to[i]) {
                 helper_to <- to[i]
                 to[i] <- from[i]
@@ -547,7 +556,7 @@ setMethod(f = "getRateAt",
 
 
 ##############################################################
-#' Generic method to retrieve the rate(s) for a specific
+#' Generic method to retrieve the rate(s) for (a) specific
 #' tenor(s) from a \code{\link{DynamicYieldCurve}} object
 #'
 #' A yield curve is a time-structure of yields, i.e. for
@@ -611,8 +620,10 @@ setGeneric(name = "rates",
 #' @aliases rates, YieldCurve, character, missing-method
 setMethod(f = "rates",
           signature = c("YieldCurve", "character", "missing"),
-          definition = function(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...){
-            out <- rates(to.dynamic(object), termEnd=termEnd, isDateEnd = isDateEnd, refdate = refdate, ...)
+          definition = function(object, termEnd, termStart, isDateEnd = FALSE, 
+                                refdate = NULL, ...){
+            out <- rates(to.dynamic(object), termEnd=termEnd, 
+                         isDateEnd = isDateEnd, refdate = refdate, ...)
             return(out)
           })
 
@@ -621,8 +632,10 @@ setMethod(f = "rates",
 #' @aliases rates, YieldCurve, character, missing-method
 setMethod(f = "rates",
           signature = c("YieldCurve", "character", "character"),
-          definition = function(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...){
-            out <- rates(to.dynamic(object), termEnd, termStart, isDateEnd = isDateEnd, refdate = refdate, ...)
+          definition = function(object, termEnd, termStart, isDateEnd = FALSE, 
+                                refdate = NULL, ...){
+            out <- rates(to.dynamic(object), termEnd, termStart, 
+                         isDateEnd = isDateEnd, refdate = refdate, ...)
             return(out)
           })
 
@@ -633,10 +646,11 @@ setMethod(f = "rates",
 #' @aliases rates, DynamicYieldCurve, character, missing-method
 setMethod(f = "rates",
           signature = c("DynamicYieldCurve", "character", "missing"),
-          definition = function(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...){
+          definition = function(object, termEnd, termStart, isDateEnd = FALSE, 
+                                refdate = NULL, ...){
 
             if (!isDateEnd) {
-              # endDate <- computeTenorDates(object$ReferenceDate, termEnd)
+              # endDate <- tenors2dates(object$ReferenceDate, termEnd)
               endDate <- shiftDates(object$ReferenceDate, termEnd)
             } else {
               endDate <- termEnd
@@ -653,10 +667,11 @@ setMethod(f = "rates",
 #' @aliases rates, DynamicYieldCurve, character, character-method
 setMethod(f = "rates",
           signature = c("DynamicYieldCurve", "character", "character"),
-          definition = function(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...){
+          definition = function(object, termEnd, termStart, isDateEnd = FALSE, 
+                                refdate = NULL, ...){
             
             if (!isDateEnd) {
-              # endDate <- computeTenorDates(termStart, termEnd)
+              # endDate <- tenors2dates(termStart, termEnd)
               endDate <- shiftDates(termStart, termEnd)
             } else {
               endDate <- termEnd
@@ -730,7 +745,8 @@ setMethod(f = "discountFactors",
           definition = function(object, end, start, method = "continuous", 
                                 period = "Y", refdate = NULL, ...) {
             return(discountFactors(to.dynamic(object), end, 
-                                   method = method, period = period, refdate = refdate, ...))
+                                   method = method, period = period, 
+                                   refdate = refdate, ...))
           })
 
 #' @export
@@ -741,7 +757,8 @@ setMethod(f = "discountFactors",
           definition = function(object, end, start, method = "continuous", 
                                 period = "Y", refdate = NULL, ...) {
             return(discountFactors(to.dynamic(object), end, start, 
-                                   method = method, period = period, refdate = refdate, ...))
+                                   method = method, period = period, 
+                                   refdate = refdate, ...))
           })
 
 ## @include
@@ -753,7 +770,8 @@ setMethod(f = "discountFactors",
           definition = function(object, end, start, method = "continuous", 
                                 period = "Y", refdate = NULL, ...) {
             start <- object$ReferenceDate
-            return(discountFactors(object, end, start, method, period, refdate = refdate, ...))
+            return(discountFactors(object, end, start, method, period, 
+                                   refdate = refdate, ...))
           })
 
 #' @export
@@ -764,7 +782,8 @@ setMethod(f = "discountFactors",
           definition = function(object, end, start, method = "continuous", 
                                 period = "Y", refdate = NULL, ...) {
             yc <- MarketInterestRate(object, min(start,end))
-            return(discountFactors(yc, end, start, method, period, refdate = refdate, ...))
+            return(discountFactors(yc, end, start, method, period, 
+                                   refdate = refdate, ...))
           })
 
 
@@ -775,14 +794,16 @@ setMethod(f = "discountFactors",
 setMethod(f = "discountFactors",
           signature = c("DynamicYieldCurve", "character", "character"),
           definition = function(object, end, start,
-                                method = "continuous", period = "Y", refdate = NULL, ...){
-            # To consider: Implementierung von Unterjährigen Zinsen bei Bruchteilen von Perioden
+                                method = "continuous", period = "Y", 
+                                refdate = NULL, ...){
+            # To consider: 
+            # Implementierung von Unterjährigen Zinsen bei Bruchteilen von Perioden
             
             # test dates and convert possible end to date type
             test.dates(start)
             err_testing <- tryCatch(test.dates(end), error = function(e) e)
             if (any(class(err_testing) == "error")) {
-              endDate <- computeTenorDates(start, end)
+              endDate <- tenors2dates(start, end)
             } else {
               endDate <- end
             }
@@ -791,7 +812,8 @@ setMethod(f = "discountFactors",
             yearFraction <- yearFraction(start, endDate, object$DayCountConvention)
             
             # get the required rate from the yield curve
-            rates <- getRateAt(object, start, endDate, method = method, period = period, refdate = refdate)
+            rates <- getRateAt(object, start, endDate, method = method, 
+                               period = period, refdate = refdate)
             
             # return requested discount factors
             if (method == "linear") {
@@ -802,7 +824,8 @@ setMethod(f = "discountFactors",
             } else if (method == "continuous") {
               return(exp(-yearFraction * rates))
             } else {
-              stop(paste("ErrorIn::discountFactors:: Method ", method, " not supported !!!"))
+              stop(paste("ErrorIn::discountFactors:: Method ", method, 
+                         " not supported !!!"))
             }
           })
 
@@ -813,6 +836,7 @@ setGeneric(name = "getRateSeries",
            })
 #' @export
 setMethod(f = "getRateSeries",
+          # Returns forward rate for start and end date. Deprecated. 
           signature = c("RiskFactor", "character", "character"),
           definition = function(
             object, startdate, enddate, frequency = "week", forward = "1M", ...){
@@ -892,34 +916,37 @@ setMethod(f = "names", signature = c("DynamicYieldCurve"),
 ##############################################################
 #' A Reference Class 
 #' 
+#' It should be generalized by unsing splinefun. 
+#' In this case, defining a class has real value.
+#' 
 #' @export
-Interpolator <- setRefClass("Interpolator", 
-                            fields = list(xValues = "numeric",
-                                          yValues = "numeric"),
-                            methods = list(
-                              initialize = function(...) {
-                                pars <- list(...)
+Interpolator <- setRefClass(
+  "Interpolator", 
+  fields = list(xValues = "numeric", yValues = "numeric"),
+  methods = list(
+    initialize = function(...) {
+      pars <- list(...)
                                 
-                                all_fields <- names(getRefClass("Interpolator")$fields())
-                                pars_names <- names(pars)
-                                test_pars_names <- pars_names %in% all_fields
-                                if (!all(test_pars_names)) {
-                                  stop(paste(
-                                    "ErrorInDynamicYieldCurve::Interpolator:: Interpolator has no field called: ", 
-                                    pars_names[!test_pars_names], "!!!"))
-                                }
+      all_fields <- names(getRefClass("Interpolator")$fields())
+      pars_names <- names(pars)
+      test_pars_names <- pars_names %in% all_fields
+      if (!all(test_pars_names)) {
+        stop(paste(
+          "ErrorInDynamicYieldCurve::Interpolator:: Interpolator has no field called: ", 
+          pars_names[!test_pars_names], "!!!"))
+      }
                                 
-                                if (length(pars$xValues) != length(pars$yValues)) {
-                                  stop("ErrorInDynamicYieldCurve::Interpolator:: xValues and yValues must have same length !!!")
-                                }
-                                .self$xValues <- pars$xValues
-                                .self$yValues <- pars$yValues
-                              },
-                              getValueAt = function(x){
-                                xOut <- approx(xValues, yValues, x, method = "linear", rule = 2)
-                                return(xOut$y)
-                              }
-                            ))
+      if (length(pars$xValues) != length(pars$yValues)) {
+        stop("ErrorInDynamicYieldCurve::Interpolator:: xValues and yValues must have same length !!!")
+      }
+      .self$xValues <- pars$xValues
+      .self$yValues <- pars$yValues
+    },
+    getValueAt = function(x){
+      xOut <- approx(xValues, yValues, x, method = "linear", rule = 2)
+      return(xOut$y)
+    }
+))
 
 
 
@@ -938,7 +965,7 @@ is.valid.yieldcurve.field <- function(x) {
 }
 
 # convert character terms to dates relative to a refDate
-computeTenorDates <- function(refDate, tenors, frame=FALSE){
+tenors2dates <- function(refDate, tenors, frame=FALSE){
   
   # relativeDates <- c("")
   relativeDates <- matrix(NA, nrow=length(refDate),ncol=length(tenors))
@@ -971,7 +998,7 @@ computeTenorDates <- function(refDate, tenors, frame=FALSE){
   
   if (!frame) {
     if (nrow(relativeDates)>1) {
-      stop("ErrorIn::computeTenorDates:: If function should return array, only one reference date is allowed !!!")
+      stop("ErrorIn::tenors2dates:: If function should return array, only one reference date is allowed !!!")
     }
     out <- c(relativeDates)
   } else {
@@ -982,7 +1009,7 @@ computeTenorDates <- function(refDate, tenors, frame=FALSE){
 }
 
 shiftDates <- function(dates, shift){
-  
+  # dates is a vector and shift is a scalar
   count <- as.numeric(substr(shift, 1, 1))
   switch(substr(shift, nchar(shift), nchar(shift)),
          "D" = {
@@ -1026,7 +1053,8 @@ convert.rate.period <- function(period) {
   if(period %in% names(allowed_periods)) {
     period_num <- allowed_periods[[period]]
   } else {
-    stop(paste("ErrorIn::discountFactors:: ", period, " is not a valid interest rate period !!!", sep=" "))
+    stop(paste("ErrorIn::discountFactors:: ", period, 
+               " is not a valid interest rate period !!!", sep=" "))
   }
   return(period_num)
 }
