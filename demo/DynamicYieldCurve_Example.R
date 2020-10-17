@@ -22,9 +22,12 @@ yc
 
 # test the implementation of the interest I get at 
 rates(yc, to="2012-06-30", from="2011-12-31", isDateEnd=TRUE)
+rates(yc, termEnd="2012-06-30", termStart="2011-12-31", isDateEnd=TRUE)
 
 # having dates overlapping two reference dates...
 rates(yc, "2013-05-31", "2012-06-30", isDateEnd=TRUE)
+
+
 
 # this is currently essentially the same as this...
 fwd <- rates(yc, "2012-12-31", "2012-06-30", isDateEnd=TRUE, refdate="2011-12-31")

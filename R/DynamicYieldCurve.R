@@ -150,7 +150,8 @@ setMethod(f = "set", signature = c("DynamicYieldCurve", "list"),
                 switch(i,
                        ReferenceDate = {
                          if (length(object$ReferenceDate) != length(value)) {
-                           stop("ErrorIn::DynamicYieldCurve::set:: Field is not allowed to change dimensions !!!")
+                           stop(paste("ErrorIn::DynamicYieldCurve::set::", 
+                                      "Field is not allowed to change dimensions !!!"))
                          }
                          object$ReferenceDate <- value
                          object$TenorDates <- tenors2dates(object$ReferenceDate,
@@ -227,7 +228,8 @@ setMethod(f = "get", signature = c("DynamicYieldCurve", "character"),
 setMethod(f = "add", signature = c("DynamicYieldCurve", "data.frame"),
           definition = function(object, what, ...){
             if (!identical(object$Tenors, colnames(object$Rates))) {
-              stop("ErrorIn::DynamicYieldCurve::add:: Tenors of rates added must match the existing YieldCurve's Tenors")
+              stop(paste("ErrorIn::DynamicYieldCurve::add::",  
+                         "Tenors of rates added must match the existing YieldCurve's Tenors"))
             }
             # add new row
             object$Rates <- rbind(object$Rates, what)
@@ -243,11 +245,13 @@ setMethod(f = "add", signature = c("DynamicYieldCurve", "DynamicYieldCurve"),
           definition = function(object, what, ...){
 
             if (!identical(object$Tenors, what$Tenors)) {
-              stop("ErrorIn::DynamicYieldCurve::add:: Tenors of rates added must match the existing YieldCurve's Tenors")
+              stop(paste("ErrorIn::DynamicYieldCurve::add::", 
+                         "Tenors of rates added must match the existing YieldCurve's Tenors"))
             }
 
             if (!identical(object$DayCountConvention, what$DayCountConvention)) {
-              stop("ErrorIn::DynamicYieldCurve::add:: DayCountConvention of rates added must match the existing YieldCurve")
+              stop(paste("ErrorIn::DynamicYieldCurve::add::", 
+                         "DayCountConvention of rates added must match the existing YieldCurve"))
             }
             
             yc <- DynamicYieldCurve()
@@ -281,136 +285,6 @@ setMethod(f = "add", signature = c("DynamicYieldCurve", "YieldCurve"),
 #' This function still needs documentation, yes.
 #' 
 #' @export
-setGeneric(name = "getRateAt_old",
-           def = function(object, from, to, ...){
-             standardGeneric("getRateAt_old")
-           })
-
-#' @export
-setMethod(f = "getRateAt_old",
-          signature = c("YieldCurve", "character", "character"),
-          definition = function(object, from, to, method = "continuous", 
-                                period = "Y", ...){
-            # convert YieldCurve to dynamic first...
-            return(getRateAt(to.dynamic(object), from, to, method = method, 
-                             period = period, ...))
-          })
-
-#########################################################################################
-#' @export
-setMethod(f = "getRateAt_old",
-          signature = c("DynamicYieldCurve", "character", "character"),
-          definition = function(object, from, to, method = "continuous", period = "Y", ...){
-            
-            # check that 'from' and 'to' have same length if both have length > 1
-            if (length(from)>1 && length(to)>1) {
-              if (length(from)!=length(to)){
-                stop("ErrorIn::DynamicYieldCurve::getRateAt:: 'from' and 'to' dates do not have valid length !!! ")
-              }
-            }
-            
-            # expand necessary dates
-            if (length(from)< length(to)){
-              from <- rep(from, length(to))
-            } else if (length(to)< length(from)) {
-              to <- rep(to, length(from))
-            }
-            
-            # pre-allocate output vector
-            out <- rep(NA, length(from))
-            
-            # loop through each date
-            for (i in 1:length(from)) {
-              
-              # check if any of the dates are before first reference date of yield curve
-              if (as.Date(from[i])<object$ReferenceDate[1] || as.Date(to[i])<object$ReferenceDate[1]) {
-                stop("ErrorIn::DynamicYieldCurve::getRateAt:: No Yields can be calculated before ReferenceDate of the DynamicYieldCurve!!!")
-              }
-              
-              # due to discountfactor, from > to is also allowed, but values should be the same, so switch
-              if (from[i]>to[i]) {
-                helper_to <- to[i]
-                to[i] <- from[i]
-                from[i] <- helper_to
-              }
-              
-              # get relevant reference date which is earlier than from & to
-              ref_idx_from <- max(cumsum(object$ReferenceDate <= from[i]))
-              ref_idx_to <- max(cumsum(object$ReferenceDate < to[i]))
-              
-              if (ref_idx_from >= ref_idx_to) {
-                t1 <- yearFraction(object$ReferenceDate[ref_idx_from], from[i], object$DayCountConvention)
-                t2 <- yearFraction(object$ReferenceDate[ref_idx_from], to[i], object$DayCountConvention)
-                
-                interpolator <- Interpolator(xValues = yearFraction(object$ReferenceDate[ref_idx_from], 
-                                                                    as.character(object$TenorDates[ref_idx_from,]), 
-                                                                    object$DayCountConvention), 
-                                             yValues = as.numeric(object$Rates[ref_idx_from,]))
-                
-                # get rates from interpolation
-                s1 <- interpolator$getValueAt(t1)
-                s2 <- interpolator$getValueAt(t2)
-                
-                # calculate forward rate
-                if (method == "linear") {
-                  out[i] <- ((1+s2*t2)/(1+s1*t1)-1)/(t2-t1)
-                } else if (method == "compound") {
-                  num_period <- convert.rate.period(period)
-                  out[i] <- num_period*((((1+s2/num_period)^(t2*num_period)/(1+s1/num_period)^(t1*num_period))^(1/((t2-t1)*num_period))) - 1)
-                } else if (method == "continuous") {
-                  out[i] <- (t2*s2 - t1*s1)/(t2 - t1)
-                } else {
-                  stop(paste("ErrorIn::DynamicYieldCurve::getRateAt2:: Method ", method, " not supported !!!"))
-                }
-                
-              } else {
-                
-                # pre-allocate memory for necessary rates and time deltas
-                rates <- rep(NA, ref_idx_to-ref_idx_from+1)
-                dt <- rep(NA, ref_idx_to-ref_idx_from+1)
-
-                rates[1] <- getRateAt_old(object,from[i],object$ReferenceDate[ref_idx_from+1], method = method, period = period)
-                dt[1] <- yearFraction(from[i], object$ReferenceDate[ref_idx_from+1], object$DayCountConvention)
-                
-                # prepare the while loop
-                count <- 2
-                idx <- ref_idx_from + 1
-                while (idx < ref_idx_to) {
-                  dt[count] <- yearFraction(object$ReferenceDate[idx], object$ReferenceDate[idx+1], object$DayCountConvention)
-                  interpolator_spot <- Interpolator(xValues = yearFraction(object$ReferenceDate[idx], 
-                                                                           as.character(object$TenorDates[idx,]), 
-                                                                      object$DayCountConvention), 
-                                               yValues = as.numeric(object$Rates[idx,]))
-                  
-                  rates[count] <- interpolator_spot$getValueAt(dt[count])
-                  idx <- idx + 1
-                  count <- count + 1
-                }
-                dt[count] <- yearFraction(object$ReferenceDate[idx], to, object$DayCountConvention)
-                interpolator_spot <- Interpolator(xValues = yearFraction(object$ReferenceDate[idx], 
-                                                                         as.character(object$TenorDates[idx,]), 
-                                                                         object$DayCountConvention), 
-                                                  yValues = as.numeric(object$Rates[idx,]))
-                rates[count] <- interpolator_spot$getValueAt(dt[count])
-                T <- yearFraction(from[i], to[i], object$DayCountConvention)
-                if (method == "linear") {
-                  out[i] <- (prod( rates * dt + 1 ) - 1)/T
-                } else if (method == "compound") {
-                  num_period <- convert.rate.period(period)
-                  out[i] <- (prod( (1 + rates/num_period)^(dt*num_period) )^(1/(T*num_period))-1) * num_period
-                } else if (method == "continuous") {
-                  out[i] <- sum( rates * dt )/T
-                } else {
-                  stop(paste("ErrorIn::DynamicYieldCurve::getRateAt:: Method ", method, " not supported !!!"))
-                }
-              }
-            }
-            # replace NA values with 0 (happens in case yearFraction is 0)
-            out[is.na(out)] <- 0
-            return(out)
-          })
-
-#' @export
 setGeneric(name = "getRateAt",
            def = function(object, from, to, ...){
              standardGeneric("getRateAt")
@@ -419,36 +293,40 @@ setGeneric(name = "getRateAt",
 #' @export
 setMethod(f = "getRateAt",
           signature = c("YieldCurve", "character", "character"),
-          definition = function(object, from, to, method = "continuous", period = "Y", refdate = NULL, ...){
+          definition = function(object, from, to, method = "continuous", 
+                                period = "Y", refdate = NULL, ...){
             # convert YieldCurve to dynamic first...
             return(getRateAt(to.dynamic(object), from, to, method = method, 
                                period = period, refdate = refdate, ...))
           })
 
-#########################################################################################
+################################################################################
 #' @export
-setMethod(f = "getRateAt",
-          signature = c("DynamicYieldCurve", "character", "character"),
-          definition = function(object, from, to, method = "continuous", period = "Y", refdate = NULL, ...){
+setMethod(
+  f = "getRateAt",
+  signature = c("DynamicYieldCurve", "character", "character"),
+  definition = function(object, from, to, method = "continuous", period = "Y", 
+                        refdate = NULL, ...){
             
-            # check that 'from' and 'to' have same length if both have length > 1
-            if (length(from)>1 && length(to)>1) {
-              if (length(from)!=length(to)){
-                stop("ErrorIn::DynamicYieldCurve::getRateAt:: 'from' and 'to' 
-                     dates do not have valid length !!! ")
-              }
-            }
+    # check that 'from' and 'to' have same length if both have length > 1
+    if (length(from)>1 && length(to)>1) {
+      if (length(from)!=length(to)){
+        stop(paste("ErrorIn::DynamicYieldCurve::getRateAt:: 'from' and 'to'", 
+             "dates do not have valid length !!! "))
+      }
+    }
+        
+    # set refdate to earliest date if its not provided
+    if (is.null(refdate)){
+      refdate <- min(c(from, to))
+    }
             
-            # set refdate to earliest date if its not provided
-            if (is.null(refdate)){
-              refdate <- min(c(from, to))
-            }
-            
-            # check if any of the dates are before first reference date of yield curve
-            if ((refdate < object$ReferenceDate[1]) | (min(c(from, to)) < object$ReferenceDate[1])) {
-              stop("ErrorIn::DynamicYieldCurve::getRateAt:: No Yields 
-                   can be calculated before first ReferenceDate of the DynamicYieldCurve!!!")
-            }
+    # check if any of the dates are before first reference date of yield curve
+    if ((refdate < object$ReferenceDate[1]) | 
+        (min(c(from, to)) < object$ReferenceDate[1])) {
+      stop(paste("ErrorIn::DynamicYieldCurve::getRateAt::", 
+           "No Yields can be calculated before first ReferenceDate of the DynamicYieldCurve!!!"))
+    }
             
             # expand necessary dates to have same length for both "to" and "from"
             if (length(from) < length(to)){
@@ -457,8 +335,9 @@ setMethod(f = "getRateAt",
               to <- rep(to, length(from))
             }
             
-            # due to discountfactor, from > to is also allowed, but values should be the same, so switch
-            for (i in 1:length(from)) { # exchange from and to
+            # due to discountfactor, from > to is also allowed, 
+            # but the result should be the same, so switch exchange from and to
+            for (i in 1:length(from)) { 
               if (from[i] > to[i]) {
                 helper_to <- to[i]
                 to[i] <- from[i]
@@ -468,6 +347,7 @@ setMethod(f = "getRateAt",
             
             # get relevant reference date which is earlier than from & to
             ref_idx <- max(cumsum(object$ReferenceDate <= refdate))
+            # Tests if 'refdate' is before or at the same time of both, 'from' and 'to' 
             if (refdate <= min(c(from, to))) {# the minimum should always in 'from'
               # get necessary year fractions
               t1 <- yearFraction(object$ReferenceDate[ref_idx], 
@@ -477,10 +357,10 @@ setMethod(f = "getRateAt",
 
               # ----------Hier Fallunterscheidung Funktion oder numerische Werte---------
               # define the interpolator
-              interpolator <- Interpolator(xValues = yearFraction(object$ReferenceDate[ref_idx], 
-                                                                  as.character(object$TenorDates[ref_idx,]), 
-                                                                  object$DayCountConvention), 
-                                           yValues = as.numeric(object$Rates[ref_idx,]))
+              interpolator <- Interpolator(
+                xValues = yearFraction(
+                  object$ReferenceDate[ref_idx], as.character(object$TenorDates[ref_idx,]), 
+                  object$DayCountConvention), yValues = as.numeric(object$Rates[ref_idx,]))
                 
               # get rates from interpolation
               s1 <- interpolator$getValueAt(t1)
@@ -490,61 +370,87 @@ setMethod(f = "getRateAt",
               # calculate forward rate
               if (method == "linear") {
                 out <- ((1+s2*t2)/(1+s1*t1)-1)/(t2-t1)
-              } else if (method == "compound") {
+              } else if (method == "compound") { 
+                # QUESTION:
+                # What happens if (t2-t1)*num_period is not an integer?
                 num_period <- convert.rate.period(period)
-                out <- num_period*((((1+s2/num_period)^(t2*num_period)/(1+s1/num_period)^(t1*num_period))^(1/((t2-t1)*num_period))) - 1)
+                out <- num_period * ( 
+                  (
+                    ( (1+s2/num_period)^(t2*num_period)/
+                        (1+s1/num_period)^(t1*num_period) 
+                      )^( 1/( (t2-t1)*num_period ) ) 
+                    ) - 1
+                  )
               } else if (method == "continuous") {
                 out <- (t2*s2 - t1*s1)/(t2 - t1)
               } else {
-                stop(paste("ErrorIn::DynamicYieldCurve::getRateAt2:: Method ", method, " not supported !!!"))
+                stop(paste("ErrorIn::DynamicYieldCurve::getRateAt2:: Method ", 
+                           method, " not supported !!!"))
               }
               
             } else {
-              #HERE GOES IMPLEMENTATION OF DYNAMIC PART
-              warning("RATES SELECTED WITH REFDATE AFTER INITIAL DATE. NOTE: FUNCTIONALITY NOT PROPERLY TESTED YET !!!")
+              # HERE GOES IMPLEMENTATION OF DYNAMIC PART
+              # Question:
+              # What exactly happens here?
+              warning(paste("RATES SELECTED WITH REFDATE AFTER INITIAL DATE.\\", 
+                            "NOTE: FUNCTIONALITY NOT PROPERLY TESTED YET !!!"))
               out <- rep(NA, length(from))
               for (k in 1:length(from)) {
                 
-                ref_idx_from <- max(cumsum(object$ReferenceDate <= from[k])) # clipping of from vector 
+                # clipping of 'from' vector 
+                ref_idx_from <- max(cumsum(object$ReferenceDate <= from[k])) 
                 
                 # pre-allocate memory for necessary rates and time deltas
                 rates <- rep(NA, ref_idx)
                 dt <- rep(NA, ref_idx)
                 
-                rates[1] <- getRateAt_old(object,from[k],object$ReferenceDate[ref_idx_from+1], 
-                                          method = method, period = period, refdate = object$ReferenceDate[ref_idx_from])
-                dt[1] <- yearFraction(from[k], object$ReferenceDate[ref_idx_from+1], object$DayCountConvention)
+                warning(paste(
+                  "Here the method 'getRateAt_old' was called.\\",
+                  "It has been changed to a call of 'getRateAt'. Please check if correct."))
+                rates[1] <- getRateAt( 
+                  object,from[k],object$ReferenceDate[ref_idx_from+1], 
+                  method = method, period = period, 
+                  refdate = object$ReferenceDate[ref_idx_from])
+                dt[1] <- yearFraction(from[k], object$ReferenceDate[ref_idx_from+1], 
+                                      object$DayCountConvention)
                 
                 # prepare the while loop
                 count <- 2
                 idx <- ref_idx_from + 1
                 while (idx < ref_idx) {
-                  dt[count] <- yearFraction(object$ReferenceDate[idx], object$ReferenceDate[idx+1], object$DayCountConvention)
-                  interpolator_spot <- Interpolator(xValues = yearFraction(object$ReferenceDate[idx], 
-                                                                           as.character(object$TenorDates[idx,]), 
-                                                                           object$DayCountConvention), 
-                                                    yValues = as.numeric(object$Rates[idx,]))
+                  dt[count] <- yearFraction(
+                    object$ReferenceDate[idx], object$ReferenceDate[idx+1], 
+                    object$DayCountConvention)
+                  interpolator_spot <- Interpolator(
+                    xValues = yearFraction(
+                      object$ReferenceDate[idx], as.character(object$TenorDates[idx,]), 
+                      object$DayCountConvention), yValues = as.numeric(object$Rates[idx,]))
                   
                   rates[count] <- interpolator_spot$getValueAt(dt[count])
                   idx <- idx + 1
                   count <- count + 1
                 }
-                dt[count] <- yearFraction(object$ReferenceDate[idx], to[k], object$DayCountConvention)
-                interpolator_spot <- Interpolator(xValues = yearFraction(object$ReferenceDate[idx], 
-                                                                         as.character(object$TenorDates[idx,]), 
-                                                                         object$DayCountConvention), 
-                                                  yValues = as.numeric(object$Rates[idx,]))
+                dt[count] <- yearFraction(object$ReferenceDate[idx], to[k], 
+                                          object$DayCountConvention)
+                interpolator_spot <- Interpolator(
+                  xValues = yearFraction(
+                    object$ReferenceDate[idx], as.character(object$TenorDates[idx,]), 
+                    object$DayCountConvention), yValues = as.numeric(object$Rates[idx,]))
                 rates[count] <- interpolator_spot$getValueAt(dt[count])
                 T <- yearFraction(from[k], to[k], object$DayCountConvention)
                 if (method == "linear") {
                   out[k] <- (prod( rates * dt + 1 ) - 1)/T
                 } else if (method == "compound") {
                   num_period <- convert.rate.period(period)
-                  out[k] <- (prod( (1 + rates/num_period)^(dt*num_period) )^(1/(T*num_period))-1) * num_period
+                  # Was genau wird hier berechnet?
+                  out[k] <- (prod( 
+                    (1 + rates/num_period)^(dt*num_period) )^(1/(T*num_period)) - 1
+                    ) * num_period
                 } else if (method == "continuous") {
                   out[k] <- sum( rates * dt )/T
                 } else {
-                  stop(paste("ErrorIn::DynamicYieldCurve::getRateAt:: Method ", method, " not supported !!!"))
+                  stop(paste("ErrorIn::DynamicYieldCurve::getRateAt:: Method ", 
+                             method, " not supported !!!"))
                 }
               }
               
@@ -714,7 +620,8 @@ setMethod(f = "rates",
 #' 
 #' @return numeric vector of discount factors for the defined periods.
 #' 
-#' @usage discountFactors(object, end, start, method = "continuous", period = "Y", refdate = NULL, ...)
+#' @usage discountFactors(object, end, start, method = "continuous", 
+#' period = "Y", refdate = NULL, ...)
 #' 
 #' @seealso \code{\link{rates}}
 #' 
@@ -847,8 +754,8 @@ setMethod(f = "getRateSeries",
             test.dates(startdate)
             test.dates(enddate)
             if (!frequency %in% c("day", "week", "month", "quarter", "year")) {
-              stop("ErrorIn::DynamicYieldCurve::getRateSeries:: Frequency must be one of 'day',
-                   'week', 'month', 'quarter' or 'year' !!!")
+              stop(paste("ErrorIn::DynamicYieldCurve::getRateSeries::", 
+                         "Frequency must be one of 'day', 'week', 'month', 'quarter' or 'year' !!!"))
             }
             
             # create date vector with frequency defined
@@ -918,8 +825,11 @@ setMethod(f = "names", signature = c("DynamicYieldCurve"),
 ##############################################################
 #' A Reference Class 
 #' 
-#' It should be generalized by unsing splinefun. 
+#' It should be generalized by using \code{splinefun}. 
 #' In this case, defining a class has real value.
+#' 
+#' Note: A class of the same name is defined in 'YieldCurve.R' 
+#' but only used here.
 #' 
 #' @export
 Interpolator <- setRefClass(
@@ -955,12 +865,14 @@ Interpolator <- setRefClass(
 ## -----------------------------------------------------------------
 ## helper methods
 # existing fields in the DynamicYieldCurve class
+# ATTENTION: This is EXACT replica of a function in 'YieldCurve.R'
 validYieldCurveFields <- function() {
-  return(c("Rates", "Tenors", "ReferenceDate", "label", 
+  return(c("Rates", "Tenors", "ReferenceDate", "label",
            "DayCountConvention", "TenorDates"))
 }
 
 # check if fields are valid
+# ATTENTION: This is EXACT replica of a function in 'YieldCurve.R'
 is.valid.yieldcurve.field <- function(x) {
   valid <- validYieldCurveFields()
   return(x %in% valid)
@@ -1000,7 +912,8 @@ tenors2dates <- function(refDate, tenors, frame=FALSE){
   
   if (!frame) {
     if (nrow(relativeDates)>1) {
-      stop("ErrorIn::tenors2dates:: If function should return array, only one reference date is allowed !!!")
+      stop(paste("ErrorIn::tenors2dates::", 
+                 "If function should return array, only one reference date is allowed !!!"))
     }
     out <- c(relativeDates)
   } else {
@@ -1073,3 +986,138 @@ to.dynamic <- function(yc){
   set(dyn_yc, attributes)
   return(dyn_yc)
 }
+
+################################################################################
+
+################################################################################
+# #' Most probably obsolete
+# #' @export
+# setGeneric(name = "getRateAt_old",
+#            def = function(object, from, to, ...){
+#              standardGeneric("getRateAt_old")
+#            })
+
+# #' @export
+# setMethod(f = "getRateAt_old",
+#           signature = c("YieldCurve", "character", "character"),
+#           definition = function(object, from, to, method = "continuous", 
+#                                 period = "Y", ...){
+#             # convert YieldCurve to dynamic first...
+#             return(getRateAt(to.dynamic(object), from, to, method = method, 
+#                              period = period, ...))
+#           })
+
+# #' @export
+# setMethod(f = "getRateAt_old",
+#           signature = c("DynamicYieldCurve", "character", "character"),
+#           definition = function(object, from, to, method = "continuous", period = "Y", ...){
+#             
+#             # check that 'from' and 'to' have same length if both have length > 1
+#             if (length(from)>1 && length(to)>1) {
+#               if (length(from)!=length(to)){
+#                 stop("ErrorIn::DynamicYieldCurve::getRateAt:: 'from' and 'to' dates do not have valid length !!! ")
+#               }
+#             }
+#             
+#             # expand necessary dates
+#             if (length(from)< length(to)){
+#               from <- rep(from, length(to))
+#             } else if (length(to)< length(from)) {
+#               to <- rep(to, length(from))
+#             }
+#             
+#             # pre-allocate output vector
+#             out <- rep(NA, length(from))
+#             
+#             # loop through each date
+#             for (i in 1:length(from)) {
+#               
+#               # check if any of the dates are before first reference date of yield curve
+#               if (as.Date(from[i])<object$ReferenceDate[1] || as.Date(to[i])<object$ReferenceDate[1]) {
+#                 stop("ErrorIn::DynamicYieldCurve::getRateAt:: No Yields can be calculated before ReferenceDate of the DynamicYieldCurve!!!")
+#               }
+#               
+#               # due to discountfactor, from > to is also allowed, but values should be the same, so switch
+#               if (from[i]>to[i]) {
+#                 helper_to <- to[i]
+#                 to[i] <- from[i]
+#                 from[i] <- helper_to
+#               }
+#               
+#               # get relevant reference date which is earlier than from & to
+#               ref_idx_from <- max(cumsum(object$ReferenceDate <= from[i]))
+#               ref_idx_to <- max(cumsum(object$ReferenceDate < to[i]))
+#               
+#               if (ref_idx_from >= ref_idx_to) {
+#                 t1 <- yearFraction(object$ReferenceDate[ref_idx_from], from[i], object$DayCountConvention)
+#                 t2 <- yearFraction(object$ReferenceDate[ref_idx_from], to[i], object$DayCountConvention)
+#                 
+#                 interpolator <- Interpolator(xValues = yearFraction(object$ReferenceDate[ref_idx_from], 
+#                                                                     as.character(object$TenorDates[ref_idx_from,]), 
+#                                                                     object$DayCountConvention), 
+#                                              yValues = as.numeric(object$Rates[ref_idx_from,]))
+#                 
+#                 # get rates from interpolation
+#                 s1 <- interpolator$getValueAt(t1)
+#                 s2 <- interpolator$getValueAt(t2)
+#                 
+#                 # calculate forward rate
+#                 if (method == "linear") {
+#                   out[i] <- ((1+s2*t2)/(1+s1*t1)-1)/(t2-t1)
+#                 } else if (method == "compound") {
+#                   num_period <- convert.rate.period(period)
+#                   out[i] <- num_period*((((1+s2/num_period)^(t2*num_period)/(1+s1/num_period)^(t1*num_period))^(1/((t2-t1)*num_period))) - 1)
+#                 } else if (method == "continuous") {
+#                   out[i] <- (t2*s2 - t1*s1)/(t2 - t1)
+#                 } else {
+#                   stop(paste("ErrorIn::DynamicYieldCurve::getRateAt2:: Method ", method, " not supported !!!"))
+#                 }
+#                 
+#               } else {
+#                 
+#                 # pre-allocate memory for necessary rates and time deltas
+#                 rates <- rep(NA, ref_idx_to-ref_idx_from+1)
+#                 dt <- rep(NA, ref_idx_to-ref_idx_from+1)
+#                 
+#                 rates[1] <- getRateAt_old(object,from[i],object$ReferenceDate[ref_idx_from+1], method = method, period = period)
+#                 dt[1] <- yearFraction(from[i], object$ReferenceDate[ref_idx_from+1], object$DayCountConvention)
+#                 
+#                 # prepare the while loop
+#                 count <- 2
+#                 idx <- ref_idx_from + 1
+#                 while (idx < ref_idx_to) {
+#                   dt[count] <- yearFraction(object$ReferenceDate[idx], object$ReferenceDate[idx+1], object$DayCountConvention)
+#                   interpolator_spot <- Interpolator(xValues = yearFraction(object$ReferenceDate[idx], 
+#                                                                            as.character(object$TenorDates[idx,]), 
+#                                                                            object$DayCountConvention), 
+#                                                     yValues = as.numeric(object$Rates[idx,]))
+#                   
+#                   rates[count] <- interpolator_spot$getValueAt(dt[count])
+#                   idx <- idx + 1
+#                   count <- count + 1
+#                 }
+#                 dt[count] <- yearFraction(object$ReferenceDate[idx], to, object$DayCountConvention)
+#                 interpolator_spot <- Interpolator(xValues = yearFraction(object$ReferenceDate[idx], 
+#                                                                          as.character(object$TenorDates[idx,]), 
+#                                                                          object$DayCountConvention), 
+#                                                   yValues = as.numeric(object$Rates[idx,]))
+#                 rates[count] <- interpolator_spot$getValueAt(dt[count])
+#                 T <- yearFraction(from[i], to[i], object$DayCountConvention)
+#                 if (method == "linear") {
+#                   out[i] <- (prod( rates * dt + 1 ) - 1)/T
+#                 } else if (method == "compound") {
+#                   num_period <- convert.rate.period(period)
+#                   out[i] <- (prod( (1 + rates/num_period)^(dt*num_period) )^(1/(T*num_period))-1) * num_period
+#                 } else if (method == "continuous") {
+#                   out[i] <- sum( rates * dt )/T
+#                 } else {
+#                   stop(paste("ErrorIn::DynamicYieldCurve::getRateAt:: Method ", method, " not supported !!!"))
+#                 }
+#               }
+#             }
+#             # replace NA values with 0 (happens in case yearFraction is 0)
+#             out[is.na(out)] <- 0
+#             return(out)
+#           })
+
+

@@ -199,7 +199,8 @@ setMethod(f = "set", signature = c("YieldCurve", "list"),
                        }
                 )
               } else {
-                warning(paste("ErrorInYieldCurve:: Field ", i, " does not exist, cannot assign value!", sep = ""))
+                warning(paste("ErrorInYieldCurve:: Field ", i, 
+                              " does not exist, cannot assign value!", sep = ""))
               }
             }
             if (length(object$Tenors) != length(object$Rates)) {
@@ -231,7 +232,8 @@ setMethod(f = "get", signature = c("YieldCurve", "character"),
                                    TenorDates = object$TenorDates
                 )
               } else {
-                warning(paste("ErrorInYieldCurve::get:: Field ", i, " does not exist, cannot get value!", sep=""))
+                warning(paste("ErrorInYieldCurve::get:: Field ", i, 
+                              " does not exist, cannot get value!", sep=""))
               }
             }
             if (length(out) == 1) {
@@ -299,130 +301,140 @@ setMethod(f = "names", signature = c("YieldCurve"),
 
 
 
-##############################################################
-#' A Reference Class 
-#' 
-#' @export
-Interpolator <- setRefClass("Interpolator", 
-            fields = list(xValues = "numeric",
-                          yValues = "numeric"),
-            methods = list(
-              initialize = function(...) {
-                pars <- list(...)
-                
-                all_fields <- names(getRefClass("Interpolator")$fields())
-                pars_names <- names(pars)
-                test_pars_names <- pars_names %in% all_fields
-                if (!all(test_pars_names)) {
-                  stop(paste(
-                    "ErrorInYieldCurve::Interpolator:: Interpolator has no field called: ", 
-                    pars_names[!test_pars_names], "!!!"))
-                }
-                
-                if (length(pars$xValues) != length(pars$yValues)) {
-                  stop("ErrorInYieldCurve::Interpolator:: xValues and yValues must have same length !!!")
-                }
-                .self$xValues <- pars$xValues
-                .self$yValues <- pars$yValues
-              },
-              getValueAt = function(x){
-                xOut <- approx(xValues, yValues, x, method = "linear", rule = 2)
-                return(xOut$y)
-              }
-            ))
+# ##############################################################
+# #' A Reference Class 
+# #' 
+# #' 
+# #' Note: A class of the same name is defined in 'DynamicYieldCurve.R'
+# #' 
+# #' @export
+# Interpolator <- setRefClass("Interpolator", 
+#             fields = list(xValues = "numeric",
+#                           yValues = "numeric"),
+#             methods = list(
+#               initialize = function(...) {
+#                 pars <- list(...)
+#                 
+#                 all_fields <- names(getRefClass("Interpolator")$fields())
+#                 pars_names <- names(pars)
+#                 test_pars_names <- pars_names %in% all_fields
+#                 if (!all(test_pars_names)) {
+#                   stop(paste(
+#                     "ErrorInYieldCurve::Interpolator:: Interpolator has no field called: ", 
+#                     pars_names[!test_pars_names], "!!!"))
+#                 }
+#                 
+#                 if (length(pars$xValues) != length(pars$yValues)) {
+#                   stop("ErrorInYieldCurve::Interpolator:: xValues and yValues must have same length !!!")
+#                 }
+#                 .self$xValues <- pars$xValues
+#                 .self$yValues <- pars$yValues
+#               },
+#               getValueAt = function(x){
+#                 xOut <- approx(xValues, yValues, x, method = "linear", rule = 2)
+#                 return(xOut$y)
+#               }
+#             ))
 
 ## -----------------------------------------------------------------
 ## helper methods
 # existing fields in the YieldCurve class
-validYieldCurveFields <- function() {
-  return(c("Rates", "Tenors", "ReferenceDate", "label", 
-           "DayCountConvention", "TenorDates"))
-}
+# ATTENTION: This is EXACT replica of a function in 'DynamicYieldCurve.R'
+# This function is used nowhere in this package
+# validYieldCurveFields <- function() {
+#   return(c("Rates", "Tenors", "ReferenceDate", "label", 
+#            "DayCountConvention", "TenorDates"))
+# }
 
 # check if fields are valid
-is.valid.yieldcurve.field <- function(x) {
-  valid <- validYieldCurveFields()
-  return(x %in% valid)
-}
+# ATTENTION: This is EXACT replica of a function in 'DynamicYieldCurve.R'
+# This function is used nowhere in this package
+# is.valid.yieldcurve.field <- function(x) {
+#   valid <- validYieldCurveFields()
+#   return(x %in% valid)
+# }
 
 # convert character terms to dates relative to a refDate
-# new function with extension in "DynamicYieldCurve
-tenors2dates <- function(refDate, tenors){
-  
-  relativeDates <- c("")
-  for (i in 1:length(tenors)) {
-    count <- as.numeric(substr(tenors[i], 1, nchar(tenors[i])-1))
-    switch(substr(tenors[i], nchar(tenors[i]), nchar(tenors[i])),
-           "D" = {
-             relativeDates[i] <- as.character(ymd(refDate) %m+% days(count))
-           },
-           "W" =  {
-             relativeDates[i] <- as.character(ymd(refDate) %m+% weeks(count))
-           },
-           "M" = {
-             relativeDates[i] <- as.character(ymd(refDate) %m+% months(count))
-           },
-           "Q" = {
-             quarter_count <- count * 3
-             relativeDates[i] <- as.character(ymd(refDate) %m+% months(quarter_count))
-           },
-           "H" = {
-             halfyear_count <- count * 6
-             relativeDates[i] <- as.character(ymd(refDate) %m+% months(halfyear_count))
-           },
-           "Y" = {
-             relativeDates[i] <- as.character(ymd(refDate) %m+% years(count))
-           }
-    )
-  }
-  return(relativeDates)
-}
+# new function with extension in "DynamicYieldCurve.R
+# tenors2dates <- function(refDate, tenors){
+#   
+#   relativeDates <- c("")
+#   for (i in 1:length(tenors)) {
+#     count <- as.numeric(substr(tenors[i], 1, nchar(tenors[i])-1))
+#     switch(substr(tenors[i], nchar(tenors[i]), nchar(tenors[i])),
+#            "D" = {
+#              relativeDates[i] <- as.character(ymd(refDate) %m+% days(count))
+#            },
+#            "W" =  {
+#              relativeDates[i] <- as.character(ymd(refDate) %m+% weeks(count))
+#            },
+#            "M" = {
+#              relativeDates[i] <- as.character(ymd(refDate) %m+% months(count))
+#            },
+#            "Q" = {
+#              quarter_count <- count * 3
+#              relativeDates[i] <- as.character(ymd(refDate) %m+% months(quarter_count))
+#            },
+#            "H" = {
+#              halfyear_count <- count * 6
+#              relativeDates[i] <- as.character(ymd(refDate) %m+% months(halfyear_count))
+#            },
+#            "Y" = {
+#              relativeDates[i] <- as.character(ymd(refDate) %m+% years(count))
+#            }
+#     )
+#   }
+#   return(relativeDates)
+# }
 
-shiftDates <- function(dates, shift){
-  
-  count <- as.numeric(substr(shift, 1, 1))
-  switch(substr(shift, nchar(shift), nchar(shift)),
-         "D" = {
-           relativeDates <- as.character(ymd(dates) %m+% days(count))
-         },
-         "W" =  {
-           relativeDates <- as.character(ymd(dates) %m+% weeks(count))
-         },
-         "M" = {
-           relativeDates <- as.character(ymd(dates) %m+% months(count))
-         },
-         "Q" = {
-           quarter_count <- count * 3
-           relativeDates <- as.character(ymd(dates) %m+% months(quarter_count))
-         },
-         "H" = {
-           halfyear_count <- count * 6
-           relativeDates <- as.character(ymd(dates) %m+% months(halfyear_count))
-         },
-         "Y" = {
-           relativeDates <- as.character(ymd(dates) %m+% years(count))
-         }
-  )
-  return(relativeDates)
-}
+# Duplicate, cf. DynamicYieldCurve.R
+# shiftDates <- function(dates, shift){
+#   
+#   count <- as.numeric(substr(shift, 1, 1))
+#   switch(substr(shift, nchar(shift), nchar(shift)),
+#          "D" = {
+#            relativeDates <- as.character(ymd(dates) %m+% days(count))
+#          },
+#          "W" =  {
+#            relativeDates <- as.character(ymd(dates) %m+% weeks(count))
+#          },
+#          "M" = {
+#            relativeDates <- as.character(ymd(dates) %m+% months(count))
+#          },
+#          "Q" = {
+#            quarter_count <- count * 3
+#            relativeDates <- as.character(ymd(dates) %m+% months(quarter_count))
+#          },
+#          "H" = {
+#            halfyear_count <- count * 6
+#            relativeDates <- as.character(ymd(dates) %m+% months(halfyear_count))
+#          },
+#          "Y" = {
+#            relativeDates <- as.character(ymd(dates) %m+% years(count))
+#          }
+#   )
+#   return(relativeDates)
+# }
 
-test.dates <- function(date) {
-  tryCatch({
-    as.Date(date)
-  }, error = function(e) {
-    stop("ErrorIn::YieldCurve Dates are not valid !!!")
-  })
-}
+# Duplicate, cf. DynamicYieldCurve.R
+# test.dates <- function(date) {
+#   tryCatch({
+#     as.Date(date)
+#   }, error = function(e) {
+#     stop("ErrorIn::YieldCurve Dates are not valid !!!")
+#   })
+# }
 
 
-convert.rate.period <- function(period) {
-  allowed_periods <- c(1, 2, 4, 12, 52, 360)
-  names(allowed_periods) <- c("Y", "H", "Q", "M", "W","D")
-  
-  if(period %in% names(allowed_periods)) {
-    period_num <- allowed_periods[[period]]
-  } else {
-    stop(paste("ErrorIn::discountFactorsv2:: ", period, " is not a valid interest rate period !!!", sep=" "))
-  }
-  return(period_num)
-}
+# Duplicate, cf. DynamicYieldCurve.R
+# convert.rate.period <- function(period) {
+#   allowed_periods <- c(1, 2, 4, 12, 52, 360)
+#   names(allowed_periods) <- c("Y", "H", "Q", "M", "W","D")
+#   
+#   if(period %in% names(allowed_periods)) {
+#     period_num <- allowed_periods[[period]]
+#   } else {
+#     stop(paste("ErrorIn::discountFactorsv2:: ", period, " is not a valid interest rate period !!!", sep=" "))
+#   }
+#   return(period_num)
+# }

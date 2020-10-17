@@ -18,7 +18,8 @@
 tenor(s) from a \code{\link{YieldCurve}} or \code{\link{DynamicYieldCurve}} 
 object.}
 \usage{
-discountFactors(object, end, start, method = "continuous", period = "Y", refdate = NULL, ...)
+discountFactors(object, end, start, method = "continuous", 
+period = "Y", refdate = NULL, ...)
 
 \S4method{discountFactors}{YieldCurve,character,missing}(
   object,
