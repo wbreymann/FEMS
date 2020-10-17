@@ -137,7 +137,7 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
   
   # compute discount factors for cash flow dates
   if(is.null(yield)) {
-    df <- discountFactors(yieldCurve, paste(as.character(time(cf)), "T00", sep=""),isDateEnd=TRUE)
+    df <- discountFactors(yieldCurve, to=as.character(time(cf)))
   } else {
     scale <- 1
     if(isPercentage) {

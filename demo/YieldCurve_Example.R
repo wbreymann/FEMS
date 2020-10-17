@@ -38,12 +38,12 @@ show(yc)
 plot(yc)
 
 # get rates & discount factor from relative date
-rates(yc, "1Y")
-discountFactors(yc, "1Y")
+rates(yc, by="1Y")
+discountFactors(yc, by="1Y")
 
 # get 1 year forward rates as of specific dates
-rates(yc, "1Y", "2013-06-30")
-discountFactors(yc, "1Y", "2013-06-30")
+rates(yc, by="1Y", from="2013-06-30")
+discountFactors(yc, by="1Y", from="2013-06-30")
 
 # change day count convention
 set(yc, what = list(DayCountConvention = "A365"))
@@ -51,12 +51,12 @@ yc$DayCountConvention <- "A365" # or same as this...
 
 
 # get rates and discount factors
-rates(yc, "6M", "2013-06-30")
-discountFactors(yc, "6M", "2013-06-30")
+rates(yc, by="6M", from="2013-06-30")
+discountFactors(yc, by="6M", from="2013-06-30")
 
 
 # get a weekly (default) series of 1M (default) forward rates between two dates
-getRateSeries(yc,"2012-12-31","2013-12-31")  # Please add argument for time step
+getRateSeries(yc, startdate="2012-12-31", enddate="2013-12-31")  # Please add argument for time step
 
 
 ##############################################################################
@@ -66,21 +66,21 @@ yc2 <- YieldCurve(label = "YC_Prim",
                   Tenors = c("1M", "2M", "3M", "4M", "5M", "6M"),
                   Rates = c(0.01, 0.015, 0.02, 0.022, 0.024, 0.025))
 
-fwd_rates <- getRateSeries(yc2, "2012-12-31", "2013-06-30", frequency = "month")
+fwd_rates <- getRateSeries(yc2, startdate="2012-12-31", enddate="2013-06-30", frequency = "month")
 fwd_rates
 
 # now change day count convention
 yc2$DayCountConvention <- "A365"
-fwd_rates2 <- getRateSeries(yc2, "2012-12-31", "2013-06-30", frequency = "month")
+fwd_rates2 <- getRateSeries(yc2, startdate="2012-12-31", enddate="2013-06-30", frequency = "month")
 fwd_rates2
 
 # or get a weekly series
-fwd_rates3 <- getRateSeries(yc2, "2012-12-31", "2013-06-30", frequency = "week")
+fwd_rates3 <- getRateSeries(yc2, startdate="2012-12-31", enddate="2013-06-30", frequency = "week")
 fwd_rates3
 plot(fwd_rates3$Values)
 
 
 # 1M forward and weekly series is default, but can also be flexible; ex.: 2M fwd, daily
-fwd_rates4 <- getRateSeries(yc2, "2012-12-31", "2013-06-30", frequency = "day", forward = "2M")
+fwd_rates4 <- getRateSeries(yc2, startdate="2012-12-31", enddate="2013-06-30", frequency = "day", forward = "2M")
 plot(fwd_rates4$Values)
 

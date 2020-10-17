@@ -40,9 +40,10 @@ set(yc, what = list(
   Rates = rates))
 
 # calculate some discount factors (and compare to previous function)
-discountFactors(yc, "1Y")
-discountFactors(yc, "2016-01-01", isDateEnd=TRUE)
-discountFactors(yc, "1Y", "2015-07-01")
+discountFactors(yc, by="1Y")
+discountFactors(yc, to="2016-01-01")
+discountFactors(yc, by="1Y", from="2015-07-01")
+discountFactors(yc, to="2016-07-01", from="2015-07-01")
 
 ###########################################################
 # test the calculation of the value function
@@ -67,31 +68,31 @@ rbind(vals_bef, vals_at, vals_after)
 (val <- value(bc2, by="2016-01-01", curve = yc_flat))
 
 # discountFactor function with flat yield curve...
-discountFactors(yc_flat, "1Y", "2015-01-01") # default method is "continuous"
-discountFactors(yc_flat, "1Y", "2015-01-01", method="linear")
-discountFactors(yc_flat, "1Y", "2015-01-01", method="compound")
-discountFactors(yc_flat, "1Y", "2015-01-01", method="compound", period="H")
-discountFactors(yc_flat, "1Y", "2015-01-01", method="continuous")
+discountFactors(yc_flat, by="1Y", from="2015-01-01") # default method is "continuous"
+discountFactors(yc_flat, by="1Y", from="2015-01-01", method="linear")
+discountFactors(yc_flat, by="1Y", from="2015-01-01", method="compound")
+discountFactors(yc_flat, by="1Y", from="2015-01-01", method="compound", period="H")
+discountFactors(yc_flat, by="1Y", from="2015-01-01", method="continuous")
 
 # use multiple dates
-discountFactors(yc_flat, c("2016-01-01","2017-01-01"), 
-                           c("2015-01-01","2016-01-01"))
+discountFactors(yc_flat, to=c("2016-01-01","2017-01-01"), 
+                           from=c("2015-01-01","2016-01-01"))
 
-discountFactors(yc_flat, c("2016-06-30","2027-12-31"), 
-                           c("2015-01-01","2016-01-01"), method = "linear")
+discountFactors(yc_flat, to=c("2016-06-30","2027-12-31"), 
+                           form=c("2015-01-01","2016-01-01"), method = "linear")
 
-discountFactors(yc_flat, c("2015-01-01","2016-01-01"), 
-                           c("2016-06-30","2027-12-31"), method = "linear")
+discountFactors(yc_flat, to=c("2015-01-01","2016-01-01"), 
+                           from=c("2016-06-30","2027-12-31"), method = "linear")
 
-(app.fact.w = discountFactors(yc_flat, c("2015-01-01","2016-01-01"), 
-                           c("2016-06-30","2027-12-31"), method = "compound", period = "W"))
+(app.fact.w = discountFactors(yc_flat, to=c("2015-01-01","2016-01-01"), 
+                           from=c("2016-06-30","2027-12-31"), method = "compound", period = "W"))
 # Test of first example
 # The test implies A/A dcc:
 (1+0.05/52.14)^78
 ((1+0.05/52.14)^78 - app.fact.w[1])/app.fact.w[1]
 
-(app.fact.cont = discountFactors(yc_flat, c("2015-01-01","2016-01-01"), 
-                           c("2016-06-30","2027-12-31"), method="continuous"))
+(app.fact.cont = discountFactors(yc_flat, to=c("2015-01-01","2016-01-01"), 
+                           from=c("2016-06-30","2027-12-31"), method="continuous"))
 # Test
 exp(0.05*(364+31+29+31+30+31+30)/365)
 # relative error

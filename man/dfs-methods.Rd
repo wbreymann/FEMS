@@ -3,71 +3,35 @@
 \docType{methods}
 \name{discountFactors}
 \alias{discountFactors}
-\alias{discountFactors,YieldCurve,character,missing-method}
+\alias{discountFactors,YieldCurve-method}
 \alias{discountFactors,}
 \alias{YieldCurve,}
 \alias{character,}
 \alias{character-method}
-\alias{discountFactors,YieldCurve,character,character-method}
-\alias{discountFactors,DynamicYieldCurve,character,missing-method}
+\alias{discountFactors,numeric-method}
 \alias{DynamicYieldCurve,}
-\alias{discountFactors,numeric,character,character-method}
-\alias{discountFactors,DynamicYieldCurve,character,character-method}
+\alias{discountFactors,DynamicYieldCurve-method}
 \alias{missing-method}
 \title{Generic method to retrieve discount factors for specific
 tenor(s) from a \code{\link{YieldCurve}} or \code{\link{DynamicYieldCurve}} 
 object.}
 \usage{
-discountFactors(object, end, start, method = "continuous", 
+discountFactors(object, to, from, method = "continuous", 
 period = "Y", refdate = NULL, ...)
 
-\S4method{discountFactors}{YieldCurve,character,missing}(
-  object,
-  end,
-  start,
-  method = "continuous",
-  period = "Y",
-  refdate = NULL,
-  ...
-)
+\S4method{discountFactors}{YieldCurve}(object, ...)
 
-\S4method{discountFactors}{YieldCurve,character,character}(
-  object,
-  end,
-  start,
-  method = "continuous",
-  period = "Y",
-  refdate = NULL,
-  ...
-)
+\S4method{discountFactors}{numeric}(object, to, from, ...)
 
-\S4method{discountFactors}{DynamicYieldCurve,character,missing}(
+\S4method{discountFactors}{DynamicYieldCurve}(
   object,
-  end,
-  start,
+  to,
+  from,
+  by,
   method = "continuous",
   period = "Y",
-  refdate = NULL,
-  ...
-)
-
-\S4method{discountFactors}{numeric,character,character}(
-  object,
-  end,
-  start,
-  method = "continuous",
-  period = "Y",
-  refdate = NULL,
-  ...
-)
-
-\S4method{discountFactors}{DynamicYieldCurve,character,character}(
-  object,
-  end,
-  start,
-  method = "continuous",
-  period = "Y",
-  refdate = NULL,
+  ad = NULL,
+  refdate,
   ...
 )
 }
@@ -76,6 +40,13 @@ period = "Y", refdate = NULL, ...)
 \code{DynamicYieldCurve} from which to extract the 
 discount factors.}
 
+\item{...}{Additional parameters to be passed.
+\itemize{
+ \item{"isDateEnd"} {logical indicating whether 'end' is 
+       of date (TRUE) or term (FALSE) format. Date format is
+       'YYYY-MM-DD'. Default is isDateEnd = FALSE.}
+}}
+
 \item{end}{character reflecting the discounting period end date.
 Can be a single value or a vector of tenors.}
 
@@ -83,13 +54,6 @@ Can be a single value or a vector of tenors.}
 period start date. If it is a single value combined 
 with a vector for 'end', then 'start' remains
 the same for all dates defined in 'end'.}
-
-\item{...}{Additional parameters to be passed.
-\itemize{
- \item{"isDateEnd"} {logical indicating whether 'end' is 
-       of date (TRUE) or term (FALSE) format. Date format is
-       'YYYY-MM-DD'. Default is isDateEnd = FALSE.}
-}}
 }
 \value{
 numeric vector of discount factors for the defined periods.
@@ -107,9 +71,9 @@ yc <- DynamicYieldCurve(label = "YC_Prim",
                         Tenors = tenors,
                         Rates = rates)
 
-discountFactors(yc, "1Y")
-discountFactors(yc, "2016-01-01", isDateEnd = TRUE)
-discountFactors(yc, "1Y", "2015-07-01")
+discountFactors(yc, by="1Y")
+discountFactors(yc, to="2016-01-01", isDateEnd = TRUE)
+discountFactors(yc, by="1Y", from="2015-07-01")
 
 }
 \seealso{

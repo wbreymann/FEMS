@@ -109,7 +109,7 @@ duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL
     # extract times (in years) from cash flows
     t <- cf$Time
     if(type=="fisher-weil") {
-      df <- discountFactors(yieldCurve, as.character(time(cf)), isDateEnd=TRUE)
+      df <- discountFactors(yieldCurve, to=as.character(time(cf)))
       d <- sum(t*df*cf$Value)/t(cf$Value)%*%df
     } else {
       # get number of coupon periods per year

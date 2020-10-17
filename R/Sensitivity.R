@@ -367,7 +367,7 @@ setMethod(
       ## discount factors
       ad0 <- by[1]
       yc <- get(method,"RiskFactorObject")
-      dfs <- discountFactors(yc, dates, ad0, isDateEnd = TRUE)
+      dfs <- discountFactors(yc, to=dates, from=ad0)
               
       ## Calculating the Macauly Duration
       D <- as.numeric(( t * cfs ) %*% dfs * ( 1 / cfs %*% dfs ))
@@ -382,8 +382,8 @@ setMethod(
       ## discount factors
       ad0 <- by[1]
       yc <- get(method,"RiskFactorObject")
-      dfs <- discountFactors(yc, dates, ad0, isDateEnd=TRUE)
-      s <- rates(yc, dates, isDateEnd=TRUE)
+      dfs <- discountFactors(yc, to=dates, from=ad0)
+      s <- rates(yc, to=dates)
               
       ## Calculating the Fisher-Weil Duration
       D <-  as.numeric(( ( t * cfs ) %*% exp( -s*t ) ) * ( 1 / cfs %*% dfs ))
@@ -453,14 +453,14 @@ setMethod(f = "sensitivity",
               ad0 <- by[1]
               yc.nme = get(method,"RiskFactorObject")$label
               yc <- FEMS:::get(scenarios[[1]], yc.nme)
-              dfs <- discountFactors(yc, dates, ad0, isDateEnd=TRUE)
+              dfs <- discountFactors(yc, to=dates, from=ad0)
               V.0 = as.numeric(cfs%*%dfs)
               
               # Calculating the discounted value for all other scenarios
               scenarios[1] = NULL
               V = unlist(lapply(scenarios, FUN=function(x) {
                 yc = FEMS:::get(x, yc.nme)
-                dfs <- discountFactors(yc, dates, ad0, isDateEnd=TRUE)
+                dfs <- discountFactors(yc, to=dates, from=ad0)
                 cfs%*%dfs
               }))
               

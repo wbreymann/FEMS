@@ -52,7 +52,7 @@ setMethod(f = "BaseContract", signature = c(),
 #' @export
 setMethod("value", signature = c("BaseContract","character","missing","missing"),
           definition = function(object, by, compound = "continuous", period="Y", curve=YieldCurve(), ...){
-            df_s <- discountFactors(curve, object$Dates, by, method=compound, period=period)
+            df_s <- discountFactors(curve, to=object$Dates, from=by, method=compound, period=period)
             # df <- data.frame(Date = by, Value = sum(object$CashFlows * df_s))
             Value = sum(object$CashFlows * df_s)
             dim (Value) = c(1, length(Value))

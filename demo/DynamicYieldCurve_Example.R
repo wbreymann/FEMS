@@ -21,25 +21,27 @@ add(yc, rates2)
 yc
 
 # test the implementation of the interest I get at 
-rates(yc, to="2012-06-30", from="2011-12-31", isDateEnd=TRUE)
-rates(yc, termEnd="2012-06-30", termStart="2011-12-31", isDateEnd=TRUE)
+rates(yc, to="2012-06-30", from="2011-12-31")
+rates(yc, to="2012-06-30", from="2011-12-31")
 
 # having dates overlapping two reference dates...
-rates(yc, "2013-05-31", "2012-06-30", isDateEnd=TRUE)
+rates(yc, to="2013-05-31", from="2012-06-30")
 
 
 
 # this is currently essentially the same as this...
-fwd <- rates(yc, "2012-12-31", "2012-06-30", isDateEnd=TRUE, refdate="2011-12-31")
-spot <- rates(yc, "2013-05-31", "2012-12-31", isDateEnd=TRUE, refdate="2011-12-31")
+(fwd <- rates(yc, to="2012-12-31", from="2012-06-30", refdate="2011-12-31"))
+(fwd <- rates(yc, to="2012-12-31", from="2012-06-30", ad="2011-12-31"))
+(spot <- rates(yc, to="2013-05-31", from="2012-12-31", refdate="2011-12-31")) # This is not a spot rate!
+
 delta1 <- yearFraction("2012-06-30","2012-12-31",yc$DayCountConvention)
 delta2 <- yearFraction("2012-12-31","2013-05-31",yc$DayCountConvention)
 (fwd*delta1 + spot*delta2)/(delta1+delta2)
 
 # another example with different refdate
-rates(yc, "2013-05-31", "2012-06-30", isDateEnd=TRUE, refdate="2013-05-31")
-fwd <- rates(yc, "2012-12-31", "2012-06-30", isDateEnd=TRUE)
-spot <- rates(yc, "2013-05-31", "2012-12-31", isDateEnd=TRUE)
+rates(yc, to="2013-05-31", from="2012-06-30", refdate="2013-05-31")
+fwd <- rates(yc, to="2012-12-31", from="2012-06-30")
+spot <- rates(yc, to="2013-05-31", from="2012-12-31")
 (fwd*delta1 + spot*delta2)/(delta1+delta2)
 
 

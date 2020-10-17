@@ -9,58 +9,71 @@
 \alias{missing-method}
 \alias{character,}
 \alias{character-method}
-\alias{rates,YieldCurve,character,missing-method}
+\alias{rates,YieldCurve-method}
 \alias{YieldCurve,}
-\alias{rates,YieldCurve,character,character-method}
-\alias{rates,DynamicYieldCurve,character,missing-method}
-\alias{rates,DynamicYieldCurve,character,character-method}
+\alias{rates,DynamicYieldCurve-method}
 \title{Generic method to retrieve the rate(s) for (a) specific
 tenor(s) from a \code{\link{DynamicYieldCurve}} object}
 \usage{
-rates(object, termEnd, termStart, ...)
+rates(object, from, to, by, ad, refdate, ...)
 
-\S4method{rates}{YieldCurve,character,missing}(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...)
+\S4method{rates}{YieldCurve}(object, ...)
 
-\S4method{rates}{YieldCurve,character,character}(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...)
-
-\S4method{rates}{DynamicYieldCurve,character,missing}(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...)
-
-\S4method{rates}{DynamicYieldCurve,character,character}(object, termEnd, termStart, isDateEnd = FALSE, refdate = NULL, ...)
+\S4method{rates}{DynamicYieldCurve}(object, from, to, by, ad = NULL, refdate, ...)
 }
 \arguments{
 \item{object}{An object of class \code{DynamicYieldCurve} for 
 which to return the yield for a given tenor}
 
-\item{termEnd}{The tenor for which to return its yield. 
-Can be a single value or a vector of tenors.}
+\item{from}{(optional) Date(s) t1. Should be a \code{character} variable with 
+format 'YYYY-MM-DD'. Is set to \code{ad} if missing.}
 
-\item{termStart}{(optional) For the forward rate at t0 
-between times t1 and t2, termEnd refers to t2 and
-termStart to t1. Is a single value. If combined 
-with a vector for termEnd, then termStart remains
-the same for all t2 defined in termEnd.}
+\item{to}{(optional, character) The date(s) t2. Should have the same format as \code{from}.}
 
-\item{...}{Additional parameters:
+\item{by}{(optional) The tenor(s). Should be for form 'nX' where 'n' is an integer
+and 'X'=("D"|"W"|"M"|"Q"|"H"|"Y") for days, weeks, months, quarters, half-years 
+and years, respectively. Either \code{to} or \code{by} must be defined.}
+
+\item{ad}{(optional) The analysis date \code{ad} with respect to which the interest
+rates are calculated. Should have the same format as \code{from}. 
+If missing or \code{ad}=\code{to}, spot rates are calculated. 
+If \code{ad}<\code{to}, forward rates are calculated.}
+
+\item{Additional}{parameters:
+
 \itemize{
- \item{"isDateEnd"}{logical indicating whether termEnd is 
+ \item{"isDateEnd"}{(deprecated) logical indicating whether to is 
        of date (TRUE) or term (FALSE) format. Date format is
        'YYYY-MM-DDTXX' with 'XX'=00 for beginning of day, or
        24 for end of day, and term format is 'IP' with 'I' 
        an integer and 'P' indicating the period (D=days, 
        W=weeks, M=months, Q=quarters, H=halfyears, Y=years).
        Default is isDateEnd=FALSE.}
+  \item{"refdate"} {(deprecated) an alternative name for \code{ad}}
 }}
 }
 \value{
-numeric The yield for the defined tenor
+\code{numeric} The interest rates for the defined tenor(s)
 }
 \description{
-A yield curve is a time-structure of yields, i.e. for
-different future points in time (tenors) a yield is 
-extracted from observed instrument prices. The 
-\code{\link{DynamicYieldCurve}} object contains these tenors with
-associated yields and allows to retrieve yields for any
+A yield curve (or more precisely spot rate curve) describes
+the term structure of interest rates. The interest rates are calculated
+with respect to a given (analysis) adte \code{ad} for money that is borrowed or
+lend at t1>=ad until time t2>t1. 
+The term or tenor is t2-t1.
+Cf. below for details.
+}
+\details{
+The 
+\code{\link{DynamicYieldCurve}} object contains tenors with
+associated spot interest rates. Rates can be retrieved for any
 tenor by inter-/extrapolation.
+
+For the forward rate at \code{ad} 
+       between times t1 and t2, \code{to} refers to t2 and
+       \code{from} refers to t1. Is a single value. If combined 
+       with a vector for \code{to}, then \code{from} remains
+       the same for all t2 defined in \code{to}.
 }
 \examples{
 yc <- DynamicYieldCurve()
@@ -69,9 +82,9 @@ rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
 set(yc, what = list(MarketObjectCode = "YC_Prim",
   Nodes = list(ReferenceDate = "2015-01-01T00", Tenors = tenors, Rates = rates)))
 
-rates(yc, "1Y")  # 1-year spot rate
-rates(yc, "2016-01-01T00", isDateEnd=TRUE) # again, 1-year spot rate
-rates(yc, "1Y", "2015-07-01T00")  # 1-year forward rate at 2015-07-01T00
+rates(yc, by="1Y")  # 1-year spot rate
+rates(yc, to="2016-01-01T00") # again, 1-year spot rate
+rates(yc, by="1Y", from="2015-07-01T00")  # 1-year forward rate at 2015-07-01T00
 
 }
 \seealso{

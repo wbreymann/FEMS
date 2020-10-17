@@ -18,21 +18,21 @@ tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
 rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
 set(yc, what = list(
   MarketObjectCode = "YC_Prim",
-  Nodes = list(ReferenceDate = "2015-01-01T00", Tenors = tenors, Rates = rates)))
+  Nodes = list(ReferenceDate = "2015-01-01", Tenors = tenors, Rates = rates)))
 
-# retrieve yield curve parameters
+# retrieve yield curve parameters ERROR: Does no longer work!!!
 get(yc, "MarketObjectCode")
 get(yc, "ReferenceDate")
 get(yc, "Tenors")
 get(yc, "Rates")
 
 # access yield curve functions
-rates(yc, "1Y")  # 1-year spot rate
-rates(yc, "2016-01-01T00", isDateEnd=TRUE) # again, 1-year spot rate
-rates(yc, "1Y", "2015-07-01T00")  # 1-year forward rate at 2015-07-01T00
-discountFactors(yc, "1Y")
-discountFactors(yc, "2016-01-01T00", isDateEnd=TRUE)
-discountFactors(yc, "1Y", "2015-07-01T00")
+rates(yc, by="1Y")  # 1-year spot rate
+rates(yc, to="2016-01-01") # again, 1-year spot rate
+rates(yc, by="1Y", from="2015-07-01")  # 1-year forward rate at 2015-07-01
+discountFactors(yc, by="1Y")
+discountFactors(yc, to="2016-01-01")
+discountFactors(yc, by="1Y", from="2015-07-01")
 
 # plot yield curve
 plot(yc)
@@ -41,8 +41,8 @@ plot(yc)
 # create a Reference Index risk factor object
 #-------------------------------------------------------------------
 ind <- Index()
-times <- c("2015-01-01T00", "2016-01-01T00", "2017-01-01T00", "2018-01-01T00",
-           "2019-01-01T00")
+times <- c("2015-01-01", "2016-01-01", "2017-01-01", "2018-01-01",
+           "2019-01-01")
 values <- c(100, 110, 120, 130, 140)
 set(ind, what=list(
   MarketObjectCode = "CHF_SMI",
@@ -53,8 +53,8 @@ get(ind, "MarketObjectCode")
 get(ind, "Data")
 
 # access reference index functions
-valueAt(ind, "2016-01-01T00")
-valueAt(ind, c("2016-01-01T00", "2016-07-01T00", "2017-01-01T00"))
+valueAt(ind, "2016-01-01")
+valueAt(ind, c("2016-01-01", "2016-07-01", "2017-01-01"))
 
 # plot index
 plot(ind)
@@ -63,8 +63,8 @@ plot(ind)
 # create a Foreign Exchange Rate risk factor object
 #-------------------------------------------------------------------
 fx <- FxRate()
-times <- c("2015-01-01T00", "2016-01-01T00", "2017-01-01T00", 
-           "2018-01-01T00", "2019-01-01T00")
+times <- c("2015-01-01", "2016-01-01", "2017-01-01", 
+           "2018-01-01", "2019-01-01")
 values <- c(1.04, 1.05, 1.2, 1.0, 0.9)
 set(fx, what=list(
   MarketObjectCode = "CHF/USD",
@@ -75,8 +75,8 @@ get(fx, "MarketObjectCode")
 get(fx, "Data")
 
 # access reference index functions
-valueAt(fx, "2016-01-01T00")
-valueAt(fx, c("2016-01-01T00", "2018-07-01T00", "2018-07-01T00"))
+valueAt(fx, "2016-01-01")
+valueAt(fx, c("2016-01-01", "2018-07-01", "2018-07-01"))
 
 # plot fx-series
 plot(fx)

@@ -23,7 +23,7 @@ shiftVsValueTable <- function(x, yieldCurve, shift=NULL, isPercentage=TRUE, per=
   res <- data.frame(Shift=shift,PresentValue=numeric(length(shift)))
   for(i in 1:length(shift)) {
     set(yieldCurve, list(Rates=list(Rates=baseRates+shift[i])))
-    df <- discountFactors(yieldCurve, dates,isDateEnd=TRUE)
+    df <- discountFactors(yieldCurve, to=dates)
     res[i,2] <- as.numeric(t(cf$Value)%*%df)
   }
   set(yieldCurve, list(Rates=list(Rates=baseRates)))

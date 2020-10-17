@@ -353,7 +353,7 @@ currentaccount.evs <- function(object, model, end_date, method, period){
       }
     } else {
       r_last <- nominal_rate
-      df_s <- discountFactors(r_last, all_dates[i-1], all_dates[i], method = method, period = period)
+      df_s <- discountFactors(r_last, to=all_dates[i-1], from=all_dates[i], method = method, period = period)
       if (all_dates[i] %in% interest_dates) {
         nominal_rate <- r[max(which(r$Dates<=interest_dates[rate_count])), ]$Values
         rate_count <- rate_count + 1
