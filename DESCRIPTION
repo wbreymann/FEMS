@@ -1,7 +1,7 @@
 Package: FEMS
 License: TBD
-Version: 0.2.9
-Date: 2020-10-12
+Version: 0.2.10
+Date: 2020-10-18
 Author: Christoph Auth <christoph.auth@zhaw.ch>,
     Wolfgang Breymann <wolfgang.breymann@zhaw.ch>,
     Nils Bund <nils.bundi@gmail.com>
@@ -56,18 +56,19 @@ Collate:
     'TimeBuckets.R'
     'YieldCurve.R'
     'DiscountingEngine.R'
+    'EventSeries.R'
+    'Events.R'
     'util.R'
     'Portfolio.R'
-    'EventSeries.R'
     'Value.R'
     'BaseContract.R'
+    'CTvars.R'
     'CapmEngine.R'
     'CompoundContract.R'
     'FEMSContract.R'
     'ContractPlot.R'
     'Liquidity.R'
     'DynamicYieldCurve.R'
-    'Events.R'
     'CurrentAccount.R'
     'DataTreeFunctions.R'
     'ExoticLinearAmortizer.R'

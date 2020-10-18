@@ -42,18 +42,28 @@ discount factors.}
 
 \item{...}{Additional parameters to be passed.
 \itemize{
- \item{"isDateEnd"} {logical indicating whether 'end' is 
+ \item{"isDateEnd"} {(deprecated)logical indicating whether 'end' is 
        of date (TRUE) or term (FALSE) format. Date format is
        'YYYY-MM-DD'. Default is isDateEnd = FALSE.}
 }}
 
-\item{end}{character reflecting the discounting period end date.
+\item{to}{character reflecting the discounting period end date.
 Can be a single value or a vector of tenors.}
 
-\item{start}{(optional) a character defining the discounting 
+\item{from}{(optional) a character defining the discounting 
 period start date. If it is a single value combined 
 with a vector for 'end', then 'start' remains
 the same for all dates defined in 'end'.}
+
+\item{by}{(optional)}
+
+\item{method}{}
+
+\item{period}{}
+
+\item{ad}{}
+
+\item{refdate}{}
 }
 \value{
 numeric vector of discount factors for the defined periods.

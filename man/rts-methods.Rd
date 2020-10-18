@@ -17,9 +17,9 @@ tenor(s) from a \code{\link{DynamicYieldCurve}} object}
 \usage{
 rates(object, from, to, by, ad, refdate, ...)
 
-\S4method{rates}{YieldCurve}(object, ...)
+\S4method{rates}{YieldCurve}(object, from, to, by, ad, refdate, ...)
 
-\S4method{rates}{DynamicYieldCurve}(object, from, to, by, ad = NULL, refdate, ...)
+\S4method{rates}{DynamicYieldCurve}(object, from, to, by, ad, refdate, ...)
 }
 \arguments{
 \item{object}{An object of class \code{DynamicYieldCurve} for 

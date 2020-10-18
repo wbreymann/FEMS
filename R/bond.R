@@ -43,7 +43,7 @@ bond <- function(start, maturity="0 years", nominal=0,
     stop("Variable start muss gesetzt werden !!!")
   }
   args <- list(...)
-  if(nchar(maturity)<13) {
+  if(nchar(maturity)<10) {
     maturity <- as.character(timeSequence(timeDate(start), 
                                                by=maturity, length.out=2)[2])
   }

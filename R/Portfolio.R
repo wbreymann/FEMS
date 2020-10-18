@@ -67,16 +67,38 @@ setMethod(f = "Portfolio", signature = c(),
           definition = function(...){
             ptf = new("Portfolio")
             pars = list(...)
+            # browser()
             if (length(pars) != 0) {
               if ("source" %in% tolower(names(pars))) {
                 source = pars[["source"]]
-                pars[["source"]] = NULL
-                print(
-                  import(object = ptf, source = source, pars)
-                )
+                # browser()
+                # We should try to make work the following:
+                # print(
+                #   import(object = ptf, source = source, pars)
+                # )
+                if (typeof(source)=="character") {
+                  print(paste("Importing from ",source))
+                  pars[["source"]] = NULL
+                  data <- read.csv(source, skipNul=FALSE)
+                  print("Data successfully read.")
+                } else if (class(source)=="data.frame") {
+                  data <- source 
+                } else {
+                  stop("Unknown data source.")
+                }
+                for (i in 1:nrow(data)) {
+                  d <- data[i,]
+                  # print(d)
+                  ctype <- as.character(d["ContractType"])
+                  # print(ctype)
+                  d <- as.list(d[names(d)!="ContractType"])
+                  # print(d)
+                  ptf <- c(ptf, 
+                           do.call(ctype, d))
+                }
               } else {
                 if (is.list(pars[[1]])) {
-                pars <- pars[[1]]
+                  pars <- pars[[1]]
                 }
                 if ( is.null(names(pars)) ) {
                   names(pars) <- unlist(lapply(pars, function(x) get(x, "ContractID")))
@@ -904,8 +926,223 @@ sim.data.rf <- function(contract, rfac){
 }
 
 
+##############################################################
+#' Derive the events for a \code{Portfolio}
+#'
+#' The events of a portfolio of contracts is in fact
+#' the set of events of all contracts in the portfolio.
+#' For more information on events of a contract see
+#' events function with \link{ContractType}-signature.
+#' 
+#' @param object The \code{Portfolio} or \code{PortfolioFast} for which to derive the events
+#'
+#' @param ad The analysis date as per which all future events are to be derived
+#'
+#' @param model (optional) The \code{RiskFactorConnector} conditional to which events are computed
+#'  
+#' @return A \code{list} object (or \code{EventTable} in case of \code{PortfolioFast} argument) containing the resulting events
+#' 
+#' @seealso \link{ContractType}, \link{RiskFactorConnector}, \link{EventSeries}, \link{EventTable}
+#'
+#' @examples
+#' # import a portfolio
+#' data(BondPortfolio)
+#' ptf <- Portfolio()
+#' import(ptf,BondPortfolio, valuationEngines=TRUE)
+#' 
+#' ## set analysis date
+#' ad <- "2015-01-02T00"
+#' 
+#' # define risk factors
+#' yc <- YieldCurve()
+#' tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
+#' rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
+#' set(yc, what = list(
+#'   MarketObjectCode = "YC_EA_AAA",
+#'   Nodes = list(ReferenceDate = ad, 
+#'                Tenors = tenors, Rates = rates)))
+#' cpi <- Index()
+#' times <- c("2015-01-01T00", "2016-01-01T00", "2017-01-01T00", "2018-01-01T00",
+#'            "2019-01-01T00")
+#' values <- c(100, 110, 120, 130, 140)
+#' set(cpi, what=list(
+#'   MarketObjectCode = "IND_CPI_EA",
+#'   Data=list(Dates=times,Values=values)))
+#' rf <- RFConn()
+#' add(rf, list(yc, cpi))
+#' 
+#' # compute events
+#' evs=events(ptf, ad, rf)
+#' evs
+#' as.data.frame(evs)
+#' 
+#' @include Events.R
+#' @include ContractType.R
+#' @include AnalysisDate.R
+#' @export
+#' @rdname ev-methods
+setMethod(f = "events", signature = c("Portfolio", "character", "missing"),
+          definition = function(object, ad, model){
+            return(events(object, AD0(ad)))
+          })
+
+#' @include Events.R
+#' @export
+#' @rdname ev-methods
+setMethod(f = "events", signature = c("Portfolio", "timeDate", "missing"),
+          definition = function(object, ad, model){
+            return(events(object, AD0(as.character(ad))))
+          })
+
+#' @include Events.R
+#' @include EventSeries.R
+#' @export
+#' @rdname ev-methods
+setMethod(f = "events", signature = c("Portfolio", "AD0", "missing"),
+          definition = function(object, ad, model){
+            out = eventList()
+            i = 0
+            for(x in object$contracts) {
+              # i = i+1
+              # print(paste("i =", i))
+              tmp = events(x, ad)
+              # print("After events")
+              out[[as.character(tmp$id)]] = tmp
+            }
+            return(out)
+          })
 
 
+#' #' @include ContractType.R
+#' #' @include AnalysisDate.R
+#' #' @include EventSeries.R
+#' #' @include Events.R
+#' #' @export
+#' #' @rdname ev-methods
+#' setMethod(f = "events", signature = c("Portfolio", "AD0", "missing"),
+#'           definition = function(object, ad, model){
+#'             return(EventSeries(object, ad))
+#'           })
 
+#' @include ContractType.R
+#' @include AnalysisDate.R
+#' @include RiskFactorConnector.R
+#' @include Events.R
+#' @export
+#' @rdname ev-methods
+setMethod(f = "events", signature = c("Portfolio", "character", "RiskFactorConnector"),
+          definition = function(object, ad, model){
+            return(events(object, AD0(ad), model))
+          })
+
+#' @include ContractType.R
+#' @include AnalysisDate.R
+#' @include RiskFactorConnector.R
+#' @include EventSeries.R
+#' @include Events.R
+#' @export
+#' @rdname ev-methods
+setMethod(f = "events", signature = c("Portfolio", "AD0", "RiskFactorConnector"),
+          definition = function(object, ad, model){
+            set(object, model)
+            return(EventSeries(object, ad))
+          })
+
+
+#' @include AnalysisDate.R
+#' @include EventSeries.R
+#' @export
+#' @docType methods
+#' @rdname evs-methods
+#' @aliases EventSeries, missing-method
+setMethod(f = "EventSeries", signature = c("Portfolio", "AD0"),
+          definition = function(object, ad, ...){
+            
+            # compute events
+            evs_raw <- generateEvents(object, ad)
+            evs_list <- list()
+            ct_list <- list()
+            id_list <- list()
+            for (i in 1:length(evs_raw)) {
+              types <- getEventAttributes(evs_raw[[i]]$events, "type")
+              payoff <- getEventAttributes(evs_raw[[i]]$events, "payoff")
+              # payoff[types %in% c("IPCI","PRY","CD","RR","RRY","SC","IPCB")] = 0
+              time <- getEventAttributes(evs_raw[[i]]$events, "time")
+              temp_df <- data.frame(
+                # ContractID = evs_raw[[i]]$contractId,
+                Date = substring(time, 1, 10),
+                Value = payoff,
+                Type = types,
+                Currency = getEventAttributes(evs_raw[[i]]$events, "currency"),
+                Time = yearFraction(substring(time[1], 1, 10), substring(time, 1, 10), convention = "30E360"),
+                NominalValue = getEventAttributes(evs_raw[[i]]$events, "nominalValue"),
+                NominalRate = getEventAttributes(evs_raw[[i]]$events, "nominalRate"),
+                NominalAccrued = getEventAttributes(evs_raw[[i]]$events, "nominalAccrued"))
+              temp_idx <- temp_df$Type %in% c("IPCI")
+              temp_df[temp_idx,"Value"] <- temp_df[temp_idx,"NominalValue"] - 
+                temp_df[c(temp_idx[2:length(temp_idx)],FALSE),"NominalValue"]
+              
+              # need to add an AD0 event 
+              idx <- length(temp_df$Date) - sum(temp_df$Date>=as.character(ad))
+              if (idx == 0) {
+                temp_df <- rbind(data.frame(
+                  # ContractID = evs_raw[[i]]$contractId,
+                  Date = as.character(ad),
+                  Value = 0,
+                  Type = "AD0",
+                  Currency = unique(getEventAttributes(evs_raw[[i]]$events, "currency")),
+                  Time = yearFraction(substring(time[1], 1, 10), as.character(ad), convention = "30E360"),
+                  NominalValue = 0,
+                  NominalRate = 0,
+                  NominalAccrued = 0), temp_df)
+              } else {
+                if (any(temp_df$Date==as.character(ad))) {
+                  temp_idx_df <- which(temp_df$Date==as.character(ad))
+                  temp_df <- rbind(data.frame(
+                    Date = as.character(ad),
+                    Value = 0,
+                    Type = "AD0",
+                    Currency = unique(getEventAttributes(evs_raw[[i]]$events, "currency")),
+                    Time = yearFraction(substring(time[1], 1, 10), as.character(ad), convention = "30E360"),
+                    NominalValue = temp_df[temp_idx_df,"NominalValue"],
+                    NominalRate = temp_df[temp_idx_df,"NominalRate"],
+                    NominalAccrued = temp_df[temp_idx_df,"NominalAccrued"]),
+                    temp_df[temp_df$Date>=as.character(ad), ])
+                } else {
+                  temp_df <- rbind(data.frame(
+                    Date = as.character(ad),
+                    Value = 0,
+                    Type = "AD0",
+                    Currency = unique(getEventAttributes(evs_raw[[i]]$events, "currency")),
+                    Time = yearFraction(substring(time[1], 1, 10), as.character(ad), convention = "30E360"),
+                    NominalValue = temp_df[idx,"NominalValue"],
+                    NominalRate = temp_df[idx,"NominalRate"],
+                    NominalAccrued = NaN),
+                    temp_df[temp_df$Date>=as.character(ad), ])
+                }
+              }
+              evs_list[[i]] <- temp_df
+              # evs_list[[i]] <- temp_df[temp_df$Date>=as.character(ad), ]
+              id_list[[i]] <- evs_raw[[i]]$contractId
+              ct_list[[i]] <- object$contracts[[evs_raw[[i]]$contractId]]$ContractTerms$ContractType
+            }
+            
+            if (length(evs_raw)==1){
+              out <- new("EventSeries")
+              out$evs <- evs_list[[1]]
+              out$id <- unlist(id_list)
+              out$ct <- unlist(ct_list)
+            } else {
+              out <- eventList()
+              for (j in 1:length(evs_raw)) {
+                temp <- new("EventSeries")
+                temp$evs <- evs_list[[j]]
+                temp$id <- id_list[[j]]
+                temp$ct <- ct_list[[j]]
+                out[[as.character(temp$id)]] <- temp
+              }
+            }
+            return(out)
+          })
 
 

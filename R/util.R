@@ -354,9 +354,21 @@ tenors2dates2 <- function(refDate, tenors, frame=FALSE){
 }
 
 shiftDates2 <- function(dates, shift) {
+  # browser()
   # dates is a vector and shift is a scalar
   units <- substrRight(shift, 1)
   counts <- gsub('.{1}$', '', shift)
-  as.character(ymd(dates) %m+% do.call(dayCountFcts[units], list(as.numeric(counts)) ))
+  dCF <- dayCountFcts[units]
+  counts <- as.numeric(counts)
+  out = character()
+  for (i in 1:length(units)) {
+    out <- rbind(out,
+      as.character(ymd(dates) %m+% do.call(dCF[i],  list(counts[i])))
+    )
+  }
+  if (nrow(out)==1 || ncol(out)==1 ) {
+    out <- as.character(out)
+  }
+  out
 }
 

@@ -39,7 +39,10 @@ setRefClass("YieldCurve",
                           Tenors = "character",
                           Rates = "numeric",
                           TenorDates = "character",
-                          DayCountConvention = "character"))
+                          DayCountConvention = "character",
+                          FUN = "function"
+                          # ,fParams = "list"
+                          ))
                           
 
 
@@ -75,7 +78,6 @@ setMethod(f = "YieldCurve",signature = c(),
           definition = function(...){
             
             pars <- list(...)
-            
             # if pars is a data.frame, convert to list()
             
             # fill fields with NULL values
@@ -85,6 +87,11 @@ setMethod(f = "YieldCurve",signature = c(),
             fill_fields$Tenors <- "0M"
             fill_fields$Rates <- Inf
             fill_fields$DayCountConvention <- "30E360"
+            fill_fields$FUN <- NULL
+            # names(fill_fields) <- 
+            #   c("label", "ReferenceDate", "Tenors", "Rates", "DayCountConvention",
+            #     "FUN")
+            # fill_fields$fParams <- NULL
             
             if (length(names(pars)) != 0) {
               
@@ -117,6 +124,14 @@ setMethod(f = "YieldCurve",signature = c(),
               if ("DayCountConvention" %in% pars_names) {
                 fill_fields$DayCountConvention <- pars$DayCountConvention
               }
+              if ("FUN" %in% pars_names) {
+                fill_fields$FUN <- pars$FUN
+                # if ( !("fParams" %in% pars_names) ) {
+                #   stop(paste("If 'FUN' is defined, 'fParams' must be defined, too!"))
+                # } 
+                # fill_fields$fParams <- pars$fParams
+              }
+              
             }
 
             yc <- new("YieldCurve")
@@ -199,7 +214,7 @@ setMethod(f = "set", signature = c("YieldCurve", "list"),
                        }
                 )
               } else {
-                warning(paste("ErrorInYieldCurve:: Field ", i, 
+                warning(paste("Error In Yield Curve:: Field ", i, 
                               " does not exist, cannot assign value!", sep = ""))
               }
             }
@@ -257,6 +272,12 @@ setMethod(f = "show", signature = c("YieldCurve"),
               names(curve) <- object$Tenors
               print("Curve:")
               print(curve)
+            }
+            if (!is.null(body(object$FUN))) {
+              cat("\nFUN:\n")
+              print(object$FUN)
+              # cat("fParams:\n")
+              # print(object$fParams)
             }
           })
 

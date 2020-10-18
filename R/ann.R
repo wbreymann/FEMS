@@ -48,7 +48,7 @@ annuity <- function(start, nominal=0.0, ir=0.0, annuity=NULL,
   args <- list(...)
   if(is.null(maturity)) {
     maturity <- NULL
-  } else if(!is.null(maturity) && nchar(maturity)<13) {
+  } else if(!is.null(maturity) && nchar(maturity)<10) {
     maturity <- as.character(timeSequence(timeDate(start), 
                                                by=maturity, length.out=2)[2])
   }
