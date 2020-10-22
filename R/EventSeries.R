@@ -407,7 +407,7 @@ setMethod("[", signature = c("EventSeries", "numeric", "character"),
 #' @docType methods
 #' @rdname as.df-methods
 as.data.frame.EventSeries <- function(x) {
-  x$evs
+  x$evs[,colnames(x$evs)!="Level"]
 }
 
 

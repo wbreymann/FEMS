@@ -95,7 +95,7 @@ setMethod(f = "add.cashflow", signature = c("CurrentAccount", "timeSeries"),
             if ((dim(cf_prev)[1]==0)) {
               agg <- added_cf
             } else {
-              comb <- rbind(cf_prev,added_cf)
+              comb <- rbind(cf_prev, added_cf)
               agg <- aggregate(comb, time(comb), "sum")
             }
             
@@ -125,10 +125,17 @@ setGeneric(name = "add.internaltransfer",
              standardGeneric("add.internaltransfer")
            })
 
+#' @import timeSeries
 #' @export
 setMethod(f = "add.internaltransfer", signature = c("CurrentAccount", "timeSeries"),
           definition = function(object, added_cf){
             add.cashflow(object, added_cf, type = "internal")
+          })
+
+#' @export
+setMethod(f = "add.internaltransfer", signature = c("CurrentAccount", "data.frame"),
+          definition = function(object, added_cf){
+            add.cashflow(object, timeSeries::as.timeSeries(added_cf), type = "internal")
           })
 
 #' @export

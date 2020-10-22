@@ -86,6 +86,31 @@ setMethod(f = "Index",signature = c("numeric", "ANY", "character"),
 
 ## @include
 #' @export
+# @aliases 
+setMethod(f = "Index",signature = c("matrix", "ANY", "character"),
+          definition = function(data, charvec, label, ...){
+            object <- new("ReferenceIndex")
+            object$Data <- timeSeries(data = data, 
+                                      charvec = charvec, 
+                                      units = "Values", ...)
+            object$label <- label
+            return(object)
+          })
+
+## @include
+#' @export
+# @aliases 
+setMethod(f = "Index",signature = c("timeSeries", "missing", "character"),
+          definition = function(data, charvec, label, ...){
+            object <- new("ReferenceIndex")
+            object$Data <- data
+            object$label <- label
+            return(object)
+          })
+
+
+## @include
+#' @export
 #' @rdname set-methods
 #' @aliases set,ForeignExchangeRate,list-method
 #' @aliases set,YieldCurve,list-method

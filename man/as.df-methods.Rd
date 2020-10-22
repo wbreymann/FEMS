@@ -5,7 +5,7 @@
 \alias{as.data.frame.EventSeries}
 \title{\code{EventSeries}-to-data.frame method}
 \usage{
-\method{as.data.frame}{EventSeries}(x)
+as.data.frame.EventSeries(x)
 }
 \arguments{
 \item{x}{An object of class \code{EventSeries}}

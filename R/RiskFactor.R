@@ -66,3 +66,20 @@ setMethod(f = "RF", signature = c("character"),
           definition = function(object) {
             return(new(object))
           })
+
+#' @export
+#' @docType methods
+#' @rdname rf-methods
+setGeneric(name = "as.timeSeries",
+           def = function(x){
+             standardGeneric("as.timeSeries")
+           })
+
+#' @import timeSeries
+#' @export
+#' @docType functions
+as.timeSeries.RiskFactor <- function(x) {return(x$Data) }
+# setMethod("as.timeSeries", signature=c("RiskFactor"),
+#           definition = function(x) {
+#             return(x$Data)
+#           })

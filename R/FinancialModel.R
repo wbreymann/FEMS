@@ -93,16 +93,18 @@ FinancialModel$methods(
     # Initialization
     clearEvents(mstructure)
     tt = tSeq[1]
+    # browser()
     events(mstructure, ad0, rf, as.character(tt))
     liq <- liquidity(mstructure, buckets, type="marginal")
     val <- value(mstructure, buckets, type="nominal")
     iam <- data.frame(as.numeric(liquidity(mstructure, buckets, "marginal")[1,]),
                       row.names=as.character(buckets)[-1])
-    names(iam) <- "InternalCashFlows"
+    names(iam) <- "InternalTransfers"
     iam <- iam[row.names(iam)<=as.character(tt),,drop=FALSE]
-    if (dim(iam)[1]) { add.internalcashflow(curr_acc, iam)  } ## Die add Methode liefert Unsinn
+    if (dim(iam)[1]) { add.internaltransfer(curr_acc, iam)  } ## Die add Methode liefert Unsinn
     
     id <- curr_acc$ContractID
+    # browser()
     for (i in 2:length(tSeq)) {
       tt = tSeq[i]
       print(paste(i, as.character(tt)))
@@ -117,11 +119,13 @@ FinancialModel$methods(
       #      marginal liquidity at the end of current time step.
       iam <- data.frame(as.numeric(liquidity(mstructure, buckets, "marginal")[1,]),
                        row.names=as.character(buckets)[-1])
-      names(iam) <- "InternalCashFlows"
+      names(iam) <- "InternalTransfers"
       ## Das richtige Zeitfenster auswählen
       ids <- row.names(iam)<=as.character(tt) & row.names(iam)>as.character(tSeq[i-1])
       iam <- iam[ids,,drop=FALSE]  
-      if (dim(iam)[1]) { add.internalcashflow(curr_acc, iam)  } ## Die add Methode liefert Unsinn
+      if (dim(iam)[1]) { 
+        add.internaltransfer(curr_acc, iam)  ## Die add Methode liefert Unsinn
+        } 
       events(mstructure, ad0, rf, as.character(tt))
       #  5.  Compute ContractEvents for current account
       evL <- eventList()

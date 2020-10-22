@@ -97,8 +97,12 @@ loan <- function(start, maturity = "0 years", nominal = 0,
   
   if(role=="long") {
     role <- "RPA"
-  } else {
+  } else if (role=="short") {
     role <- "RPL"
+  } else {
+    stop(paste0("Error in FEMS::loan: '", role,
+    "' is not a valid name for argument 'role'")
+    )
   }
   
   if(!"Currency"%in%names(args)) {

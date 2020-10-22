@@ -4,11 +4,14 @@
 \name{RF}
 \alias{RF}
 \alias{RF,character-method}
+\alias{as.timeSeries}
 \title{\code{RiskFactor}-class constructor}
 \usage{
 RF(object)
 
 \S4method{RF}{character}(object)
+
+as.timeSeries(x)
 }
 \arguments{
 \item{object}{character, where \code{object} is expected to be the 

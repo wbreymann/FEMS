@@ -1,5 +1,5 @@
 # Example for FinancialModel
-
+library(FEMS)
 # Preparation -------------------------------------------
 rm(list=ls())
 devtools::load_all()
@@ -26,7 +26,7 @@ CurrAcc.balance = 150000
 curr_acc <- CurrentAccount(ContractID = "CurrAcc",
                            ContractDealDate = "2013-12-31",
                            Currency = "CHF",
-                           NotionalPrincipal = CurrAcc.balance,
+                           Balance = CurrAcc.balance,
                            # CashFlows = cashflows,
                            CycleAnchorDateOfInterestPayment = "2013-12-31",
                            CycleOfInterestPayment = "1Y-",
@@ -115,7 +115,7 @@ FM <- FinancialModel(
 
 # Simulate the strategy --------------------------------
 # FM$simulate(start = "2015-12-31", end = "2020-12-31", by="1 year")
-Father$Wealth$contracts[[1]]$InternalCashFlows <- data.frame()
+Father$Wealth$contracts[[1]]$InternalTransfers <- timeSeries()
 FM$simulate(t.start = t.start, t.end = t.end, by="1 year")
 
 liquidity(Father, tb, "marginal")

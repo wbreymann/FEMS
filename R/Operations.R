@@ -100,14 +100,16 @@ setRefClass("OperationalCF",
 #' 
 #' @export
 setGeneric(name = "OperationalCF",
-           def = function(...){
+           def = function(pattern, args, ...){
              standardGeneric("OperationalCF")
            })
 
 #' @export
-setMethod(f = "OperationalCF",signature = c(),
-          definition = function(...){
+setMethod(f = "OperationalCF", signature = c(pattern="function", args="list"),
+          definition = function(pattern, args, ...){
             object = new("OperationalCF")
+            object$pattern <- pattern
+            object$args <- args
             pars = list(...)
             if(length(pars)==0){
             }  else if (is.list(pars[[1]])) {
@@ -123,7 +125,7 @@ setMethod(f = "initialize", signature="OperationalCF",
             .Object <- callNextMethod()
             # initialize pars
             .Object$ContractType = "OperationalCF"
-            .Object$pattern = function(model,params) { NULL }
+            .Object$pattern = function(model, params) { NULL }
             return(.Object)
           })
 
@@ -418,18 +420,14 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
             # }
               if(!is.null(ops)) {
                 vals <- as.numeric(series(ops))
-                events <- rbind(events,
-                             data.frame(Date=as.character(time(ops)),
-                                        Value=c(vals[1],vals[2:length(vals)]),
-                                        Type="OPS",
-                                        Level="P",
-                                        Currency=object$Currency,
-                                        Time=yearFraction(as.character(ad), 
-                                                          as.character(time(ops)), 
-                                                          convention = "30E360"),
-                                        NominalValue=0.0,
-                                        NominalRate=0.0,
-                                        NominalAccrued=0.0))
+                events <- rbind(
+                  events, data.frame(
+                    Date=as.character(time(ops)),
+                    Value=c(vals[1],vals[2:length(vals)]),
+                    Type="OPS", Level="P", Currency=object$Currency,
+                    Time=yearFraction(as.character(ad), as.character(time(ops)), 
+                                      convention = "30E360"),
+                    NominalValue=0.0, NominalRate=0.0, NominalAccrued=0.0))
               }
               # evaluate invest pattern
               # Should be generalized, cf. above
@@ -442,18 +440,15 @@ setMethod(f = "EventSeries", signature = c("Operations", "timeDate"),
               if(!is.null(ops)) {
                 if (length(ops)<2) stop("An investment pattern needs to have length>1!")
                 vals <- c(ops[1,],diff(ops)[-1,])
-                events <- rbind(events,
-                             data.frame(Date=as.character(time(ops)),
-                                        Value=c(-vals[1],vals[2:length(vals)]),
-                                        Type=c("IED",rep("DPR",length(ops)-1)),
-                                        Level="P",
-                                        Currency=object$Currency,
-                                        Time=yearFraction(as.character(ad), 
-                                                          as.character(time(ops)), 
-                                                          convention = "30E360"),
-                                        NominalValue=vals,
-                                        NominalRate=0.0,
-                                        NominalAccrued=0.0))
+                events <- rbind(
+                  events, data.frame(
+                    Date=as.character(time(ops)),
+                    Value=c(-vals[1],vals[2:length(vals)]),
+                    Type=c("IED",rep("DPR",length(ops)-1)),
+                    Level="P", Currency=object$Currency,
+                    Time=yearFraction(as.character(ad), as.character(time(ops)), 
+                                      convention = "30E360"),
+                    NominalValue=vals, NominalRate=0.0, NominalAccrued=0.0))
               }
               # If there is a salvage value (write-off no till 0)
               # we add a last event of type MD and the remaining value
