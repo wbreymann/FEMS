@@ -3,7 +3,6 @@
 # package: rflContracts
 # Date: 14.09.2015
 # IDP - Institute for Data Analysis and Process Design
-# author(s): Nils Andri Bundi (bund@zhaw.ch)
 #*******************************************************************************
 
 ##############################################################
