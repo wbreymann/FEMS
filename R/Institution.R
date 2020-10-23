@@ -14,7 +14,7 @@
 #' The upper level is predefined with the nodes "Active", "Passive" and
 #' "Operations".
 #' 
-#' @import data.tree, R6
+#' @import data.tree R6
 #' @export
 #' @rdname institution
 #' @export
