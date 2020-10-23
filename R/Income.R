@@ -640,7 +640,8 @@ setMethod(f = "income",
 
 # income from interest/fee
 income.from.payments = function(eventSeries, by, digits=2, ...) {
-  income.events <- subset(as.data.frame(eventSeries), Type %in% c("IP","FP"))
+  # Check that ICPI is income relevant!!
+  income.events <- subset(as.data.frame(eventSeries), Type %in% c("IP","ICPI","FP","OPS","DPR"))
   inc <- timeSeries(rep(0, length(by)), charvec = by)
   cf.raw <- timeSeries(income.events$Value, charvec = substring(income.events$Date, 1, 10))
   cf.aggr <- aggregate(cf.raw, by, FUN=sum)
