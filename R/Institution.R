@@ -36,3 +36,17 @@ institution <- function(name, cashcollect=TRUE) {
   addContracts(list(collector=collector), FindNode(inst, "Current"))
   return(inst)
 }
+
+
+# Comment
+# 'ModelStructure.R' doesn't contain any class definition.
+# Maybe the methods in that file should be integrated into this one,
+# but this can wait.
+
+# events method:
+# the method defined in 'ModelStructure.R' could be just extended such that 
+# all cashflow-relevant events are added to the cash collector as internal transfers.
+# But then, as last step, the event function should be executed again 
+# for the cash collector and the eventList of the corresponding node must be
+# updated accordingly, cf. lines 114-119 of 'ModelStructure'
+# 

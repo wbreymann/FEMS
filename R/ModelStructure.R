@@ -90,6 +90,7 @@ setMethod(f = "addContracts", signature = c("list", "Node"),
 #' @export
 setMethod(f = "events", signature = c("Node", "character", "RiskFactorConnector"),
           definition = function(object, ad, model, end_date){
+            # The function 'events.modelstructure' is applied to all nodes.
             object$Do(fun=events.modelstructure, ad=ad, model=model, end_date=end_date)
           })
 
@@ -102,7 +103,7 @@ events.modelstructure = function(node, ..., filterFun=isLeaf) {
   ctrs = node$contracts
   # print(paste("Klasse", class(ctrs[[1]])))
   
-  res = sapply(
+  res = sapply( # applies 'events' method to all contracts.
     X=ctrs,
     FUN = function(x, pars) {
       pars = c(object=x, pars)
@@ -110,7 +111,7 @@ events.modelstructure = function(node, ..., filterFun=isLeaf) {
       # print(paste("Parameter: Anzahl", length(pars)))
       # print(class(x))
       # print(pars)
-      evs = do.call("events", pars)
+      evs = do.call("events", pars) 
       if (!is.null(evs) ) {
         if (is.null(node$eventList)) {
           node$eventList <- eventList()

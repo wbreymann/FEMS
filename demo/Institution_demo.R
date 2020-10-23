@@ -10,8 +10,12 @@ devtools::load_all()
 pp <- institution("PowerPlant")
 
 pp
-pp$Assets$Current$contracts
+pp$Assets$Current$contracts[[1]]$InternalTransfers <- timeSeries()
+pp$Assets$Current$contracts[[1]]$InternalTransfers 
+
 
 class(pp)[1]
 tail(class(pp),1)
+
+
 
