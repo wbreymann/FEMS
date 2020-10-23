@@ -690,9 +690,9 @@ income.from.revaluation = function(object, by, method, digits=2, ...) {
   
   # compute mark-to-model values
   if (is.null(method)) {
-    vals <- FEMS::value(object, as.character(by), type = "markToModel", digits = digits)
+    vals <- FEMS::value(object, as.character(by), type = "market", digits = digits)
   } else {
-    vals <- FEMS::value(object, as.character(by), type = "markToModel", 
+    vals <- FEMS::value(object, as.character(by), type = "market", 
                          method = method, digits = digits)
   }
   # return first differences
@@ -716,9 +716,9 @@ income.from.revaluation.from.es = function(evs, by, method, digits=2, ...) {
   
   # compute mark-to-model values
   if (is.null(method)) {
-    vals <- FEMS::value(evs, as.character(by), type = "markToModel", digits = digits)
+    vals <- FEMS::value(evs, as.character(by), type = "market", digits = digits)
   } else {
-    vals <- FEMS::value(evs, as.character(by), type = "markToModel", 
+    vals <- FEMS::value(evs, as.character(by), type = "market", 
                          method = method, digits = digits)
   }
   

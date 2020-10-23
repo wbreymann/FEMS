@@ -337,8 +337,8 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "D
               val = FEMS::value(object, by, "nominal", digits=digits, ...)
             } else if (type %in% c("market")) {
               # add spread to interest rate
-              spread <- FEMS::get(method, "DiscountingSpread")
-              dc <- FEMS::get(method, "RiskFactorObject")
+              spread <- FEMS::get(method, "dc.spread")
+              dc <- FEMS::get(method, "dc.object")
               FEMS::set(dc, list(Rates=FEMS::get(dc, "Rates") + spread))
               val = sapply(by, function(ad) { # loop over elements in "by"
                 evs = data.frame(
