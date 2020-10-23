@@ -36,6 +36,7 @@ Depends:
     jsonlite,
     readxl,
     data.tree,
+    R6,
     R (>= 2.10)
 Imports:
     timeSeries (>= 3012.99),

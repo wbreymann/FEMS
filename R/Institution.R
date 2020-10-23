@@ -25,15 +25,22 @@ Institution <- R6Class("Institution",
 #' @export
 #' @rdname institution
 #' @export
-institution <- function(name, cashcollect=TRUE) {
+institution <- function(name, cashcollect=TRUE, ...) {
   inst <- Node$new("inst")
   inst$AddChild("Assets")
   inst$AddChild("Liabilities")
   inst$AddChild("PandL")
-  inst$Assets$AddChild("Current")
   
-  collector <- CurrentAccount()
-  addContracts(list(collector=collector), FindNode(inst, "Current"))
+  if (cashcollect) {
+    inst$AddChild("CurrentAccount")
+    collector <- CurrentAccount(ContractID = "Collector", 
+                                CycleOfInterestPayment = "1Y-",
+                                CycleOfRateReset = "1Y-",
+                                ...)
+    addContracts(list(collector=collector), 
+                 FindNode(inst, "CurrentAccount"))
+  }
+
   return(inst)
 }
 

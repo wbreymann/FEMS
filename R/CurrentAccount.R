@@ -277,9 +277,11 @@ currentaccount.evs <- function(object, model, end_date, method, period){
                               Values = object$NominalInterestRate)
     if (!(deal_date_r$Dates %in% r$Dates)) {
       r <- rbind(deal_date_r, r)
-    } else {
-      r[r$Dates==deal_date_r$Dates, ]$Values  <- deal_date_r$Values
     }
+    # WHY DID WE DO THIS?
+    # } else {
+    #   r[r$Dates==deal_date_r$Dates, ]$Values  <- deal_date_r$Values
+    # }
     
     #potentially drop the ones not being unique
   } else {

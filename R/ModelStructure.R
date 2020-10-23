@@ -92,6 +92,14 @@ setMethod(f = "events", signature = c("Node", "character", "RiskFactorConnector"
           definition = function(object, ad, model, end_date){
             # The function 'events.modelstructure' is applied to all nodes.
             object$Do(fun=events.modelstructure, ad=ad, model=model, end_date=end_date)
+
+            # fill Cash Collector, if it exists.
+            if (object$CurrentAccount$isLeaf) {
+              if (names(object$CurrentAccount$contracts) == "collector") {
+                # transfer this to cash collector
+                transfer.to.collector(object, ad, get.YieldCurve(model), end_date)
+              }
+            }
           })
 
 
@@ -103,22 +111,77 @@ events.modelstructure = function(node, ..., filterFun=isLeaf) {
   ctrs = node$contracts
   # print(paste("Klasse", class(ctrs[[1]])))
   
+  cash.collector <- NULL
   res = sapply( # applies 'events' method to all contracts.
     X=ctrs,
     FUN = function(x, pars) {
       pars = c(object=x, pars)
       if ( class(x)!="CurrentAccount") { pars[["end_date"]] <- NULL }
+      if ( class(x)=="CurrentAccount" & 
+           names(node$contracts)=="collector") { 
+        cash.collector <<- node$name
+      } else {
       # print(paste("Parameter: Anzahl", length(pars)))
       # print(class(x))
       # print(pars)
-      evs = do.call("events", pars) 
-      if (!is.null(evs) ) {
-        if (is.null(node$eventList)) {
-          node$eventList <- eventList()
+        evs = do.call("events", pars) 
+        if (!is.null(evs) ) {
+          if (is.null(node$eventList)) {
+            node$eventList <- eventList()
+          }
+          node$eventList[[as.character(get(x,"ContractID"))]] <- evs
         }
-        node$eventList[[as.character(get(x,"ContractID"))]] <- evs
       }
     }, pars)
+}
+
+transfer.to.collector <- function(object, ad, model, end_date) {
+  
+  evList <- object$Get("eventList")
+  evList.filtered <- data.frame()
+  for (i in 1:length(evList)) {
+    tempList <- evList[[i]]
+    if (!is.na(evList[[i]])) {
+      tempList <- as.data.frame(evList[[i]])
+      tempList <- tempList[!(tempList$Value %in%c("IPCI","DPR","PRF","RR","RRY","SC","PRY")),
+                           c("Date","Value")]
+      evList.filtered <- rbind(evList.filtered, tempList)
+    }
+  }
+
+  # aggregate this and add to Cash Collector...
+  evAgg <-aggregate(x = list(Value = evList.filtered$Value),
+                by = list(Date = evList.filtered$Date),
+                FUN = sum)
+  internal.tfs <- timeSeries(data = evAgg$Value,
+                             charvec = evAgg$Date,
+                             units = "Values")
+  # t0 <- as.character(rownames(internal.tfs[1,]))
+  internal.tfs <- internal.tfs[internal.tfs$Values!=0,]
+  set(object$CurrentAccount$contracts$collector, 
+                list(InternalTransfers = internal.tfs,
+                     CycleAnchorDateOfInterestPayment = ad,
+                     CycleAnchorDateOfRateReset = ad,
+                     ContractDealDate = ad,
+                     MarketObjectCodeRateReset = model$label))
+  
+  # calculate events of cash collector
+  evs <- events(object$CurrentAccount$contracts$collector, 
+                ad, model, end_date=as.character(end_date))
+
+  # add this to the eventList
+  nm <- as.character(get(object$CurrentAccount$contracts$collector,"ContractID"))
+  object$CurrentAccount$eventList[[nm]] <- evs
+}
+
+get.YieldCurve <- function(rfconn) {
+  tst <- unlist(lapply(rfconn$riskfactors, function(x) 
+                      {class(x) %in% c("DynamicYieldCurve","YieldCurve")}))
+  if (sum(tst) > 1) {
+    stop("More than one YieldCurve object supplied. Currently not supported!")
+  }
+  yc <- rfconn$riskfactors[tst][[1]]
+  return(yc)
 }
 
 ####---------------------------------------------------------------
