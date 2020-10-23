@@ -80,6 +80,7 @@ Collate:
     'ForeignExchangeOutright.R'
     'ForeignExchangeRate.R'
     'Future.R'
+    'Institution.R'
     'LinearAmortizer.R'
     'MultiCurrencyDiscountingEngine.R'
     'NegativeAmortizer.R'
