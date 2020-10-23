@@ -85,7 +85,7 @@ liquidity(ops1, by=tb, type="marginal")
 value(ops1, by=by, type="nominal")
 
 # Discount-Engine für die Barwertberechnung:
-eng <- DcEngine(RiskFactorObject=rf1[["YC_CH"]])
+eng <- DcEngine(dc.object=rf1[["YC_CH"]])
 #set(eng, rf)
 
 # Barwert der (erwarteten) operativen Cashflows
@@ -97,7 +97,7 @@ value(ops1, by=tb, type="markToModel", method=eng)
 tb <- timeBuckets(ad, by="1 years", length.out=3, bucketLabs=c("2016", "2017"))  ## Error!!
 tb
 # Discount-Engine für die Barwertberechnung:
-eng <- DcEngine(RiskFactorObject=yc.ch)
+eng <- DcEngine(dc.object=yc.ch)
 
 ops.invest <- function(model, params) {
   timeSeries(seq(1000, 0, length.out=24), times)

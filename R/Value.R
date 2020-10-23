@@ -74,14 +74,14 @@
 #' # define valuation engine for mark-to-model value
 #' dcEngine <- DcEngine()
 #' set(dcEngine,list(RiskFactorObjectLink="RiskFreeCurve",
-#'                   DiscountingSpread=0.0))
+#'                   dc.spread=0.0))
 #' set(dcEngine,rf)
 #' set(pam,dcEngine)
 #' value(pam,by=ad,type="market")
 #' 
 #' # again with a different engine
 #' set(dcEngine,list(RiskFactorObjectLink="RiskFreeCurve",
-#'                   DiscountingSpread=0.1))
+#'                   dc.spread=0.1))
 #' value(pam,by=ad,type="market",method=dcEngine)
 #' 
 #' @include EventSeries.R Portfolio.R DiscountingEngine.R
@@ -153,8 +153,8 @@ setMethod(f = "value", signature = c("ContractType", "timeBuckets", "character",
           definition = function(object, by, type, method, spread = 0, ...){
             type <- temp.func.type.deprecated(type)
             eng <- DcEngine()
-            set(eng, what = list(DiscountingSpread = spread,
-                                 RiskFactorObject = method))
+            set(eng, what = list(dc.spread = spread,
+                                 dc.object = method))
             val <- FEMS::value(object, as.character(by), type, method=eng)
             names(val) <- by@breakLabs
             return(val)

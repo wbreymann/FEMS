@@ -99,7 +99,7 @@ exp(0.05*(364+31+29+31+30+31+30)/365)
 (exp(0.05*(364+31+29+31+30+31+30)/365) - app.fact.cont[1])/app.fact.cont[1]
 
 
-eng <- DcEngine(RiskFactorObject=yc_flat, DiscountingSpread=0)
+eng <- DcEngine(dc.object=yc_flat, dc.spread=0)
 class(b1)
 ev <- events(b1, "2015-01-01")
 

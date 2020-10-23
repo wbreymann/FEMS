@@ -44,7 +44,7 @@
 #' 'CapitalAssetPricingModel') and '[par1]', ... refer to parameters
 #' to the specific type of valuation engine:
 #' \itemize{
-#'    \item Discounting: 'RiskFactorObjectLink', 'DiscountingSpread'
+#'    \item Discounting: 'RiskFactorObjectLink', 'dc.spread'
 #'    \item MultiCurrencyDiscounting: 'CurrencyPair', 'TargetCurrency',
 #'    'Currency1', 'Currency2', 'Spread1', 'Spread2', 
 #'    'InterestRateModelObjectLink1', 'InterestRateModelObjectLink2'

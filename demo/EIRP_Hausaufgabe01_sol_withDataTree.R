@@ -65,7 +65,7 @@ set(ptf,rf)
 
 # Definieren der Diskontierungsmethode unter Verwendung 
 # derselben Zinskurve wie oben und mit Spread von 0%
-eng <- DcEngine(DiscountingSpread=0.0, RiskFactorObjectLink=obj, rf)
+eng <- DcEngine(dc.spread=0.0, RiskFactorObjectLink=obj, rf)
 
 by = timeSequence(substring(t0,1,10),by="1 year",length.out=6)
 years = as.character(2016:2020)

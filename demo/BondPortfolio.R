@@ -90,7 +90,7 @@ value(ptf,by,type="nominal")
 ## -> define discounting model
 dcEngine <- DcEngine()
 set(dcEngine,list(RiskFactorObjectLink="YC_EA_AAA",
-                  DiscountingSpread=0.0))
+                  dc.spread=0.0))
 set(dcEngine,rf)
 value(ptf,by,type="markToModel",method=dcEngine)
 

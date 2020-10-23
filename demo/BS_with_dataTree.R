@@ -15,7 +15,7 @@ yc <- YieldCurve(MarketObjectCode = obj, ReferenceDate = t0,
                  Tenors = c("1D", "10Y"), Rates = c(ir.1d, ir.10y))
 rf <- RFConn(yc)
 set(ptf,rf)
-eng <- DcEngine(DiscountingSpread=0.0, RiskFactorObjectLink=obj, rf)
+eng <- DcEngine(dc.spread=0.0, RiskFactorObjectLink=obj, rf)
 evL = events(ptf, t0)
 
 # Anylytics

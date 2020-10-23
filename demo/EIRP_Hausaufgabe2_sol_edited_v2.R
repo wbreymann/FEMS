@@ -92,7 +92,7 @@ rf <- RFConn(list(gas.idx, el.idx, yc))
 rf
 
 # Generiere Diskontierungsmethode
-diskont <- DcEngine(DiscountingSpread=0.0, RiskFactorObjectLink="MARKTZINS")
+diskont <- DcEngine(dc.spread=0.0, RiskFactorObjectLink="MARKTZINS")
 set(diskont, rf)
 
 # Modellierung des Kraftwerks

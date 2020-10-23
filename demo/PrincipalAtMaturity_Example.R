@@ -60,15 +60,10 @@ pam["NotionalPrincipal"] = 1000
 pam[35]
 
 # create yield curve
-yc <- YieldCurve(MarketObjectCode = "YC.USA.TREASURY",
+yc <- YieldCurve(label = "YC.USA.TREASURY",
                  ReferenceDate = "2015-01-01",
                  Tenors = c("1M", "2M", "3M", "4M", "5M", "6M","1Y","5Y"),
                  Rates = c(0.01, 0.015, 0.02, 0.022, 0.024, 0.025, 0.03, 0.035))
-
-# set the simulation through time based on the yield curve from refdate to today
-# Q bwlf: 
-# Which date is "today"?
-setTimeSeries(yc, yc$ReferenceDate, as.character(today()))
 
 # create a risk factor connector & add YieldCurve
 rf <- RFConn()
@@ -81,7 +76,7 @@ set(pam, rf)
 evs <- events(pam, "2015-01-01")
 
 value(pam, by = "2015-01-02", type = "nominal")
-eng <- DcEngine(RiskFactorObject = yc, DiscountingSpread = 0.0)
+eng <- DcEngine(dc.object = yc, dc.spread = 0.0)
 value(pam, by = "2015-01-02", type = "markToModel", method = eng)
 
 plot(pam,"2015-01-01")
@@ -143,7 +138,7 @@ port[[1]] # As before
 port[c("Contract-03","Contract-03")]
 port[c("Contract-03","Contract-05")]
 port[c("Contract-03","Contract-05"),]
-port[c("Contract-03","Contract-05"),1] # Fehler, as it should be
+# port[c("Contract-03","Contract-05"),1] # Fehler, as it should be
 port[c("Contract-03","Contract-05"),"ContractID"] # Warum Fehler? 
 
 
@@ -172,5 +167,18 @@ liquidity(port, by = by, type = "cumulative")
 # nominal income vector
 income(port, by = by, type = "marginal", revaluation.gains = FALSE)
 income(port, by = by, type = "marginal", revaluation.gains = TRUE, method = eng)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

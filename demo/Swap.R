@@ -93,7 +93,7 @@ set(swap, leg1, leg2)
 
 ## create valuation engine, link to risk factors and assign to pam
 eng <- DcEngine()
-set(eng, what=list(DiscountingSpread=0.1,
+set(eng, what=list(dc.spread=0.1,
                    RiskFactorObjectLink="YC_Prim"))
 set(eng, rf)
 set(swap, eng)
@@ -177,7 +177,7 @@ set(swap, leg1, leg2)
 
 ## create valuation engine, link to risk factors and assign to pam
 eng <- DcEngine()
-set(eng, what=list(DiscountingSpread=0.0,
+set(eng, what=list(dc.spread=0.0,
                    RiskFactorObjectLink="YC_Prim"))
 set(eng, rf)
 set(swap, eng)

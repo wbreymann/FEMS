@@ -58,7 +58,7 @@ set(pam, what=list(
 
 ## set the valuation engine
 eng <- DcEngine()
-set(eng, what=list(DiscountingSpread=0.0,
+set(eng, what=list(dc.spread=0.0,
                    RiskFactorObjectLink="YC_Prim"))
 set(eng, rf)
 set(pam, eng)

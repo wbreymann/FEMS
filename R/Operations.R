@@ -777,7 +777,7 @@ ops.nominal = function(object, by, digits=2) {
 ops.marketValue = function(object, by, method, digits=2) {
  
   # extract discounting parameters
-  spread <- FEMS:::get(method,"DiscountingSpread")
+  spread <- FEMS:::get(method,"dc.spread")
   dc <- get(method, "RiskFactorObject")
   FEMS::set(dc, list(Rates = FEMS::get(dc, "Rates") + spread))
   

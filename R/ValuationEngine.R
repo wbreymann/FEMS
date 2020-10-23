@@ -101,7 +101,7 @@ setRefClass("ValuationEngineModel",
 #' dc = VE("DiscountingEngine")
 #' set(dc, what=list(
 #'                    RiskFactorObjectLink="YC_CHF",
-#'                    DiscountingSpread=0.05))
+#'                    dc.spread=0.05))
 #' # same.dc = VE(dc$jref)   # This command doesn't work
 #'
 ## @include
@@ -163,7 +163,7 @@ setMethod(f = "VE", signature = c("character"),
 #' dcm = VEM("DiscountingEngine")
 #' set(dcm, what=list(
 #'                    RiskFactorObjectLink="YC_CHF",
-#'                    DiscountingSpread=0.05))
+#'                    dc.spread=0.05))
 #' # same.dcm = VEM(dcm$jref)   # This command doesn't work.
 #' 
 #' # example 3: create a new 'DiscountingEngineModel' object using the

@@ -1,6 +1,6 @@
 # library(FEMS)
 rm(list=ls())
-devtools::load_all()
+library(FEMS)
 
 #------------------------------- Pure cash flows -------------------------------
 # 1. Current account
@@ -40,10 +40,10 @@ rf <- RFConn(marketRate)
 
 # calculate event series
 # currently still not the same format as an rActus EventSeries
-(evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date = "2019-12-31")) ## Error: CF not taken into account properly
+(evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date = "2019-12-31")) 
 cashFlows(curr_acc, from = "2012-12-31", riskfactors = rf) 
 cashFlows(curr_acc, from = "2012-12-31", to = "2019-12-31", riskfactors = rf) 
-(evs.curr_acc <- events(curr_acc, "2012-12-31", rf)) # must produce an error
+# (evs.curr_acc <- events(curr_acc, "2012-12-31", rf)) # must produce an error
 (evs.curr_acc.1 <- events(curr_acc, "2012-12-31", rf, end_date = "2013-12-31"))  
 (evs.curr_acc.2 <- events(curr_acc, "2013-12-31", rf, end_date = "2014-12-31"))
 (evs.curr_acc.3 <- events(curr_acc, "2014-12-31", rf, end_date = "2015-12-31"))  
@@ -140,7 +140,7 @@ cashFlows(ops1, ad)
 cashFlows(ops1, "2015-12-31")
 events1 <- events(ops1, ad)
 print(events1$evs)
-plot(ops1, ad)  ## Doesn't work. 
+plot(ops1, ad)
 
 
 #------------------------Investment with depreciation --------------------------
