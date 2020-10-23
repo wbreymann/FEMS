@@ -26,8 +26,8 @@
 #' @rdname dcv-classes
 setRefClass("DiscountingEngine",
             contains = c("ValuationEngine"),
-            fields = list(DiscountingSpread = "numeric",
-                          RiskFactorObject = "RiskFactor"
+            fields = list(dc.spread = "numeric",
+                          dc.object = "RiskFactor"
             ))
 
 ## @include 
@@ -61,8 +61,8 @@ setMethod(f = "DcEngine", signature = c("missing"),
           definition = function(...){
               object <- new("DiscountingEngine")
               pars <- list(...)
-              if (!("DiscountingSpread" %in% names(pars))) {
-                pars <- c(pars, list(DiscountingSpread=0))
+              if (!("dc.spread" %in% names(pars))) {
+                pars <- c(pars, list(dc.spread=0))
               }
               if (length(pars) == 0) {
               } else if (is.list(pars[[1]])) {
@@ -91,11 +91,11 @@ setMethod(f = "set",
               if (is.valid.dcengine.field(i)) {
                 value <- what[[i]]
                 switch(i,
-                       RiskFactorObject = {
-                         object$RiskFactorObject <- value
+                       dc.object = {
+                         object$dc.object <- value
                        },
-                       DiscountingSpread = {
-                         object$DiscountingSpread <- value
+                       dc.spread = {
+                         object$dc.spread <- value
                        }
                 )
               } else {
@@ -113,7 +113,7 @@ setMethod(f = "set",
             if (sum(as.numeric(is_yc)) > 1) {
               stop("ErrorIn::DiscountingEngine:: Only one YieldCurve can be defined in RiskFactorConnector for DCEngine !!!")
             }
-            object$RiskFactorObject <- what$riskfactors[is_yc==TRUE][[1]]
+            object$dc.object <- what$riskfactors[is_yc==TRUE][[1]]
           })
 
 ## -----------------------------------------------------------------
@@ -168,10 +168,10 @@ setMethod(f = "set",
 #' @aliases get,jobjRef,character-method
 setMethod(f = "get", signature = c("DiscountingEngine","character"),
           definition = function(object, what){
-            if (what == "RiskFactorObject") {
-                out <- object$RiskFactorObject
-              } else if (what == "DiscountingSpread") {
-                out <- object$DiscountingSpread
+            if (what == "dc.object") {
+                out <- object$dc.object
+              } else if (what == "dc.spread") {
+                out <- object$dc.spread
               }
             return(out)
           })
@@ -180,16 +180,16 @@ setMethod(f = "get", signature = c("DiscountingEngine","character"),
 #' @export
 setMethod("show", signature = "DiscountingEngine",
           definition = function(object){
-            cat(paste0("DiscountingSpread: ", object$DiscountingSpread,"\n"))
+            cat(paste0("DiscountingSpread: ", object$dc.spread,"\n"))
             print("RiskFactorObject:")
-            print(object$RiskFactorObject)
+            print(object$dc.object)
           })
 
 ## -----------------------------------------------------------------
 ## helper methods
 # existing fields in the DiscountingEngine class
 validDCEngineFields <- function() {
-  return(c("RiskFactorObject", "DiscountingSpread"))
+  return(c("dc.object", "dc.spread"))
 }
 
 # check if fields are valid
