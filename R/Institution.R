@@ -14,31 +14,30 @@
 #' The upper level is predefined with the nodes "Active", "Passive" and
 #' "Operations".
 #' 
-#' @import data.tree, R6
+#' @import data.tree R6
 #' @export
 #' @rdname institution
-#' @export
 Institution <- R6Class("Institution",
                        inherit = Node)
 
-
 #' @export
 #' @rdname institution
-#' @export
 institution <- function(name, cashcollect=TRUE, ...) {
-  inst <- Node$new("inst")
+  
+  inst <- Node$new(name)
   inst$AddChild("Assets")
   inst$AddChild("Liabilities")
   inst$AddChild("PandL")
   
   if (cashcollect) {
-    inst$AddChild("CurrentAccount")
+    inst$Assets$AddChild("Current")
     collector <- CurrentAccount(ContractID = "Collector", 
                                 CycleOfInterestPayment = "1Y-",
                                 CycleOfRateReset = "1Y-",
                                 ...)
     addContracts(list(collector=collector), 
-                 FindNode(inst, "CurrentAccount"))
+                 FindNode(inst, "Current"))
+    inst$Assets$AddChild("LongTerm")
   }
 
   return(inst)
