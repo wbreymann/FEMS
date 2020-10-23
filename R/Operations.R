@@ -136,7 +136,10 @@ setRefClass("Investments",
             contains = "Operations",
             fields = list(
               pattern = "function",
-              args = "list"
+              args = "list",
+              InitialExchangeDate = "character",
+              MaturityDate = "character",
+              NotionalPrincipal = "numeric"
             ))
 ## -----------------------------------------------------------------
 #' Investments Contract class definition
@@ -186,7 +189,40 @@ setMethod(f = "Investments",signature = c(),
             } else {
               FEMS:::set(object=object, what=pars)
             }
+            
+            # try to fetch IED, MD and NotionalPrincipal for the Contract
+            tryCatch(
+              {
+                t0 <- as.character(object$args[[1]][1])
+                evs_tmp <- events(object, t0)
+                object$InitialExchangeDate <- t0
+                object$NotionalPrincipal <- evs_tmp$evs[evs_tmp$evs$Date == t0,"NominalValue"]
+                if ("MD" %in% evs_tmp$evs$Type ) {
+                  object$MaturityDate <- evs_tmp$evs[evs_tmp$evs$Type == "MD","Date"]
+                } else {
+                  min_idx <- min(which( evs_tmp$evs$NominalValue==0))
+                  object$MaturityDate <- evs_tmp$evs[min_idx, "Date"]
+                }
+              },
+              error=function(cond) {
+                # Just ignore this then...
+              })
+              
             return(object)
+          })
+
+#' @export
+setGeneric(name = "Investment",
+           def = function(...){
+             standardGeneric("Investment")
+           })
+
+
+#' @export
+#' @rdname ct-methods
+setMethod(f = "Investment",signature = c(),
+          definition = function(...){
+            Investments(...)
           })
 
 setMethod(f = "initialize", signature="Investments",
