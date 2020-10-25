@@ -214,7 +214,7 @@ rf=RFConn()
 add(rf, yc)
 dcEngine <- DcEngine()
 set(dcEngine, list(RiskFactorObjectLink="RiskFreeCurve",
-                  DiscountingSpread=0.0))
+                  dc.spread=0.0))
 set(dcEngine, rf)
 
 # now compute income with revaluation gains for defined time axis

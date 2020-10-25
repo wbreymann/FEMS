@@ -31,6 +31,7 @@
 \alias{NegativeAmortizer}
 \alias{NegativeAmortizer,ANY-method}
 \alias{Investments,ANY-method}
+\alias{Investment,ANY-method}
 \alias{Reserves,ANY-method}
 \alias{Optns}
 \alias{Optns,ANY-method}
@@ -111,6 +112,8 @@ NegativeAmortizer(...)
 \S4method{NegativeAmortizer}{ANY}(...)
 
 \S4method{Investments}{ANY}(...)
+
+\S4method{Investment}{ANY}(...)
 
 \S4method{Reserves}{ANY}(...)
 

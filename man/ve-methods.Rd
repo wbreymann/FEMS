@@ -65,7 +65,7 @@ dc = VE("DiscountingEngine")
 dc = VE("DiscountingEngine")
 set(dc, what=list(
                    RiskFactorObjectLink="YC_CHF",
-                   DiscountingSpread=0.05))
+                   dc.spread=0.05))
 # same.dc = VE(dc$jref)   # This command doesn't work
 
 }

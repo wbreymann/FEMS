@@ -183,14 +183,14 @@ value(pam,by=ad,type="nominal")
 # define valuation engine for mark-to-model value
 dcEngine <- DcEngine()
 set(dcEngine,list(RiskFactorObjectLink="RiskFreeCurve",
-                  DiscountingSpread=0.0))
+                  dc.spread=0.0))
 set(dcEngine,rf)
 set(pam,dcEngine)
 value(pam,by=ad,type="market")
 
 # again with a different engine
 set(dcEngine,list(RiskFactorObjectLink="RiskFreeCurve",
-                  DiscountingSpread=0.1))
+                  dc.spread=0.1))
 value(pam,by=ad,type="market",method=dcEngine)
 
 }
