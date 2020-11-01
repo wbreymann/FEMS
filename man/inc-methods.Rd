@@ -40,7 +40,7 @@
 \alias{income,eventList,timeDate,character,logical,missing-method}
 \alias{income,data.frame,timeDate,character,ANY,ANY-method}
 \alias{income,data.frame,timeDate,character,logical,missing-method}
-\alias{income,Node,timeBuckets,character,ANY,ANY-method}
+\alias{income,Node,timeBuckets,ANY,ANY,ANY-method}
 \alias{income,Operations,timeDate,missing,ANY,ANY-method}
 \alias{income,Operations,timeBuckets,missing,ANY,ANY-method}
 \alias{income,Operations,timeBuckets,character,ANY,ANY-method}
@@ -122,7 +122,7 @@ income(object, by, type, revaluation.gains, method, ...)
 
 \S4method{income}{data.frame,timeDate,character,logical,missing}(object, by, type, revaluation.gains, method, ...)
 
-\S4method{income}{Node,timeBuckets,character,ANY,ANY}(object, by, type, revaluation.gains = FALSE, method, ...)
+\S4method{income}{Node,timeBuckets,ANY,ANY,ANY}(object, by, type, revaluation.gains, method, scale = 1, digits = 2)
 
 \S4method{income}{Operations,timeDate,missing,ANY,ANY}(object, by, type, revaluation.gains, method, ...)
 

@@ -186,16 +186,22 @@ get.YieldCurve <- function(rfconn) {
 #' @include Liquidity.R
 #' @rdname liq-methods
 #' @export
-setMethod(f = "liquidity", signature = c("Node", "timeBuckets", "character"),
-          definition = function(object, by, type){
+setMethod(f = "liquidity", signature = c("Node", "timeBuckets", "ANY"),
+          definition = function(object, by, type, scale=1, digits=2){
+            if (missing(type)) {
+              type <- "marginal"
+            }
             # Compute liquidity for whole tree
             clearAnalytics(object, "liquidity")
-            object$Do(fun=fAnalytics, "liquidity", by=by, type=type, filterFun=isLeaf)
+            object$Do(fun=fAnalytics, "liquidity", by=by, type=type, 
+                      filterFun=isLeaf)
             aggregateAnalytics(object, "liquidity")
-            liq = data.frame (t(object$Get("liquidity", format = function(x) as.numeric(ff(x,0)))  ),
-                              check.names=FALSE, fix.empty.names=FALSE)
-            rownames(liq) = capture.output(print(object))[-1]
-            liq
+            res = data.frame(
+              t(object$Get("liquidity", format = function(x) as.numeric(ff(x,0))) ),
+              check.names=FALSE, fix.empty.names=FALSE)
+            rownames(res) = capture.output(print(object))[-1]
+            colnames(res) <- by@bucketLabs
+            return(round(res/scale,digits))
           })
 
 ####---------------------------------------------------------------
@@ -204,20 +210,25 @@ setMethod(f = "liquidity", signature = c("Node", "timeBuckets", "character"),
 #' @include Value.R
 #' @rdname val-methods
 #' @export
-setMethod(f = "value", signature = c("Node", "timeBuckets", "character"),
-          definition = function(object, by, type, method) {
+setMethod(f = "value", signature = c("Node", "timeBuckets", "ANY"),
+          definition = function(object, by, type, method, scale=1, digits=2) {
             if (missing(method)) {
               method <- DcEngine()
             }
+            if (missing(type)) {
+              type <- "nominal"
+            }
             # Compute value for whole tree
             clearAnalytics(object, "value")
-            object$Do(fun=fAnalytics, "value", by=as.character(by), type=type, method=method, filterFun=isLeaf)
+            object$Do(fun=fAnalytics, "value", by=as.character(by), type=type, 
+                      method=method, filterFun=isLeaf)
             aggregateAnalytics(object, "value")
-            val <- data.frame (t(object$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
-                              check.names=FALSE, fix.empty.names=FALSE)
-            rownames(val) <- capture.output(print(object))[-1]
-            colnames(val) <- by@breakLabs
-            val
+            res <- data.frame(
+              t(object$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
+              check.names=FALSE, fix.empty.names=FALSE)
+            rownames(res) <- capture.output(print(object))[-1]
+            colnames(res) <- by@breakLabs
+            return(round(res/scale,digits))
           })
 
 
@@ -227,22 +238,30 @@ setMethod(f = "value", signature = c("Node", "timeBuckets", "character"),
 #' @include Income.R
 #' @rdname inc-methods
 #' @export
-setMethod(f = "income", signature = c("Node", "timeBuckets", "character"),
-          definition = function(object, by, type, revaluation.gains = FALSE, method, ...){
+setMethod(f = "income", signature = c("Node", "timeBuckets", "ANY"),
+          definition = function(object, by, type, revaluation.gains, 
+                                method, scale=1, digits=2){
             
-            # Compute value for whole tree
+            # Compute income for whole tree
             if (missing(method)) {
               method <- DcEngine()
+            }
+            if (missing(type)) {
+              type <- "marginal"
+            }
+            if (missing(revaluation.gains)) {
+              revaluation.gains <- FALSE
             }
             clearAnalytics(object, "income")
             object$Do(fun=fAnalytics, "income", by=by, type=type, method=method, 
                       revaluation.gains=revaluation.gains, filterFun=isLeaf)
             aggregateAnalytics(object, "income")
-            inc <- data.frame (t(object$Get("income", format = function(x) as.numeric(ff(x,0)))  ),
-                               check.names=FALSE, fix.empty.names=FALSE)
-            rownames(inc) <- capture.output(print(object))[-1]
-            colnames(inc) <- by@bucketLabs
-            inc
+            res <- data.frame(
+              t(object$Get("income", format = function(x) as.numeric(ff(x,0))) ),
+              check.names=FALSE, fix.empty.names=FALSE)
+            rownames(res) <- capture.output(print(object))[-1]
+            colnames(res) <- by@bucketLabs
+            return(round(res/scale,digits))
           })
 
 ##################################################

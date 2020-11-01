@@ -31,7 +31,7 @@
 \alias{value,CurrentAccount,character,character,missing-method}
 \alias{value,CurrentAccount,timeDate,character,ValuationEngine-method}
 \alias{value,CurrentAccount,character,character,ValuationEngine-method}
-\alias{value,Node,timeBuckets,character,ANY-method}
+\alias{value,Node,timeBuckets,ANY,ANY-method}
 \alias{value,Operations,AD0,character,missing-method}
 \alias{value,Operations,character,character,missing-method}
 \alias{value,Operations,timeDate,character,missing-method}
@@ -97,7 +97,7 @@ value(object, by, type, method, ...)
 
 \S4method{value}{CurrentAccount,character,character,ValuationEngine}(object, by, type, method, end_date, ...)
 
-\S4method{value}{Node,timeBuckets,character,ANY}(object, by, type, method)
+\S4method{value}{Node,timeBuckets,ANY,ANY}(object, by, type, method, scale = 1, digits = 2)
 
 \S4method{value}{Operations,AD0,character,missing}(object, by, type, method, ...)
 

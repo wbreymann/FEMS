@@ -25,7 +25,7 @@
 \alias{liquidity,CurrentAccount,timeBuckets,missing-method}
 \alias{liquidity,CurrentAccount,timeBuckets,character-method}
 \alias{liquidity,CurrentAccount,timeDate,character-method}
-\alias{liquidity,Node,timeBuckets,character-method}
+\alias{liquidity,Node,timeBuckets,ANY-method}
 \alias{liquidity,Operations,timeDate,missing-method}
 \alias{liquidity,Operations,timeBuckets,missing-method}
 \alias{liquidity,Operations,timeDate,character-method}
@@ -77,7 +77,7 @@ liquidity(object, by, type, ...)
 
 \S4method{liquidity}{CurrentAccount,timeDate,character}(object, by, type, digits = 2)
 
-\S4method{liquidity}{Node,timeBuckets,character}(object, by, type)
+\S4method{liquidity}{Node,timeBuckets,ANY}(object, by, type, scale = 1, digits = 2)
 
 \S4method{liquidity}{Operations,timeDate,missing}(object, by, type, ...)
 
