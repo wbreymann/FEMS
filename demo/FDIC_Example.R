@@ -44,7 +44,7 @@ t0 <- "2020-03-31"
 # just some generic Yield Curve
 yc.tnr <- c("1M","10Y")
 yc.rts <- c(0.02,0.02)
-yc <- YieldCurve(label = "YC.USA.TREASURY", 
+yc <- YieldCurve(label = "YC_EA_AAA", 
                  ReferenceDate = as.character(t0), 
                  Tenors = yc.tnr, 
                  Rates = yc.rts)
@@ -58,7 +58,36 @@ set(diskont, rf)
 
 events(balance, t0, rf, end_date="2025-03-31")
 
-events(ptf$contracts[[1]], t0)
+events(ptf$contracts[[1]], t0, rf)
 
+
+
+
+
+
+######
+# Here is the example using the existing Bond portfolio
+file.path <- "./data/BondPortfolio.xls"
+
+ptf <- Portfolio()
+import(ptf, source = file.path, sheet="BondPortfolio")
+
+t0 <- "2015-01-01"
+
+# just some generic Yield Curve
+yc.tnr <- c("1M","10Y")
+yc.rts <- c(0.02,0.02)
+yc <- YieldCurve(label = "YC_EA_AAA", 
+                 ReferenceDate = as.character(t0), 
+                 Tenors = yc.tnr, 
+                 Rates = yc.rts)
+
+# Generate market environment
+rf <- RFConn(yc)
+
+# Generate "discounting engine"
+diskont <- DcEngine(dc.spread=0.0, dc.object=yc)
+set(diskont, rf)
+events(ptf, t0, rf)
 
 
