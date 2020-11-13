@@ -58,7 +58,7 @@ set(diskont, rf)
 
 events(balance, t0, rf, end_date="2025-03-31")
 
-events(ptf)
+events(ptf$contracts[[1]], t0)
 
 
 
