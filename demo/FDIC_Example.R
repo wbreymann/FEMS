@@ -39,12 +39,12 @@ addContracts(ptf$contracts[6], FindNode(balance, "Mortgage"))
 addContracts(ptf$contracts[c(3,5)], FindNode(balance, "Bonds"))
 
 # calculate events for the contracts
-t0 <- "2020-03-31"
+t0 <- "2019-03-31"
 
 # just some generic Yield Curve
 yc.tnr <- c("1M","10Y")
 yc.rts <- c(0.02,0.02)
-yc <- YieldCurve(label = "YC_EA_AAA", 
+yc <- YieldCurve(label = "YC.USA.TREASURY", 
                  ReferenceDate = as.character(t0), 
                  Tenors = yc.tnr, 
                  Rates = yc.rts)
@@ -66,7 +66,9 @@ events(ptf$contracts[[1]], t0, rf)
 
 
 ######
-# Here is the example using the existing Bond portfolio
+# to have a working example, I transferred the existing bond portfolio sheet to the new 
+# ACTUS version
+
 file.path <- "./data/BondPortfolio.xls"
 
 ptf <- Portfolio()
