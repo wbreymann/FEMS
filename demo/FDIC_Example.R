@@ -1,4 +1,6 @@
 
+library(FEMS)
+
 # load the data for PAMs and ANNs into a Portfolio
 file.path.pam <- "./data-raw/PAM_FDIC.xls"
 file.path.ann <- "./data-raw/ANN_FDIC.xls"
@@ -23,6 +25,7 @@ balance$Liabilities$ShortTerm$AddChild("Bonds")
 balance$AddChild("Equity")
 balance$AddChild("Current")
 
+balance
 
 # Create current account and add to "Current"
 # (Where should the current account go?)
@@ -44,7 +47,7 @@ t0 <- "2019-03-31"
 # just some generic Yield Curve
 yc.tnr <- c("1M","10Y")
 yc.rts <- c(0.02,0.02)
-yc <- YieldCurve(label = "YC.USA.TREASURY", 
+yc <- YieldCurve(label = "YC.USA.TREASURY",  
                  ReferenceDate = as.character(t0), 
                  Tenors = yc.tnr, 
                  Rates = yc.rts)
@@ -56,7 +59,8 @@ rf <- RFConn(yc)
 diskont <- DcEngine(dc.spread=0.0, dc.object=yc)
 set(diskont, rf)
 
-events(balance, t0, rf, end_date="2025-03-31")
+events(balance, t0, rf, end_date="2025-03-31")  # Error!!!
+# Error: invalid assignment for reference class field ‘Data’, should be from class “timeSeries” or a subclass (was class “NULL”)
 
 events(ptf$contracts[[1]], t0, rf)
 
@@ -91,5 +95,13 @@ rf <- RFConn(yc)
 diskont <- DcEngine(dc.spread=0.0, dc.object=yc)
 set(diskont, rf)
 events(ptf, t0, rf)
+
+  
+  
+  
+  
+  
+  
+  
 
 
