@@ -223,10 +223,16 @@ setMethod(f = "value", signature = c("Node", "timeBuckets", "ANY"),
             object$Do(fun=fAnalytics, "value", by=as.character(by), type=type, 
                       method=method, filterFun=isLeaf)
             aggregateAnalytics(object, "value")
+            object$Equity$value <- object$value
+            object$value <- rep(0, length(object$value))
+            object2 <- Clone(object)
+            if ( is.element("PandL", names(object2$children)) )
+              object2$RemoveChild("PandL")
+            
             res <- data.frame(
-              t(object$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
+              t(object2$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
               check.names=FALSE, fix.empty.names=FALSE)
-            rownames(res) <- capture.output(print(object))[-1]
+            rownames(res) <- capture.output(print(object2))[-1]
             colnames(res) <- by@breakLabs
             return(round(res/scale,digits))
           })

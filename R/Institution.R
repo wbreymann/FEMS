@@ -27,6 +27,7 @@ institution <- function(name, cashcollect=TRUE, ...) {
   inst <- Node$new(name)
   inst$AddChild("Assets")
   inst$AddChild("Liabilities")
+  inst$AddChild("Equity")
   inst$AddChild("PandL")
   
   if (cashcollect) {

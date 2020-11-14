@@ -25,6 +25,7 @@ set(yc, what = list(
         Tenors = tenors, 
         Rates = rates))
 
+
 # create actus risk factor connector (later linking of risk factor(s) and CT)
 rf <- RFConn()
 add(rf,yc)
@@ -74,7 +75,7 @@ get(pam, what = "ContractID")
 summary(pam)
 
 #' generate contract events
-as.data.frame(events(pam,ad))
+events(pam,ad) # Error
 
 #' compute nominal value
 value(pam,by = ad,type = "nominal")
@@ -129,7 +130,7 @@ set(pam, what = list(
          CycleAnchorDateOfInterestPayment = "2014-12-31"))        
 
 #' generate contract events
-as.data.frame(events(pam,ad))
+events(pam,ad)
 
 #' compute mark-to-model value
 value(pam,by="2013-01-02",type="markToModel", method=eng)
@@ -152,7 +153,7 @@ set(pam, what=list(
          NominalInterestRate = 0.05))             # nominal Interest rate
 
 #' generate contract events
-as.data.frame(events(pam,ad)) # here is no interest payment without cycle definition...
+events(pam,ad) # here is no interest payment without cycle definition...
 
 #' compute mark-to-model value
 value(pam,by="2013-01-02",type="markToModel", method=eng)
@@ -175,7 +176,7 @@ set(pam, what = list(
          CycleOfInterestPayment = "P6ML1"))                
 
 #' generate contract events
-as.data.frame(events(pam,ad)) 
+events(pam,ad)
 
 #' compute mark-to-model value
 value(pam,by="2013-01-02",type="markToModel", method=eng)
@@ -197,7 +198,7 @@ plot(pam,ad)
 set(pam, what = list(CycleOfInterestPayment = "P6ML0")) # was "6M+" not sure what the L1 does?
 
 #' generate contract events
-as.data.frame(events(pam,ad))
+events(pam,ad)
 
 #' compute mark-to-model value
 value(pam,by="2013-01-02",type="markToModel", method=eng)
@@ -218,7 +219,7 @@ set(pam, what = list(CycleOfInterestPayment = "P6ML1"))
 set(object = pam, what = list(CapitalizationEndDate = "2013-07-01" ))
 
 #' generate contract events
-as.data.frame(events(pam,ad))
+events(pam,ad)
 
 #' compute mark-to-model value
 value(pam,by="2013-01-02",type="markToModel", method=eng)
@@ -249,7 +250,7 @@ set(object = pam, what = list(
                   MarketObjectCodeOfRateReset = "YC_Prim"))
 
 #' generate contract events
-as.data.frame(events(pam,ad))
+events(pam,ad)
 
 #' compute mark-to-model value
 value(pam,by="2013-01-02",type="markToModel", method=eng)
@@ -274,7 +275,7 @@ set(object = pam, what = list(
                   CycleOfRateReset = "P3ML1")) # was "3M-"
 
 #' generate contract events
-as.data.frame(events(pam,ad))
+events(pam,ad)
 
 #' compute mark-to-model value
 value(pam,by="2013-01-02",type="markToModel",method=eng)
@@ -296,7 +297,7 @@ set(yc, what = list(
           Tenors=tenors))
 
 #' generate contract events
-as.data.frame(events(pam,ad))
+events(pam,ad)
 
 #' compute mark-to-model value
 value(pam,by="2013-01-02",type="markToModel",method=eng)
