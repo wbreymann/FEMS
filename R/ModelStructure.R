@@ -223,10 +223,10 @@ setMethod(f = "value", signature = c("Node", "timeBuckets", "ANY"),
             object$Do(fun=fAnalytics, "value", by=as.character(by), type=type, 
                       method=method, filterFun=isLeaf)
             aggregateAnalytics(object, "value")
-            object$Equity$value <- object$value
+            object$Equity$value <- -object$value
             object$value <- rep(0, length(object$value))
             object2 <- Clone(object)
-            if ( is.element("PandL", names(object2$children)) )
+            if ( type == "nominal" && is.element("PandL", names(object2$children)) )
               object2$RemoveChild("PandL")
             
             res <- data.frame(

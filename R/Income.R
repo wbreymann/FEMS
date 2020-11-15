@@ -661,6 +661,13 @@ income.from.accruals = function(object, by, digits=2, ...) {
 # Is the computation correct?
 income.from.accruals.new = function(eventSeries, by, digits=2, ...) {
 
+  # NominalAccrued has NaN if AD0 is later than IED.
+  # This should not be.
+  # As workaround, it is set to 0
+  # Should be dropped as soon as ACTUS bug is fixed.
+  if (is.nan(eventSeries$evs[eventSeries$evs[,"Type"]=="AD0","NominalAccrued"])) {
+    eventSeries$evs[eventSeries$evs[,"Type"]=="AD0","NominalAccrued"] <- 0
+  }
   ev.df <- as.data.frame(eventSeries)[, c("Date","Type","NominalAccrued")]
   ev.df$Date <- substring(ev.df$Date, 1, 10)
   ev.target <- data.frame(Date = c(as.character(min(by) - 24 * 60 * 60), as.character(by)), Type = c("Init",rep("Accr",length(by))),
