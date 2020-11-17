@@ -641,7 +641,10 @@ setMethod(f = "income",
 # income from interest/fee
 income.from.payments = function(eventSeries, by, digits=2, ...) {
   # Check that ICPI is income relevant!!
-  income.events <- subset(as.data.frame(eventSeries), Type %in% c("IP","ICPI","FP","OPS","DPR"))
+  income.events <- subset(as.data.frame(eventSeries), Type %in% c("IP","IPCI","FP","OPS","DPR","IED"))
+  # adjust for PremiumDiscountsatIED
+  idx.ied <- income.events$Type=="IED"
+  income.events$Value[idx.ied] <- income.events$Value[idx.ied] + income.events$NominalValue [idx.ied]
   inc <- timeSeries(rep(0, length(by)), charvec = by)
   cf.raw <- timeSeries(income.events$Value, charvec = substring(income.events$Date, 1, 10))
   cf.aggr <- aggregate(cf.raw, by, FUN=sum)
