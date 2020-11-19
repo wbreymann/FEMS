@@ -1,7 +1,7 @@
 Package: FEMS
 License: TBD
-Version: 0.2.13
-Date: 2020-11-15
+Version: 0.2.14
+Date: 2020-11-19
 Author: Christoph Auth <christoph.auth@zhaw.ch>,
     Wolfgang Breymann <wolfgang.breymann@zhaw.ch>,
     Nils Bund <nils.bundi@gmail.com>
