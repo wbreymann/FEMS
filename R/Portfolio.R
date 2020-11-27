@@ -127,7 +127,7 @@ setGeneric(name = "generateEvents",
 setMethod("generateEvents", signature = c("Portfolio"),
           definition = function(object, ...){
             # send contract and risk factors to the Server
-            
+
             ## create body for contracts
             contracts <- list()
             rf_conn <- RFConn()
@@ -1123,6 +1123,11 @@ setMethod(f = "EventSeries", signature = c("Portfolio", "AD0"),
               }
               evs_list[[i]] <- temp_df
               # evs_list[[i]] <- temp_df[temp_df$Date>=as.character(ad), ]
+
+              if (grepl("T00:00:00$",evs_raw[[i]]$contractId)) {
+                #warning("ContractName contained T00:00:00. Will be removed!")
+                evs_raw[[i]]$contractId <- gsub("T00:00:00","",evs_raw[[i]]$contractId)
+              }
               id_list[[i]] <- evs_raw[[i]]$contractId
               ct_list[[i]] <- object$contracts[[evs_raw[[i]]$contractId]]$ContractTerms$ContractType
             }

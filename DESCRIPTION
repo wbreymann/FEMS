@@ -108,6 +108,7 @@ Collate:
     'import.R'
     'irr.R'
     'loan.R'
+    'newbiz.R'
     'onAttach.R'
     'onLoad.R'
     'priceVsYield.R'
