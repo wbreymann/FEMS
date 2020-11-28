@@ -288,12 +288,12 @@ set(ptf,rf)
 set(eng,rf)
 
 # -> Neugeschäft "Steigende Zinsen"
-new.zinsanstieg=newbiz(Bilanz,by,s.zinsanstieg,templates,rf)
-ptf.zinsanstieg=add.model(Bilanz, new.zinsanstieg)
+new.zinsanstieg <- newbiz(Bilanz,by,s.zinsanstieg,templates,rf)
+ptf.zinsanstieg <- add.model(Bilanz, new.zinsanstieg)
 
 # -> Neugeschäft "Fortführung"
-new.konst=newbiz(Bilanz,by,s.konst,templates,rf)
-ptf.konst=add.model(Bilanz, new.konst)
+new.konst <- newbiz(Bilanz,by,s.konst,templates,rf)
+ptf.konst <- add.model(Bilanz, new.konst)
 
 # -> Vergleich Nominal-Wert
 rbind(value(ptf.konst,tb,type="nominal")["1 Bilanz                  ",],
