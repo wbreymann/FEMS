@@ -34,10 +34,17 @@ colnames(pars.pretty) <- c("CID", "CT", "CNTRL", "NT", "MD", "P/D", "IR",
 pars.pretty
 
 # 3. Definieren hierarchische Bilanzstruktur
-Bilanz <- Node$new("Bilanz")
-Bilanz$AddChild("Assets")
-Bilanz$AddChild("Liabilities")
-Bilanz$Assets$AddChild("FixeDarlehen")
+# Bilanz <- Node$new("Bilanz")
+# Bilanz$AddChild("Assets")
+# Bilanz$AddChild("Liabilities")
+# Bilanz$Assets$AddChild("FixeDarlehen")
+# Bilanz$Assets$AddChild("VariableDarlehen")
+# Bilanz$Liabilities$AddChild("Interbank")
+# Bilanz$Liabilities$AddChild("Kundenkonten")
+
+Bilanz <- institution("BankA")
+temp.node <- FindNode(Bilanz,"LongTerm")
+temp.node$name <- "FixeDarlehen"
 Bilanz$Assets$AddChild("VariableDarlehen")
 Bilanz$Liabilities$AddChild("Interbank")
 Bilanz$Liabilities$AddChild("Kundenkonten")

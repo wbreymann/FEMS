@@ -83,6 +83,7 @@ setMethod(f = "newbiz",
 
             # extract nodes
             nodes <- Traverse(object, filterFun = isLeaf)
+            nodes <- nodes[!(Get(nodes,"name") %in% c("Equity","PandL","Current"))]
             #nodes <- Traverse(object, traversal = "pre-order") # or rather this???
             
             # test inputs
@@ -100,7 +101,6 @@ setMethod(f = "newbiz",
             value.node <- value(object, by = tb, type = "nominal")[,1, drop=FALSE]
             
             # current value
-            names(Get(nodes, "levelName"))
             current <- abs(value.node[sapply(names(Get(nodes, "levelName")), 
                                              grep, x=rownames(value.node)),])
             names(current) <- names(Get(nodes, "levelName"))
