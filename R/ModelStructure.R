@@ -355,7 +355,12 @@ fAnalytics = function(node, ...) {
       FUN = function(x, pars) {
         pars = list(...)
         fnam = pars[[1]] # the name of the analytics [liquidity|income|value]
-        object = node$eventList[[as.character(get(x,"ContractID"))]] # the eventSeries of the contract
+        Id = tryCatch({
+          get(x,"ContractID")
+        }, error = function(e) {
+          x
+        })
+        object = node$eventList[[as.character(Id)]] # the eventSeries of the contract
         pars = pars[c(-1)]
       do.call(fnam, c(object=object, pars))
       })
