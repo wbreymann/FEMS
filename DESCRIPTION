@@ -1,12 +1,7 @@
 Package: FEMS
 License: TBD
-<<<<<<< HEAD
 Version: 0.2.19
 Date: 2021-10-01
-=======
-Version: 0.2.17
-Date: 2020-12-08
->>>>>>> 503f086fa68cff3f7c2926e7a03f595b43540014
 Author: Christoph Auth <christoph.auth@zhaw.ch>,
     Wolfgang Breymann <wolfgang.breymann@zhaw.ch>,
     Nils Bund <nils.bundi@gmail.com>
