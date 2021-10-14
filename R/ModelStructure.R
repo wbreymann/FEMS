@@ -82,6 +82,63 @@ setMethod(f = "addContracts", signature = c("list", "Node"),
             leaf$contracts = c(leaf$contracts,contracts)
           })
 
+#' @export
+setGeneric(name = "add.model",
+           def = function(object, added.object, ...){
+             standardGeneric("add.model")
+           })
+
+#' @export
+setMethod(f = "add.model", signature = c("Node", "Node"),
+          definition = function(object, added.object, ...){
+            if (!identical(object$Get("levelName"), added.object$Get("levelName"))) {
+              stop("Structure of both nodes must be identical!")
+            }
+            out <- make.copy(object)
+            out$Do(function(node) {
+                      nm <- names(node$Get("levelName"))
+                      ctrs <- FindNode(added.object, nm)$contracts
+                      if (!is.null(ctrs)) {
+                        addContracts(ctrs, node)
+                      }
+                      }, filterFun = isLeaf)
+            clearAnalytics(out, "eventList")
+            clearAnalytics(out, "value")
+            clearAnalytics(out, "income")
+            clearAnalytics(out, "liquidity")
+            return(out)
+          })
+
+#' @export
+setGeneric(name = "make.copy",
+           def = function(object, ...){
+             standardGeneric("make.copy")
+           })
+
+#' @export
+setMethod(f = "make.copy", signature = c("Node"),
+          definition = function(object, empty = FALSE, ...){
+            object.copy <- Clone(object, pruneFun = NULL, attributes = FALSE)
+            if (empty) {
+              clearAll(object.copy)
+            }
+            return(object.copy)
+          })
+
+#' @export
+setMethod(f = "get", signature = c("Node", "character"),
+          definition = function(object, what, ...){
+            if ( tolower(what[1]) == "contracts" ) {
+              if(!is.list(object$Get("contracts"))) {
+                out <- list()
+              } else {
+                out <- Filter(Negate(anyNA), object$Get("contracts"))
+              }
+            }
+            return(out)
+          })
+
+
 ####---------------------------------------------------------------
 ## events methods
 
@@ -104,6 +161,7 @@ setMethod(f = "events", signature = c("Node", "character", "RiskFactorConnector"
 #' @include CurrentAccount.R
 ###' @export
 events.modelstructure = function(node, ..., filterFun=isLeaf) {
+  
   node$eventList <- NULL # cleanup old eventList
   pars = list(...)
   ctrs = node$contracts
@@ -212,6 +270,7 @@ setMethod(f = "liquidity", signature = c("Node", "timeBuckets", "ANY"),
 #' @export
 setMethod(f = "value", signature = c("Node", "timeBuckets", "ANY"),
           definition = function(object, by, type, method, scale=1, digits=2) {
+
             if (missing(method)) {
               method <- DcEngine()
             }
@@ -223,10 +282,16 @@ setMethod(f = "value", signature = c("Node", "timeBuckets", "ANY"),
             object$Do(fun=fAnalytics, "value", by=as.character(by), type=type, 
                       method=method, filterFun=isLeaf)
             aggregateAnalytics(object, "value")
+            object$Equity$value <- -object$value
+            object$value <- rep(0, length(object$value))
+            object2 <- Clone(object)
+            if ( type == "nominal" && is.element("PandL", names(object2$children)) )
+              object2$RemoveChild("PandL")
+            
             res <- data.frame(
-              t(object$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
+              t(object2$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
               check.names=FALSE, fix.empty.names=FALSE)
-            rownames(res) <- capture.output(print(object))[-1]
+            rownames(res) <- capture.output(print(object2))[-1]
             colnames(res) <- by@breakLabs
             return(round(res/scale,digits))
           })
@@ -241,7 +306,7 @@ setMethod(f = "value", signature = c("Node", "timeBuckets", "ANY"),
 setMethod(f = "income", signature = c("Node", "timeBuckets", "ANY"),
           definition = function(object, by, type, revaluation.gains, 
                                 method, scale=1, digits=2){
-            
+
             # Compute income for whole tree
             if (missing(method)) {
               method <- DcEngine()
@@ -290,7 +355,12 @@ fAnalytics = function(node, ...) {
       FUN = function(x, pars) {
         pars = list(...)
         fnam = pars[[1]] # the name of the analytics [liquidity|income|value]
-        object = node$eventList[[as.character(get(x,"ContractID"))]] # the eventSeries of the contract
+        Id = tryCatch({
+          get(x,"ContractID")
+        }, error = function(e) {
+          x
+        })
+        object = node$eventList[[as.character(Id)]] # the eventSeries of the contract
         pars = pars[c(-1)]
       do.call(fnam, c(object=object, pars))
       })
@@ -326,6 +396,17 @@ clearAnalytics = function(node, analytics) {
   nodes = Traverse(node, traversal="pre-order")
   for (n in nodes) {
     n[[analytics]] = NULL
+  }
+}
+
+# clears all attributes of a node
+clearAll = function(node) {
+  nodes = Traverse(node, traversal="pre-order")
+  for (n in nodes) {
+    att <- n$attributes
+    for (a in att) {
+      n[[a]] = NULL
+    }
   }
 }
 

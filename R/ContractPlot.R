@@ -147,6 +147,36 @@ setMethod("plot", signature("FEMSContract", "character"),
             }
           })
 
+#' @export
+#' @docType methods
+#' @rdname plt-methods
+setMethod("plot", signature("EventSeries", "character"),
+          definition = function(x, y, yc=NULL, ...){
+            
+            # extract event series as data.frame
+            df <- as.data.frame(x)
+            
+            # plot
+            # I need to distinguish between single and combined contracts!
+            ct <- get(x,"ct")
+            id <- get(x,"id")
+            if (tolower(ct) %in% c("future", "futur", "option", "optns")) {
+              FEMS:::contractPlot(df,contractType = ct,
+                                  childType =
+                                    get(get(x,what="ChildContracts")[[1]], what="ContractType"),
+                                  contractId = id)
+              
+            } else if (tolower(ct) %in% c("swap", "swaps")){
+              FEMS:::contractPlot(df,contractType = ct,
+                                  childType =
+                                    c(get(get(x,what="ChildContracts")[[1]], what="ContractType"),
+                                      get(get(x,what="ChildContracts")[[2]], what="ContractType")),
+                                  contractId = id)
+            } else {
+              FEMS:::contractPlot(df,contractType = ct, contractId = id)
+              
+            }
+          })
 
 # setMethod("plot", signature("ContractType", "character"),
 #           definition = function(x, y, yc=NULL, ...){

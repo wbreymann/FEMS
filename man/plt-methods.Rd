@@ -4,6 +4,7 @@
 \name{plot,ContractType,character-method}
 \alias{plot,ContractType,character-method}
 \alias{plot,FEMSContract,character-method}
+\alias{plot,EventSeries,character-method}
 \alias{plot,YieldCurve,missing-method}
 \alias{plot,RiskFactor,ANY-method}
 \title{Plot a \link{YieldCurve}}
@@ -11,6 +12,8 @@
 \S4method{plot}{ContractType,character}(x, y, yc = NULL, ...)
 
 \S4method{plot}{FEMSContract,character}(x, y, yc = NULL, to = NULL, ...)
+
+\S4method{plot}{EventSeries,character}(x, y, yc = NULL, ...)
 
 \S4method{plot}{YieldCurve,missing}(x, y, ...)
 

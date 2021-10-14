@@ -641,7 +641,10 @@ setMethod(f = "income",
 # income from interest/fee
 income.from.payments = function(eventSeries, by, digits=2, ...) {
   # Check that ICPI is income relevant!!
-  income.events <- subset(as.data.frame(eventSeries), Type %in% c("IP","ICPI","FP","OPS","DPR"))
+  income.events <- subset(as.data.frame(eventSeries), Type %in% c("IP","IPCI","FP","OPS","DPR","IED"))
+  # adjust for PremiumDiscountsatIED
+  idx.ied <- income.events$Type=="IED"
+  income.events$Value[idx.ied] <- income.events$Value[idx.ied] + income.events$NominalValue [idx.ied]
   inc <- timeSeries(rep(0, length(by)), charvec = by)
   cf.raw <- timeSeries(income.events$Value, charvec = substring(income.events$Date, 1, 10))
   cf.aggr <- aggregate(cf.raw, by, FUN=sum)
@@ -661,6 +664,13 @@ income.from.accruals = function(object, by, digits=2, ...) {
 # Is the computation correct?
 income.from.accruals.new = function(eventSeries, by, digits=2, ...) {
 
+  # NominalAccrued has NaN if AD0 is later than IED.
+  # This should not be.
+  # As workaround, it is set to 0
+  # Should be dropped as soon as ACTUS bug is fixed.
+  if (is.nan(eventSeries$evs[eventSeries$evs[,"Type"]=="AD0","NominalAccrued"])) {
+    eventSeries$evs[eventSeries$evs[,"Type"]=="AD0","NominalAccrued"] <- 0
+  }
   ev.df <- as.data.frame(eventSeries)[, c("Date","Type","NominalAccrued")]
   ev.df$Date <- substring(ev.df$Date, 1, 10)
   ev.target <- data.frame(Date = c(as.character(min(by) - 24 * 60 * 60), as.character(by)), Type = c("Init",rep("Accr",length(by))),

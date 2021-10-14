@@ -715,7 +715,7 @@ setMethod(f = "value", signature = c("Operations", "timeDate", "character", "mis
           definition = function(object, by, type, ...){
             if(type=="nominal") {
               return(ops.nominal(events(object, by[1]), by, ...))
-            } else if (type %in% c("markToModel","markToMarket")) {
+            } else if (type %in% "market") {
               stop("Need argument 'method' in order to evaluate 'markToModel'-type value!")
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
@@ -733,7 +733,7 @@ setMethod(f = "value", signature = c("Operations", "timeBuckets", "character",
               val = ops.nominal(events(object, by2[1]), by2, ...)
               names(val) = by@breakLabs
               return(val)
-            } else if (type %in% c("markToModel","markToMarket")) {
+            } else if (type %in% "market") {
               stop("Need argument 'method' in order to evaluate 'markToModel'-type value!")
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
@@ -760,9 +760,12 @@ setMethod(f = "value", signature = c("Operations", "timeDate", "character",
           definition = function(object, by, type, method, ...){
             if(type=="nominal") {
               return(ops.nominal(events(object, by[1]), by, ...))
-            } else if (type %in% c("markToModel","markToMarket")) {
+            } else if (type %in% "market") {
               # print("valuation of operations contract")
-              return(ops.marketValue(events(object, by[1]), by, method, ...))
+              evs <- events(object, by[1])
+              tmp <- ops.marketValue(evs, by, method, ...)
+              return(tmp)
+          # return(ops.marketValue(events(object, by[1]), by, method, ...))
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
             }
@@ -780,7 +783,7 @@ setMethod(f = "value", signature = c("Operations", "timeBuckets", "character",
               val = ops.nominal(events(object, as.timeDate(by2[1])[1]), by2, ...)
               names(val) = by@breakLabs
               return(val)
-            } else if (type %in% c("markToModel","markToMarket")) {
+            } else if (type %in% "market") {
               val = ops.marketValue(events(object, as.timeDate(by[1])[1]), by, method, ...)
               names(val) = by@breakLabs
               return(val)
@@ -814,7 +817,9 @@ ops.marketValue = function(object, by, method, digits=2) {
  
   # extract discounting parameters
   spread <- FEMS:::get(method,"dc.spread")
-  dc <- get(method, "RiskFactorObject")
+  # dc <- get(method, "RiskFactorObject") # This is wrong.
+  dc <- get(method, "dc.object")
+
   FEMS::set(dc, list(Rates = FEMS::get(dc, "Rates") + spread))
   
   # extract cashflow events

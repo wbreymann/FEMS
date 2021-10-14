@@ -100,8 +100,8 @@ object using \code{EventSeries(x)} with \code{x} a
 R-data.frame using \code{as.data.frame(y)}.
 
 In addition, a number of analytical methods allows to compute standard
-financial analytics based on the Contract Events of a CT. Amongst 
-others, these are \code{markToModel}, \code{nominal},
+financial analytics based on the Contract Events of a CT. 
+Amongst others, these are \code{market}, \code{nominal},
 \code{macaulay}, etc.
 
 Lastly, a graphical representation of the payoff of a CT may

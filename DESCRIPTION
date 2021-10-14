@@ -1,7 +1,7 @@
 Package: FEMS
 License: TBD
-Version: 0.2.12
-Date: 2020-10-29
+Version: 0.2.19
+Date: 2021-10-01
 Author: Christoph Auth <christoph.auth@zhaw.ch>,
     Wolfgang Breymann <wolfgang.breymann@zhaw.ch>,
     Nils Bund <nils.bundi@gmail.com>
@@ -42,7 +42,7 @@ Imports:
     timeSeries (>= 3012.99),
 SystemRequirements: R (>= 3.5.0) 
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Collate: 
     'ContractModel.R'
     'RiskFactor.R'
@@ -108,6 +108,7 @@ Collate:
     'import.R'
     'irr.R'
     'loan.R'
+    'newbiz.R'
     'onAttach.R'
     'onLoad.R'
     'priceVsYield.R'

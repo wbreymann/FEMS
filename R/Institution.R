@@ -22,12 +22,13 @@ Institution <- R6Class("Institution",
 
 #' @export
 #' @rdname institution
-institution <- function(name, cashcollect=TRUE, ...) {
+institution <- function(name, cashcollect=TRUE, equity=TRUE, PandL=TRUE, ...) {
   
   inst <- Node$new(name)
   inst$AddChild("Assets")
   inst$AddChild("Liabilities")
-  inst$AddChild("PandL")
+  if (equity) { inst$AddChild("Equity") }
+  if (PandL) { inst$AddChild("PandL") }
   
   if (cashcollect) {
     inst$Assets$AddChild("Current")

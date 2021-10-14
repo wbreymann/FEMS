@@ -182,16 +182,17 @@ setMethod(f = "liquidity", signature = c("EventSeries", "timeDate", "character")
           definition = function(object, by, type, digits = 2) {
           # definition = function(object, by, type, digits = 2, filtered=c("DPR", "IAM","RES","IPCI")){
           # cf.raw <- object$evs[!is.element(object$evs$Type,filtered),] 
+            filtered=c("DPR", "IAM","RES","IPCI")
             if (type == "marginal") {
               liq <- timeSeries(rep(0, length(by)), charvec = by)
-              cf.raw <- timeSeries(get(object,"evs")$Value,
-                                 charvec = substring(get(object,"evs")$Date, 1, 10))
-              # cf.raw <- timeSeries(cf.raw$Value,
-              #                      charvec = substring(cf.raw$Date, 1, 10))
-              # cf.aggr = .aggregate.timeSeries(cf.raw, by, FUN=sum)
-              cf.aggr <- aggregate(cf.raw, by, FUN = sum)
-              
-              liq[time(cf.aggr),] <- cf.aggr
+              evs <- get(object,"evs")
+              evs <- evs[!is.element(evs$Type, filtered),]
+              cf.raw <- timeSeries(evs$Value,
+                                 charvec = substring(evs$Date, 1, 10))
+              if (length(cf.raw)>0) {
+                cf.aggr <- aggregate(cf.raw, by, FUN = sum)
+                liq[time(cf.aggr),] <- cf.aggr
+              }
               liq <- as.numeric(series(liq))[-1]
             } else if (type == "cumulative") {
               liq <- cumsum(liquidity(object, by, type = "marginal", digits = digits))
@@ -279,7 +280,7 @@ setMethod(f = "liquidity", signature = c("data.frame", "timeDate", "character"),
               liq = FEMS:::aggregate.leafs(leafs, tree$branches, by)
 
             } else if (type=="marginal") {
-              ev.raw <- subset(object, !Type %in% c("DPR","RES"))
+              ev.raw <- subset(object, !Type %in% c("DPR", "ITF","RES","IPCI"))
               liq <- timeSeries(rep(0, length(by)), charvec=by)
               cf.raw <- timeSeries(ev.raw$Value,
                                   charvec=substring(ev.raw$Date,1,10))

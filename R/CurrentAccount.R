@@ -508,7 +508,7 @@ setMethod(f = "value", signature = c("CurrentAccount", "character", "character",
           definition = function(object, by, type, method, end_date, ...){
             if(type=="nominal") {
               return(FEMS::value(FEMS::events(object, by[1], end_date=by[length(by)]), by, "nominal", ...))
-            } else if (type %in% c("markToModel","markToMarket")) {
+            } else if (type %in% "market") {
               stop("Need argument 'method' in order to evaluate 'markToModel'-type value!")
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
@@ -530,10 +530,15 @@ setMethod(f = "value", signature = c("CurrentAccount", "timeDate", "character", 
 #' @rdname val-methods
 setMethod(f = "value", signature = c("CurrentAccount", "character", "character", "ValuationEngine"),
           definition = function(object, by, type, method, end_date, ...){
+            type <- temp.func.type.deprecated(type)
             if (type == "nominal") {
-              val <- FEMS::value(FEMS::events(object, by[1], object$RiskFactorConnector, end_date=end_date), by, "nominal", method, ...)
-            } else if (type %in% c("markToModel", "markToMarket") ) {
-              val <- FEMS::value(FEMS::events(object, by[1], object$RiskFactorConnector, end_date=end_date), by, "markToModel", method, ...)
+              val <- FEMS::value(FEMS::events(
+                object, by[1], object$RiskFactorConnector, end_date=end_date), 
+                by, "nominal", method, ...)
+            } else if (type %in% "market" ) {
+              val <- FEMS::value(FEMS::events(
+                object, by[1], object$RiskFactorConnector, end_date=end_date), 
+                by, "market", method, ...)
             } else {
               stop(paste("Value type '", type, "' not recognized!", sep=""))
             }

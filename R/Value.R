@@ -352,7 +352,9 @@ setMethod(f = "value", signature = c("EventSeries", "character", "character", "D
                 # Otherwise inconsistent with result from same method
                 # computed from Contract
                 evs.sub = subset(evs, times >= timeDate(ad))
-                evs.sub <- subset(evs.sub, !(evs.sub$types %in% c("DPR","IPCI")))
+                # evs.sub <- subset(evs.sub, !(evs.sub$types %in% c("DPR","IPCI")))
+                # ATTENTION: IPCI muss beim Abzinsen berücksichtigt werden.
+                evs.sub <- subset(evs.sub, !(evs.sub$types %in% c("DPR")))
                 if( nrow(evs.sub)==0 | sum(evs.sub$types %in% c("IED","PRD")) > 0
                     # | evs.sub["times", evs.sub$types=="IED"] > ad
                 ) {
@@ -623,9 +625,11 @@ check.start.date <- function(start_dt, start_dt_evs) {
 }
 
 temp.func.type.deprecated <- function(type) {
-  if (type %in% c("markToModel", "markToMarket")) {
-    cat("The type 'markToModel' or 'markToMarket' will be deprecated in future releases.\n")
-    cat("Please use 'market' instead.\n")
+  if (type %in% c("markToModel", "markToMarket") ) {
+    # if ( type != "market") {
+      cat("The type 'markToModel' or 'markToMarket' will be deprecated in future releases.\n")
+      cat("Please use 'market' instead.\n")
+    # }
     type <- "market"
   }
   return(type)

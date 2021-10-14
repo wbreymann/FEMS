@@ -172,7 +172,7 @@ setMethod(f = "get", signature = c("DiscountingEngine","character"),
                 out <- object$dc.object
               } else if (what == "dc.spread") {
                 out <- object$dc.spread
-              }
+              } 
             return(out)
           })
 

@@ -275,13 +275,13 @@ setMethod(f = "sensitivity",
               
               # Calculate value for base scenario
               set(method, scenarios[[1]])
-              V.0 = FEMS::value(object, by[1], type="markToModel", method=method)
+              V.0 = FEMS::value(object, by[1], type="market", method=method)
               
               # Calculating the discounted value for all other scenarios
               scenarios[1] = NULL
               V = unlist(lapply(scenarios, FUN=function(x) {
                 temp = set(method, x)
-                FEMS::value(object, by[1], type="markToModel", method=temp)
+                FEMS::value(object, by[1], type="market", method=temp)
               }))
               
               # compute sensitivity
@@ -366,7 +366,8 @@ setMethod(
               
       ## discount factors
       ad0 <- by[1]
-      yc <- get(method,"RiskFactorObject")
+      # yc <- get(method,"RiskFactorObject")
+      yc <- get(method, "dc.object")
       dfs <- discountFactors(yc, to=dates, from=ad0)
               
       ## Calculating the Macauly Duration
@@ -381,7 +382,8 @@ setMethod(
 
       ## discount factors
       ad0 <- by[1]
-      yc <- get(method,"RiskFactorObject")
+      # yc <- get(method,"RiskFactorObject")
+      yc <- get(method, "dc.object")
       dfs <- discountFactors(yc, to=dates, from=ad0)
       s <- rates(yc, to=dates)
               
@@ -451,7 +453,9 @@ setMethod(f = "sensitivity",
               dates <- get(object, "evs")$Date
               cfs <- get(object, "evs")$Value
               ad0 <- by[1]
-              yc.nme = get(method,"RiskFactorObject")$label
+              # yc.nme = get(method,"RiskFactorObject")$label
+              yc.nme = get(method,"dc.object")$label
+
               yc <- FEMS:::get(scenarios[[1]], yc.nme)
               dfs <- discountFactors(yc, to=dates, from=ad0)
               V.0 = as.numeric(cfs%*%dfs)
