@@ -4,4 +4,53 @@
   * arg from -> by
   * yield should also accomodate yieldCurve objects and arg yieldCurve should be deprecated
   
+- presentValue/value: 
+  * check treatment of IPCI events. 
+    Should be taken into account in present value computation.
+    
+- streamline compounding methods for present value computation:
+  * Provide yearly, intra-yearly and continuous compounding for functions
+    value, presentValue and irr.
+    
+- Berechnung der Zinsen für angebrochene Perioden
+
+- for function irr:
+irr(object, method = "compound", period = "Y", convention = "30E360E", 
+       isPercentage=TRUE, ...)
+  We can merge method and period into a single argument "period":
+  * period = "0" means continuous compounding
+  * period = "INF" means "linear"
   
+  
+- By the way, such conventions should be used by the discount engine.
+
+- Definition von Zeitintervallen:
+  * Es gibt das timeSeries 'by' format und das Format, das im Argument 'period' von 
+    'irr' benutzt wird. 
+    Wir sollten wird uns auf ein Format einigen.
+  * Es sollte die Syntax "nP" mit n natürliche Zahl und P=[Y|M|W|D] möglich sein.
+  
+- presentValue(cashFlows(OpCFs, "2013-12-31"), 5, from="2015-01-01")
+  doesn't work as expected.
+  
+  With the following definition:
+  times = timeSequence(from="2014-01-01", by="3 months", length.out=9)
+values = cumsum(c(1,rnorm(8,0.02,0.1)))
+# Erstellen eines Preisindexes
+idx <- Index(label = "PriceIndex", data = values, 
+            charvec = times)
+# Funktion für den Ertrag
+revenue <- function(idx, times) { 
+  idx$Data[as.character(times),] * 1000
+}
+# Modellierung des operativen Zahlungsstromes
+OpCFs <- OperationalCF(
+  ContractID="Ops001", Currency="CHF",
+  pattern = revenue, # die Funktion von oben
+  args = list( # Parameter der Funktion
+    idx = idx,  
+    times = as.character(times)
+  )
+)
+
+evs <- events(OpCFs, "2013-12-31")
