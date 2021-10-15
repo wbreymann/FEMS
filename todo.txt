@@ -1,0 +1,7 @@
+
+- Function presentValue:
+  * Interface should be streamlined and in better accordance with the value function
+  * arg from -> by
+  * yield should also accomodate yieldCurve objects and arg yieldCurve should be deprecated
+  
+  
