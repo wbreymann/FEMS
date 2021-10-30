@@ -54,3 +54,33 @@ OpCFs <- OperationalCF(
 )
 
 evs <- events(OpCFs, "2013-12-31")
+
+- isPrice doesn't make sense for operational cash flows
+
+- end_date not defined for presentValue
+
+- I wonder whether we should not rename the 'events' function to 'simulate'
+  Because this is what it is.
+  I know, this is a major change, and the old function should be provided 
+  for a certain period but labeld "deprecated"
+  
+- RiskFactorConnector -> RiskFactorEnv
+
+- Kontrakt CT101 vom Bankenmodell zahlt keine Zinsen. (Siehe HA2)
+
+- Suggestion:
+  Replace the function "events" by "simulate".
+  I think it's more intuitive.
+  The arguments remain the same, but be should add the following argument:
+  type = ["single"|"mc"] (default: "single")
+  rule = FUN (must be specified if type="mc"). 
+      The function FUN generates the mc scenearios.
+  ...: arguments passed to FUN.
+  
+- MC simulation:
+  The simulation command should work as sketched above.
+  The results are stored in the institution object (i.e., the data.tree)
+  The analysis commands should be extended such that they work with the whole mc sample
+  An then we need easy commands to extract the distribution (i.e., the computed sample)
+  for different analytical quantities, 
+  and also an easy way to compute Value-at-Risk and Expected Shortfall.
