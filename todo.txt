@@ -7,6 +7,7 @@
 - presentValue/value: 
   * check treatment of IPCI events. 
     Should be taken into account in present value computation.
+    Sollte schon (weitgehend?) erledigt.
     
 - streamline compounding methods for present value computation:
   * Provide yearly, intra-yearly and continuous compounding for functions
@@ -84,3 +85,5 @@ evs <- events(OpCFs, "2013-12-31")
   An then we need easy commands to extract the distribution (i.e., the computed sample)
   for different analytical quantities, 
   and also an easy way to compute Value-at-Risk and Expected Shortfall.
+  
+- Help vervollständigen
