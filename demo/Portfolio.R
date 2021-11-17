@@ -39,6 +39,21 @@ presentValue(bnd2, yield=9, isPrice=TRUE)
 presentValue(bnd3, yield=9, isPrice=TRUE)
 presentValue(ptf, yield=c(9,9,9), isPrice=TRUE)
 
+
+t <- "2015-01-01"
+yc <- YieldCurve()
+tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
+rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
+
+# set function can be called as before...
+set(yc, what = list(
+  label = "YC_Prim",
+  ReferenceDate = t,
+  Tenors = tenors,
+  Rates = rates))
+
+presentValue(ptf, yieldCurve=yc, isPrice=TRUE)
+
 duration(bnd1, type="macaulay", yield=9)
 duration(bnd2, type="macaulay", yield=9)
 duration(bnd3, type="macaulay", yield=9)
