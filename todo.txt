@@ -31,7 +31,7 @@ irr(object, method = "compound", period = "Y", convention = "30E360E",
     Wir sollten wird uns auf ein Format einigen.
   * Es sollte die Syntax "nP" mit n natürliche Zahl und P=[Y|M|W|D] möglich sein.
   
-- presentValue(cashFlows(OpCFs, "2013-12-31"), 5, from="2015-01-01")
+- presentValue(cashFlows(OpCFs, "2013-12-31"), 5, by="2015-01-01")
   doesn't work as expected.
   
   With the following definition:
