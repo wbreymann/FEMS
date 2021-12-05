@@ -36,7 +36,7 @@ This constructor is in fact a short cut to the constructors
 of the implemented classes such as \code{\link{PamModel}} for 
 \code{\link{PrincipalAtMaturityModel}} or 
 \code{\link{StkModel}} for \code{\link{StockModel}}. Note 
-that it is not possible to instanciate class 
+that it is not possible to instantiate class 
 \code{ContractModel} itself but only the implementing 
 classes extending \code{ContractModel}.
 }

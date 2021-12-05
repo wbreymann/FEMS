@@ -61,7 +61,7 @@ setRefClass("ContractModel",
 #' of the implemented classes such as \code{\link{PamModel}} for 
 #' \code{\link{PrincipalAtMaturityModel}} or 
 #' \code{\link{StkModel}} for \code{\link{StockModel}}. Note 
-#' that it is not possible to instanciate class 
+#' that it is not possible to instantiate class 
 #' \code{ContractModel} itself but only the implementing 
 #' classes extending \code{ContractModel}.
 #' 
@@ -120,8 +120,12 @@ setGeneric(name = "CTM",
 #' @rdname ctm-methods
 #' @aliases CTM, character-method
 setMethod(f = "CTM", signature = c("character"),
-          definition = function(model) {
+  # I don't understand how this function can be working.
+  # Where is the object "actusDictionary"?
+            definition = function(model) {
 
+            # print("In CTM")
+            
             if (!model %in% names(actusDictionary$rflActus_attributes)) {
               stop(paste("ErrorIn::ContractModel:: Type of Contract ", model, " does not exist !!!"))
             }

@@ -182,7 +182,7 @@ setMethod(f = "liquidity", signature = c("EventSeries", "timeDate", "character")
           definition = function(object, by, type, digits = 2) {
           # definition = function(object, by, type, digits = 2, filtered=c("DPR", "IAM","RES","IPCI")){
           # cf.raw <- object$evs[!is.element(object$evs$Type,filtered),] 
-            filtered=c("DPR", "IAM","RES","IPCI")
+            filtered=c("DPR", "IAM","RES","IPCI")  # What is IAM?
             if (type == "marginal") {
               liq <- timeSeries(rep(0, length(by)), charvec = by)
               evs <- get(object,"evs")

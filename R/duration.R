@@ -50,13 +50,13 @@
 duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL, 
                      isPercentage=TRUE, from=NULL, digits=2) {
 
-  if(type=="fisher-weil"&&is.null(yieldCurve)) {
+  if(type=="fisher-weil" && is.null(yieldCurve)) {
     stop("for the general duration type, please provide a yield curve!")  
   } else {
     if(is.null(price)&&is.null(yield)) {
       stop("for non-general duration types, please provide either 'price' or 'yield' information!")
     } 
-    if ( !is.element(type, c("macaulay","dollar")) ) {
+    if ( !is.element(type, c("macaulay","dollar", "fisher-weil")) ) {
       stop("Duration type not known.")
     }
   }

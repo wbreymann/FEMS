@@ -284,8 +284,9 @@ transfer.to.collector <- function(object, ad, model, end_date) {
   for (i in 1:length(evList)) {
     if (!is.na(evList[[i]][1])) {
       tempList <- as.data.frame(evList[[i]])
-      tempList <- tempList[!(tempList$Value %in%c("IPCI","DPR","PRF","RR","RRY","SC","PRY")),
+      tempList <- tempList[!(tempList$Type %in% c("IPCI","DPR","PRF","RR","RRY","SC","PRY")),
                            c("Date","Value")]
+      # print(tempList)
       evList.filtered <- rbind(evList.filtered, tempList)
     }
   }
@@ -384,26 +385,11 @@ setMethod(f = "value", signature = c("Node", "timeBuckets", "ANY"),
             if (missing(type)) {
               type <- "nominal"
             }
-            # # Compute value for whole tree
-            # clearAnalytics(object, "value")
-            # object$Do(fun=fAnalytics, "value", by=as.character(by), type=type,
-            #           method=method, filterFun=isLeaf)
-            # aggregateAnalytics(object, "value")
-            # object$Liabilities$Equity$value <- -object$value
-            # object$Liabilities$value <- object$Liabilities$value + object$Liabilities$Equity$value
-            # object$value <- rep(0, length(object$value))
-            # object2 <- Clone(object)
-            # if ( type == "nominal" && is.element("Operations", names(object2$children)) )
-            #   object2$RemoveChild("Operations")
-            # 
-            # res <- data.frame(
-            #   t(object2$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
-            #   check.names=FALSE, fix.empty.names=FALSE)
             res <- value(object, as.timeDate(by), type=type, method=method,
                          scale=scale, digits=digits)
-            # rownames(res) <- capture.output(print(object2))[-1]
             colnames(res) <- by@breakLabs
-            return(round(res/scale,digits))
+            # return(round(res/scale,digits))
+            return(res)
           })
 
 #' @include Value.R
@@ -423,7 +409,7 @@ setMethod(f = "value", signature = c("Node", "timeDate", "ANY"),
                       method=method, filterFun=isLeaf)
             aggregateAnalytics(object, "value")
             object$Liabilities$Equity$value <- -object$value
-            object$Liabilities$value <- object$Liabilities$value + object$Liabilities$Equity$value
+            object$Liabilities$value <- object$Liabilities$Debt$value + object$Liabilities$Equity$value
             object$value <- rep(0, length(object$value))
             object2 <- Clone(object)
             if ( type == "nominal" && is.element("Operations", names(object2$children)) )
