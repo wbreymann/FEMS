@@ -14,6 +14,7 @@
 \alias{events,Portfolio,character,RiskFactorConnector-method}
 \alias{events,Portfolio,AD0,RiskFactorConnector-method}
 \alias{events,Node,character,RiskFactorConnector-method}
+\alias{showEvents,Node-method}
 \alias{events,Operations,character,missing-method}
 \alias{events,Operations,AD0,missing-method}
 \alias{events,Operations,timeDate,missing-method}
@@ -43,6 +44,8 @@ events(object, ad, model, ...)
 \S4method{events}{Portfolio,AD0,RiskFactorConnector}(object, ad, model)
 
 \S4method{events}{Node,character,RiskFactorConnector}(object, ad, model, end_date)
+
+\S4method{showEvents}{Node}(object, ...)
 
 \S4method{events}{Operations,character,missing}(object, ad, model)
 

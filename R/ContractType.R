@@ -281,3 +281,28 @@ setMethod(f = "getContractModel",signature = c("ContractType"),
             return(CTM(long_name))
           })
 
+####################################################
+# Checking attributes of a contract and setting appropriate defaults
+#' @export
+setMethod(f = "checkAttributes", signature = c("ContractType", "missing"),
+          definition = function(object, verbose=0, correct=TRUE){
+            # CycleAnchorDateOfInterestPayment
+            if (
+              substring(object$ContractTerms$CycleOfRateReset,1,1) == "P" &&
+              (object$ContractTerms$CycleAnchorDateOfRateReset == "NULL" || 
+               is.null(object$ContractTerms$CycleAnchorDateOfRateReset))
+            )
+            {
+                warning ("CycleAnchorDateOfRateReset must be defined because CycleOfRateReset is set.")
+              if (correct) {
+                warning("Correct default value is set.")
+                # print(object$ContractTerms[["CycleAnchorDateOfInterestPayment"]])
+                # set(object, what=list(CycleAnchorDateOfRateReset=
+                #       object$ContractTerms$CycleAnchorDateOfInterestPayment))
+                object$ContractTerms$CycleAnchorDateOfRateReset <-
+                object$ContractTerms$CycleAnchorDateOfInterestPayment
+                # warning(as.character(object$ContractTerms[["CycleAnchorDateOfRateReset"]]))
+              }
+            }
+          })
+

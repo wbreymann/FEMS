@@ -38,3 +38,12 @@ setMethod(f = "summary", signature = c("ContractABC"),
           definition = function(object){
             print(CTterms(object))
           })
+
+# A generic for a method to check the attributes of a contract for consistence
+# and assign appropriate default values
+#' @export
+setGeneric(name = "checkAttributes",
+           def = function(object, attribute, ...){
+             standardGeneric("checkAttributes")
+           })
+

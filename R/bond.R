@@ -108,5 +108,6 @@ bond <- function(start, maturity="0 years", nominal=0,
   attributes <- append(attributes, args)
   out <- Pam()
   set(out, what=attributes)
+  checkAttributes(out)
   return(out)
 }

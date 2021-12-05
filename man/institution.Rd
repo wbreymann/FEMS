@@ -5,7 +5,7 @@
 \alias{institution}
 \title{Class that contains the whole model of an enterprise or institution.}
 \usage{
-institution(name, cashcollect = TRUE, equity = TRUE, PandL = TRUE, ...)
+institution(name, cashcollect = TRUE, equity = TRUE, Operations = TRUE, ...)
 }
 \description{
 The class inherits from class \code{Node} in package \code{data.tree}

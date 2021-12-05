@@ -82,6 +82,93 @@ setMethod(f = "addContracts", signature = c("list", "Node"),
             leaf$contracts = c(leaf$contracts,contracts)
           })
 
+####---------------------------------------------------------------
+## showContracts
+#' @export
+setGeneric(name = "showContracts",
+           def = function(object, ...){
+             standardGeneric("showContracts")
+           })
+
+#' @export
+setMethod(f = "showContracts", signature = c("Node"),
+          definition = function(object){
+            FEMS:::clearAnalytics(object, "summary.ct")
+            summary.ct <- data.frame()
+            object$Do(fun=showContracts.modelstructure, filterFun=isLeaf)
+            rbind.attributes(object, "summary.ct")
+            res <- object$summary.ct
+
+            # set row names
+            nodes.path <- Get(Traverse(bank),"pathString")
+            rn <- capture.output(bank)[-1]
+            rn <- substring(rn,4,max(nchar(rn)))
+            res <- bank$summary.ct
+            rnams <- character(nrow(res))
+            for (i in 1:nrow(res)) {
+              rnams[i] <- paste(format(i,width=2),rn[nodes.path==res[i,1]])
+            }
+            # t(t(rnams))
+            rownames(res) <- rnams
+            res[,-1]
+          })
+
+showContracts.modelstructure = function(node, ... ) {
+  if(!is.null(node$contracts)) {
+    ptf <- Portfolio(node$contracts)
+    node$summary.ct <- cbind(node$pathString,CTterms(ptf, pretty=TRUE))
+  }
+}
+
+rbind.attributes = function(node, attribute) {
+  nL <- Traverse(node, traversal="post-order",filterFun=isNotLeaf)
+  len <- length(nL)
+  recordLen <- max(Get(Traverse(node), function(node) dim(node$summary.ct)[2] ), na.rm = TRUE)
+  cNams <- get.col.names(node, attribute)
+  for (i in 1:len) {
+    localNode <- nL[[i]]
+    res <- lapply(
+      localNode$children,
+      FUN=function(child, x, cNams) {
+        if (!is.null(child[[x]])) {
+          y <- child[[x]]
+          colnames(y) <- cNams
+          y
+        } 
+      }, 
+      x=attribute, cNams=cNams
+    )
+    df0 <- data.frame()
+    for (k in 1:length(res))
+    {
+      df0 <- rbind(df0, res[[k]])  
+    }
+    ch <- c(localNode$pathString,character(recordLen-1))
+    df0 <- rbind(ch, df0)
+
+    localNode[[attribute]] <- df0
+  }
+}
+
+get.col.names <- function(node, var)
+{
+  res <- lapply(
+    Traverse(node, filterFun=isLeaf), 
+    FUN = function(x) {
+      y <- NULL
+      if (!is.null(x[[var]])){
+        y <- colnames(x[[var]])
+      }
+      # if (!is.null(y)) return(y)
+      return(y)
+    }
+  )
+  res[-which(sapply(res, is.null))][[1]]
+}
+
+
+#-------------------------------------------------------
+  
 #' @export
 setGeneric(name = "add.model",
            def = function(object, added.object, ...){
@@ -238,8 +325,28 @@ get.YieldCurve <- function(rfconn) {
   return(yc)
 }
 
+#' @export
+setGeneric(name = "showEvents",
+           def = function(object, ...){
+             standardGeneric("showEvents")
+           })
+
+
+#' @rdname ev-methods
+#' @export
+setMethod(f = "showEvents", signature = c("Node"),
+          definition = function(object, ...){
+            object$Do(fun=showEvents.modelstructure, ..., filterFun=isLeaf)
+          })
+
+###' @export
+showEvents.modelstructure = function(node, ... ) {
+    print(paste(node$path, collapse="$"))
+    show(node$eventList)
+}
+
 ####---------------------------------------------------------------
-## liquidity methods
+## liquidity
 
 #' @include Liquidity.R
 #' @rdname liq-methods
@@ -277,25 +384,89 @@ setMethod(f = "value", signature = c("Node", "timeBuckets", "ANY"),
             if (missing(type)) {
               type <- "nominal"
             }
+            # # Compute value for whole tree
+            # clearAnalytics(object, "value")
+            # object$Do(fun=fAnalytics, "value", by=as.character(by), type=type,
+            #           method=method, filterFun=isLeaf)
+            # aggregateAnalytics(object, "value")
+            # object$Liabilities$Equity$value <- -object$value
+            # object$Liabilities$value <- object$Liabilities$value + object$Liabilities$Equity$value
+            # object$value <- rep(0, length(object$value))
+            # object2 <- Clone(object)
+            # if ( type == "nominal" && is.element("Operations", names(object2$children)) )
+            #   object2$RemoveChild("Operations")
+            # 
+            # res <- data.frame(
+            #   t(object2$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
+            #   check.names=FALSE, fix.empty.names=FALSE)
+            res <- value(object, as.timeDate(by), type=type, method=method,
+                         scale=scale, digits=digits)
+            # rownames(res) <- capture.output(print(object2))[-1]
+            colnames(res) <- by@breakLabs
+            return(round(res/scale,digits))
+          })
+
+#' @include Value.R
+#' @rdname val-methods
+#' @export
+setMethod(f = "value", signature = c("Node", "timeDate", "ANY"),
+          definition = function(object, by, type, method, scale=1, digits=2) {
+            if (missing(method)) {
+              method <- DcEngine()
+            }
+            if (missing(type)) {
+              type <- "nominal"
+            }
             # Compute value for whole tree
             clearAnalytics(object, "value")
-            object$Do(fun=fAnalytics, "value", by=as.character(by), type=type, 
+            object$Do(fun=fAnalytics, "value", by=as.character(by), type=type,
                       method=method, filterFun=isLeaf)
             aggregateAnalytics(object, "value")
-            object$Equity$value <- -object$value
+            object$Liabilities$Equity$value <- -object$value
+            object$Liabilities$value <- object$Liabilities$value + object$Liabilities$Equity$value
             object$value <- rep(0, length(object$value))
             object2 <- Clone(object)
-            if ( type == "nominal" && is.element("PandL", names(object2$children)) )
-              object2$RemoveChild("PandL")
+            if ( type == "nominal" && is.element("Operations", names(object2$children)) )
+              object2$RemoveChild("Operations")
+            
+            res <- data.frame(
+              t(object2$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
+              check.names=FALSE, fix.empty.names=FALSE)
+            # res <- value(object, as.character(by), type=type, method=method,
+            #              scale=scale, digits=digits)
+            rownames(res) <- capture.output(print(object2))[-1]
+            colnames(res) <- as.character(by)
+            return(round(res/scale,digits))
+          })
+
+#' @include Value.R
+#' @rdname val-methods
+#' @export
+setMethod(f = "value", signature = c("Node", "character", "ANY"),
+          definition = function(object, by, type, method, scale=1, digits=2) {
+            if (missing(method)) {
+              method <- DcEngine()
+            }
+            if (missing(type)) {
+              type <- "nominal"
+            }
+            # Compute value for whole tree
+            clearAnalytics(object, "value")
+            object$Do(fun=fAnalytics, "value", as.character(by), type=type, 
+                      method=method, filterFun=isLeaf)
+            aggregateAnalytics(object, "value")
+            object$Liabilities$Equity$value <- -object$value
+            object$value <- rep(0, length(object$value))
+            object2 <- Clone(object)
+            if ( type == "nominal" && is.element("Operations", names(object2$children)) )
+              object2$RemoveChild("Operations")
             
             res <- data.frame(
               t(object2$Get("value", format = function(x) as.numeric(ff(x,0)))  ),
               check.names=FALSE, fix.empty.names=FALSE)
             rownames(res) <- capture.output(print(object2))[-1]
-            colnames(res) <- by@breakLabs
             return(round(res/scale,digits))
           })
-
 
 ####---------------------------------------------------------------
 ## income methods

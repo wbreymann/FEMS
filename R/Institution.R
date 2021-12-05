@@ -22,13 +22,18 @@ Institution <- R6Class("Institution",
 
 #' @export
 #' @rdname institution
-institution <- function(name, cashcollect=TRUE, equity=TRUE, PandL=TRUE, ...) {
+institution <- function(name, cashcollect=TRUE, equity=TRUE, Operations=TRUE, ...) {
   
   inst <- Node$new(name)
   inst$AddChild("Assets")
   inst$AddChild("Liabilities")
-  if (equity) { inst$AddChild("Equity") }
-  if (PandL) { inst$AddChild("PandL") }
+  inst$Liabilities$AddChild("Debt")
+  if (equity) { inst$Liabilities$AddChild("Equity") }
+  if (Operations) { 
+    inst$AddChild("Operations") 
+    inst$Operations$AddChild("Revenues") 
+    inst$Operations$AddChild("Expenses") 
+  }
   
   if (cashcollect) {
     inst$Assets$AddChild("Current")
@@ -38,6 +43,7 @@ institution <- function(name, cashcollect=TRUE, equity=TRUE, PandL=TRUE, ...) {
                                 ...)
     addContracts(list(collector=collector), 
                  FindNode(inst, "Current"))
+    inst$Assets$AddChild("ShortTerm")
     inst$Assets$AddChild("LongTerm")
   }
 

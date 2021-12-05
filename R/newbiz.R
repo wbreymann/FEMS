@@ -83,8 +83,13 @@ setMethod(f = "newbiz",
 
             # extract nodes
             nodes <- Traverse(object, filterFun = isLeaf)
-            nodes <- nodes[!(Get(nodes,"name") %in% c("Equity","PandL","Current"))]
+            # nodes <- nodes[!(Get(nodes,"name") %in% c("Equity","Operations","Current"))]
             #nodes <- Traverse(object, traversal = "pre-order") # or rather this???
+            # The whole path should be taken into account
+            nodes <- nodes[
+              !sapply(tmp, 
+                      FUN=function(x) sum(is.element(x, c("Equity","Operations","Current"))) )
+            ]
             
             # test inputs
             if( !all.equal(

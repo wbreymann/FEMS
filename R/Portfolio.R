@@ -574,10 +574,22 @@ setMethod(f = "summary", signature = c("Portfolio"),
             invisible(NULL)
           })
 
+# ## @include
+# #' @export
+# #' @docType methods
+# #' @rdname ptf-methods
+## @aliases
+# setGeneric(name = "show",
+#            def = function(object, ...){
+#              standardGeneric("show")
+#            })
+
+
+
 ## @include
 #' @export
 # @docType methods
-# @rdname add-methods
+# @rdname show-methods
 # @aliases 
 setMethod(f = "show", signature = c("Portfolio"),
           definition = function(object){
@@ -592,7 +604,7 @@ setMethod(f = "show", signature = c("Portfolio"),
             # print(table(unlist(types)))
             # 
             # invisible(NULL)
-            print(CTterms(object))
+            print(CTterms(object, pretty))
           })
 
 ## @include
@@ -617,8 +629,8 @@ setGeneric(name = "CTterms",
 
 ## @include
 #' @export
-setMethod("CTterms", signature = c("Portfolio", "ANY", "missing"),
-          definition = function(x, i) {
+setMethod("CTterms", signature = c("Portfolio", "missing", "missing"),
+          definition = function(x, pretty=FALSE) {
             vars = c(
               "ContractID",
               "ContractType",
@@ -628,8 +640,43 @@ setMethod("CTterms", signature = c("Portfolio", "ANY", "missing"),
               "NotionalPrincipal",
               "NominalInterestRate"
             )
+            CTterms(x, vars=vars, pretty=pretty)
+          }
+)
+
+## @include
+#' @export
+setMethod("CTterms", signature = c("Portfolio", "numeric", "missing"),
+          definition = function(x, i, pretty=FALSE) {
+            vars = c(
+              "ContractID",
+              "ContractType",
+              "ContractRole",
+              "InitialExchangeDate",
+              "MaturityDate",
+              "NotionalPrincipal",
+              "NominalInterestRate"
+            )
             # ct = x$contracts[[i]]
-            CTterms(x, i, vars=vars)
+            CTterms(x, i, vars=vars, pretty=pretty)
+          }
+)
+
+## @include
+#' @export
+setMethod("CTterms", signature = c("Portfolio", "logical", "missing"),
+          definition = function(x, i, pretty=FALSE) {
+            vars = c(
+              "ContractID",
+              "ContractType",
+              "ContractRole",
+              "InitialExchangeDate",
+              "MaturityDate",
+              "NotionalPrincipal",
+              "NominalInterestRate"
+            )
+            # ct = x$contracts[[i]]
+            CTterms(x, i, vars=vars, pretty=pretty)
           }
 )
 
@@ -652,8 +699,20 @@ setMethod("CTterms", signature = c("Portfolio", "ANY", "missing"),
 
 ## @include
 #' @export
+setMethod("CTterms", signature = c("Portfolio", "missing", "character"),
+          definition = function(x, vars, pretty=FALSE) {
+            out <- extractVariablesFromPortfolio(x$contracts, vars)
+            if (pretty) {
+              colnames(out) <- .defaults$shortNames[colnames(out)]
+            }
+            return(out)
+          })
+
+
+## @include
+#' @export
 setMethod("CTterms", signature = c("Portfolio", "numeric", "character"),
-          definition = function(x, i, vars) {
+          definition = function(x, i, vars, pretty=FALSE) {
             cts = x$contracts[i]
             out = data.frame()
             for (ct in cts) {
@@ -665,6 +724,9 @@ setMethod("CTterms", signature = c("Portfolio", "numeric", "character"),
                 # print(cVars)
                 # out = rbind(out, as.data.frame(FEMS:::get(ct, vars)))
                 out = rbind(out, as.data.frame(cVars))
+                if (pretty) {
+                  colnames(out) <- .defaults$shortNames[colnames(out)]
+                }
               }
             }
             out
@@ -673,19 +735,41 @@ setMethod("CTterms", signature = c("Portfolio", "numeric", "character"),
 
 ## @include
 #' @export
-setMethod("CTterms", signature = c("Portfolio", "character", "character"),
-          definition = function(x, i, vars) {
-            # cts = x$contracts[i]
-            return(extractVariablesFromPortfolio(x$contracts[i], vars))
-          })
+setMethod("CTterms", signature = c("Portfolio", "logical", "character"),
+          definition = function(x, i, vars, pretty=FALSE) {
+            cts = x$contracts[i]
+            out = data.frame()
+            for (ct in cts) {
+              if ( !is.null(ct) ) {
+                # print(class(ct))
+                # print(paste0("vars = ", vars))
+                cVars = FEMS:::get(ct, vars)
+                
+                # print(cVars)
+                # out = rbind(out, as.data.frame(FEMS:::get(ct, vars)))
+                out = rbind(out, as.data.frame(cVars))
+                if (pretty) {
+                  colnames(out) <- .defaults$shortNames[colnames(out)]
+                }
+              }
+            }
+            out
+          }
+)
 
 
 ## @include
 #' @export
-setMethod("CTterms", signature = c("Portfolio", "missing", "character"),
-          definition = function(x, vars) {
-            return(extractVariablesFromPortfolio(x$contracts, vars))
+setMethod("CTterms", signature = c("Portfolio", "character", "character"),
+          definition = function(x, i, vars, pretty=FALSE) {
+            # cts = x$contracts[i]
+            out <- extractVariablesFromPortfolio(x$contracts[i], vars)
+            if (pretty) {
+              colnames(out) <- .defaults$shortNames[colnames(out)]
+            }
+            return(out)
           })
+
 
 extractVariablesFromPortfolio = function(cts, vars) {
   out = data.frame()
@@ -719,23 +803,6 @@ extractVariablesFromPortfolio = function(cts, vars) {
   return(out)
 }
 
-## @include
-#' @export
-setMethod("CTterms", signature = c("Portfolio", "missing", "missing"),
-          definition = function(x) {
-            vars = c(
-              "ContractID",
-              "ContractType",
-              "ContractRole", 
-              "InitialExchangeDate",
-              "MaturityDate",
-              "NotionalPrincipal",
-              "NominalInterestRate"
-            )
-            CTterms(x, vars=vars)
-          }
-)
-
 
 ## @include
 #' @export
@@ -743,23 +810,6 @@ setMethod("[[", signature = c("Portfolio", "ANY"),
           definition = function(x, i) {
             ct = x$contracts[[i]]
             ct
-          }
-)
-
-## @include
-#' @export
-setMethod("CTterms", signature = c("Portfolio", "missing", "missing"),
-          definition = function(x) {
-            vars = c(
-              "ContractID",
-              "ContractType",
-              "ContractRole", 
-              "InitialExchangeDate",
-              "MaturityDate",
-              "NotionalPrincipal",
-              "NominalInterestRate"
-            )
-            CTterms(x, vars=vars)
           }
 )
 
