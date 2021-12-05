@@ -79,7 +79,7 @@ duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL
     if(is.null(price[1])) {
       price <- numeric(length(cts))
       for(i in 1:length(cts)) {
-        price[i] <- presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage, 
+        price[i] <- presentValue(cts[[i]], yield[i], yieldCurve, by, isPercentage, 
                                  isPrice=TRUE, digits=digits+2)
       }
     }

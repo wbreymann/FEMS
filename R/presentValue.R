@@ -21,7 +21,7 @@
 #'                    \code{\link{DynamicYieldcurve}} to calculate discount 
 #'                    factors from.
 #'
-#' @param from a character indicating the date as for which the NPV is calculated.
+#' @param by a character indicating the date as for which the NPV is calculated.
 #'  
 #' @param isPercentage a logical, indicating if the 'yield' is passed as percentage 
 #'                     (TRUE) or as fraction (FALSE) (default is TRUE). 
@@ -34,7 +34,7 @@
 #' 
 #' @return a numeric, representing the Net Present Value (NPV) of the contract. 
 #' 
-#' @usage presentValue(x, yield, yieldCurve, from, isPercentage, isPrice, digits)
+#' @usage presentValue(x, yield, yieldCurve, by, isPercentage, isPrice, digits)
 #' 
 #' @details 
 #' TO BE ADDED
@@ -54,7 +54,7 @@
 #' @include cashFlows.R DynamicYieldCurve.R YieldCurve.R
 #' @export 
 
-presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL, 
+presentValue <- function(x, yield=NULL, yieldCurve=NULL, by=NULL, 
                          isPercentage=TRUE, isPrice=FALSE, digits=2) {
 
   if(is.null(yield) && is.null(yieldCurve)) {
@@ -71,14 +71,14 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
     }
     pv <- 0
     for(i in 1:length(cts)) pv <- 
-      pv + presentValue(cts[[i]], yield[i], yieldCurve, from, isPercentage, isPrice)
+      pv + presentValue(cts[[i]], yield[i], yieldCurve, by, isPercentage, isPrice)
     return(pv)
   }
   
   # compute cash flows of instrument
   if (class(x)=="timeSeries") {
-    if(is.null(from)) {
-      from <- as.character(rownames(x)[1])
+    if(is.null(by)) {
+      by <- as.character(rownames(x)[1])
     }
     #colnames(x) <- rep("Value", ncol(x))
     cf <- x
@@ -90,18 +90,18 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
       cf$Time <- yearFraction(rownames(cf)[1], rownames(cf))
     }
     colnames(cf)[1:ncol(cf)-1] <- rep("Value", ncol(cf)-1)
-    if (isPrice && from == rownames(cf)[1]) {
+    if (isPrice && by == rownames(cf)[1]) {
       cf <- cf[2:nrow(cf),]
     }
   } else if (class(x)=="EventSeries") {
-    if(is.null(from)) {
-      from <- as.character(evs$evs$Date[1])
+    if(is.null(by)) {
+      by <- as.character(evs$evs$Date[1])
     }
     evs <- as.data.frame(x)[,c("Date","Value","Type","Time")]
-    if (isPrice && evs[evs$Date==from,"Type"]=="IED") {
-      evs <- evs[evs$Date>from,]
+    if (isPrice && evs[evs$Date==by,"Type"]=="IED") {
+      evs <- evs[evs$Date>by,]
     } else {
-      evs <- evs[evs$Date>=from,]
+      evs <- evs[evs$Date>=by,]
     }
     #evs[evs$Type%in%c("RR","RRY","SC","PRY"),"Value"] <- 0
     evs <- evs[!(evs$Type%in%c("IPCI","DPR","PRF","RR","RRY","SC","PRY")),]
@@ -115,24 +115,24 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, from=NULL,
     cf <- aggregate(evs.ts, time(evs.ts), "sum")
     cf$Time <- evs.ts[row.names(cf),]$Time
   } else if (any(is(x) %in% c("CurrentAccount","Operations"))) {
-    if(is.null(from)) {
-      from <- as.character(FEMS:::get(x, "ContractDealDate"))
-      if(is.null(from)){
-        stop("Argument 'from' has to be provided !!!")
+    if(is.null(by)) {
+      by <- as.character(FEMS:::get(x, "ContractDealDate"))
+      if(is.null(by)){
+        stop("Argument 'by' has to be provided !!!")
       }
     }
-    if (isPrice && from == as.character(FEMS:::get(x,"ContractDealDate"))) {
-      from <- as.character(ymd(from) %m+% days(1))
+    if (isPrice && by == as.character(FEMS:::get(x,"ContractDealDate"))) {
+      by <- as.character(ymd(by) %m+% days(1))
     }
-    cf <- cashFlows(x, from=from)
+    cf <- cashFlows(x, from=by)
   } else {
-    if(is.null(from)) {
-      from <- as.character(FEMS:::get(x,"InitialExchangeDate"))
+    if(is.null(by)) {
+      by <- as.character(FEMS:::get(x,"InitialExchangeDate"))
     }
-    if (isPrice && from == as.character(FEMS:::get(x,"InitialExchangeDate"))) {
-      from <- as.character(ymd(from) %m+% days(1))
+    if (isPrice && by == as.character(FEMS:::get(x,"InitialExchangeDate"))) {
+      by <- as.character(ymd(by) %m+% days(1))
     }
-    cf <- cashFlows(x, from=from)
+    cf <- cashFlows(x, from=by)
   }
   
   # compute discount factors for cash flow dates
