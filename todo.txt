@@ -87,3 +87,18 @@ evs <- events(OpCFs, "2013-12-31")
   and also an easy way to compute Value-at-Risk and Expected Shortfall.
   
 - Help vervollständigen
+
+- contract attribute in CurrentAccount:
+  MarketObjectCodeRateReset -> MarketObjectCodeOfRateReset
+  
+- Computation of interest and dicsount factors: Check
+
+- CurrentAccount (cf. CurrentAccount_example): 
+  * Variable interest rates (=rate reset) is not taken into account properly 
+    for interest rates withouth term structure (MarketInterestRate)
+  * Computation of events is much too slow
+  
+- Speed-up computation:
+  * Computational intensive tasks that involve loops should be programmed in c/c++
+  
+  

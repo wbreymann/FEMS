@@ -16,14 +16,14 @@ perc_out_dt <- c("2013-12-31","2014-12-31")
 
 # construct current account
 curr_acc <- CurrentAccount(ContractID = "Test_CurrAcc",
-                         ContractDealDate = t0,
-                         Currency = "CHF",
-                         Balance = 50000,
-                         ExternalTransactions = ext.tas,
-                         PercentageOutflows = percentage_outflows,
-                         CycleAnchorDateOfInterestPayment = t0,
-                         CycleOfInterestPayment = "1Y-",
-                         MarketObjectCodeRateReset = "YC_FLAT")
+                           ContractDealDate = t0,
+                           Currency = "CHF",
+                           Balance = 50000,
+                           ExternalTransactions = ext.tas,
+                           PercentageOutflows = percentage_outflows,
+                           CycleAnchorDateOfInterestPayment = t0,
+                           CycleOfInterestPayment = "1Y-",
+                           MarketObjectCodeRateReset = "YC_FLAT")
 curr_acc
 #plot(curr_acc, "2012-12-31", yc = yc_flat)
 curr_acc_tst <- bankAccount(t0, balance = 50000, ext_transactions = ext.tas, 
@@ -34,6 +34,7 @@ rf <- RFConn(yc_flat)
 
 # calculate event series
 # currently still not the same format as an rActus EventSeries
+# In the following, interest is not computed properly:
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2018-12-31"))
 # (evs.curr_acc <- events(curr_acc, "2012-12-31", rf)) # must produce an error
 (evs.curr_acc.1 <- events(curr_acc, "2012-12-31", rf, end_date="2013-12-31"))  
@@ -45,7 +46,7 @@ rf <- RFConn(yc_flat)
 
 # first add a single internal cash flow
 add.internaltransfer(curr_acc, 
-             timeSeries(data = 5000, charvec = "2019-06-30"))
+                     timeSeries(data = 5000, charvec = "2019-06-30"))
 (evs.curr_acc <- events(curr_acc, "2012-12-31", rf, end_date="2019-06-30"))
 
 # check liquidity function...
@@ -72,7 +73,7 @@ value(evs, by, "nominal", digits=0)
 
 # now add another cash flow to the current account...
 add.externaltransaction(curr_acc, 
-             timeSeries(data = 1000, charvec = "2015-06-30"))
+                        timeSeries(data = 1000, charvec = "2015-06-30"))
 (evs.curr_acc_new <- events(curr_acc, "2012-12-31", rf, end_date="2018-12-31"))
 
 #################################################################################################
@@ -85,12 +86,12 @@ rf <- RFConn(yc_flat)
 
 (cashflows2 <- timeSeries(data = -10000, charvec = "2013-12-31"))
 curr_acc2 <- CurrentAccount(ContractID = "Test_CurrAcc2",
-                         ContractDealDate = t0,
-                         Currency = "CHF",
-                         ExternalTransactions = cashflows2,
-                         CycleAnchorDateOfInterestPayment = t0,
-                         CycleOfInterestPayment = "1Y-",
-                         MarketObjectCodeRateReset = "YC_FLAT")
+                            ContractDealDate = t0,
+                            Currency = "CHF",
+                            ExternalTransactions = cashflows2,
+                            CycleAnchorDateOfInterestPayment = t0,
+                            CycleOfInterestPayment = "1Y-",
+                            MarketObjectCodeRateReset = "YC_FLAT")
 (evs.curr_acc2 <- events(curr_acc2, "2012-12-31", rf, end_date="2014-08-30"))
 (evs.curr_acc2 <- events(curr_acc2, "2012-12-31", rf, end_date="2013-11-30"))  # Error: last CF later than end date.
 
@@ -122,13 +123,13 @@ perc_out_dt <- c("2013-12-31","2014-12-31","2015-12-31","2016-12-31","2017-12-31
 (percentage_outflows <- timeSeries(data = rep(0.04, length(perc_out_dt)), 
                                    charvec = perc_out_dt))
 curr_acc <- CurrentAccount(ContractID = "CurrentAccount_1",
-                         ContractDealDate = t0,
-                         Currency = "CHF",
-                         ExternalTransactions = cashflows,
-                         PercentageOutflows = percentage_outflows,
-                         CycleAnchorDateOfInterestPayment = t0,
-                         CycleOfInterestPayment = "1Y-",
-                         MarketObjectCodeRateReset = "FlatCurve")
+                           ContractDealDate = t0,
+                           Currency = "CHF",
+                           ExternalTransactions = cashflows,
+                           PercentageOutflows = percentage_outflows,
+                           CycleAnchorDateOfInterestPayment = t0,
+                           CycleOfInterestPayment = "1Y-",
+                           MarketObjectCodeRateReset = "FlatCurve")
 
 (ev <- events(curr_acc, "2013-12-31", RFConn(yc_flat), end_date="2018-12-31"))
 
@@ -143,13 +144,13 @@ perc_out_dt <- c("2013-12-31","2014-12-31","2015-12-31","2016-12-31","2017-12-31
 (percentage_outflows <- timeSeries(data = rep(0.04, length(perc_out_dt)), 
                                    charvec = perc_out_dt))
 curr_acc5 <- CurrentAccount(ContractID = "CurrentAccount_1",
-                           ContractDealDate = t0,
-                           Currency = "CHF",
-                           ExternalTransactions = cashflows,
-                           PercentageOutflows = percentage_outflows,
-                           CycleAnchorDateOfInterestPayment = t0,
-                           CycleOfInterestPayment = "1Y-",
-                           MarketObjectCodeRateReset = "FlatCurve")
+                            ContractDealDate = t0,
+                            Currency = "CHF",
+                            ExternalTransactions = cashflows,
+                            PercentageOutflows = percentage_outflows,
+                            CycleAnchorDateOfInterestPayment = t0,
+                            CycleOfInterestPayment = "1Y-",
+                            MarketObjectCodeRateReset = "FlatCurve")
 
 (evs.curr_acc5 <- events(curr_acc5, "2013-12-31", RFConn(yc_flat), end_date="2018-03-31"))
 
@@ -172,6 +173,7 @@ curr_acc6 <- CurrentAccount(ContractID = "CurrentAccount_6",
                             MarketObjectCodeRateReset = "FlatCurve",
                             NominalInterestRate = 0.02)
 
+# ERROR: In the following, interest is computed correctly but rate reset is not computed
 (evs.curr_acc6 <- events(curr_acc6, "2013-12-31", RFConn(yc_flat), end_date="2018-03-31"))
 
 
@@ -182,6 +184,12 @@ yc_flat <- YieldCurve(label = "FlatCurve",
 set(curr_acc6, list(CycleAnchorDateOfRateReset = t0,
                     CycleOfRateReset = "1Y-"))
 (evs.curr_acc6 <- events(curr_acc6, "2013-12-31", RFConn(yc_flat), end_date="2018-03-31"))
+
+set(curr_acc6, list(NominalInterestRate = 0))
+# ERROR: In the following: Interest computed correctly but reported correctly in the event list
+# ERROR: Event "RR" (rate reset) not shown.
+(evs.curr_acc6 <- events(curr_acc6, "2013-12-31", RFConn(yc_flat), end_date="2018-03-31"))
+
 
 #################################################################################################
 # Example 7:
