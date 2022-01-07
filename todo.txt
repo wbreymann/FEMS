@@ -112,3 +112,4 @@ evs <- events(OpCFs, "2013-12-31")
   (for simplicity in the period considered)
   
 - Das Modell muss so aufgesetzt sein, dass man nur Teile davon neu zu simulieren braucht.
+
