@@ -101,4 +101,14 @@ evs <- events(OpCFs, "2013-12-31")
 - Speed-up computation:
   * Computational intensive tasks that involve loops should be programmed in c/c++
   
+- Computation of taxes.
+  This must be done at the level of the whole institution.
+  We should have variables like
+  * EBT
+  * EAT
+  * Taxrate
+  * Taxes paid
+  The taxes paid should give raise to a negative cashflow 
+  (for simplicity in the period considered)
   
+- Das Modell muss so aufgesetzt sein, dass man nur Teile davon neu zu simulieren braucht.
