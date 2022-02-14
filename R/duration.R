@@ -53,7 +53,7 @@ duration <- function(x, type="macaulay", yield=NULL, price=NULL,
     stop("Argument 'yieldCurve' deprecated, please use 'yield' instead!")
   }
   
-  if(type=="fisher-weil" && !is(yield, "YieldCurve")) {
+  if(type=="fisher-weil" && !(is(yield, "YieldCurve") || is(yield, "DynamicYieldCurve"))) {
     stop("for the general duration type, please provide a yield curve!")  
   } else {
     if(is.null(price)&&is.null(yield)) {
@@ -76,7 +76,7 @@ duration <- function(x, type="macaulay", yield=NULL, price=NULL,
       price <- rep(NULL, length(cts))
     }
     d <- numeric(length(cts))
-    if (!is(yield, "YieldCurve")){
+    if (!is(yield, "YieldCurve") && !is(yield, "DynamicYieldCurve")){
       for(i in 1:length(cts)) {
         d[i] <- duration(cts[[i]], type, yield[i], price[i], isPercentage, from)
       }

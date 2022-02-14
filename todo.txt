@@ -1,29 +1,38 @@
 
-- Function presentValue:
+- Function presentValue: 
   * Interface should be streamlined and in better accordance with the value function (DONE)
   * arg from -> by (DONE)
   * yield should also accomodate yieldCurve objects and arg yieldCurve should be deprecated (DONE)
-  Q: Sollten from -> by dann auch in "duration" und "yieldToMaturity" angepasst werden?
+  Q: 
+  # Gegeben der Funktionsweise finde ich "from" aber eigentlich den korrekteren Argumentnamen (da die     Funktion mit "from/by"" nur Cash-Flows ab dem angegebenen Zeitpunkt betrachtet, "from/by"" mit          Datum vor dem erstem CF Datum gibt einfach den NPV zum Zeitpunkt des ersten CF's)
+  # Sollten from -> by dann auch in "duration" und "yieldToMaturity" angepasst werden?
   
 - presentValue/value: 
-  * check treatment of IPCI events. 
+  * check treatment of IPCI events.
     Should be taken into account in present value computation.
     (DONE)
     
 - streamline compounding methods for present value computation:
   * Provide yearly, intra-yearly and continuous compounding for functions
     value, presentValue and irr.
+  Q: 
+  # irr sollte das schon können.
+  # presentVaule wurde angepasst, besitzt jetzt aber auch drei weitere Argumente method, period,            convention.
+  # Note: Die bisherige Berechnung mit isPrice ist nicht ganz korrekt. (Warum hier by+1 Tag?)
     
 - Berechnung der Zinsen für angebrochene Perioden
 
 - for function irr:
-irr(object, method = "compound", period = "Y", convention = "30E360E", 
+irr(object, method = "compound", period = "Y", convention = "30E360", 
        isPercentage=TRUE, ...)
   We can merge method and period into a single argument "period":
   * period = "0" means continuous compounding
   * period = "INF" means "linear"
+    Q: 
+    # Hier müsste dann extrem viel angepasst werden, die komplette Namensgebung innerhalb der YieldCurve       und DynamicYieldCurve ist gleich. 
+    # Wie würde man dann bspw. unterjährige Zinsen übergeben?
   
-  
+
 - By the way, such conventions should be used by the discount engine.
 
 - Definition von Zeitintervallen:

@@ -52,8 +52,10 @@
 #' @include cashFlows.R DynamicYieldCurve.R YieldCurve.R
 #' @export 
 
-presentValue <- function(x, yield, by=NULL, 
-                         isPercentage=TRUE, isPrice=FALSE, digits=2, yieldCurve=NULL) {
+presentValue <- function(x, yield,  
+                         by=NULL, isPercentage=TRUE, isPrice=FALSE, digits=2, 
+                         method="compound", period="Y", convention="30E360", 
+                         yieldCurve=NULL) {
 
   if (!is.null(yieldCurve)){
     stop("Argument 'yieldCurve' deprecated, please use 'yield' instead!")
@@ -67,11 +69,13 @@ presentValue <- function(x, yield, by=NULL,
         stop("Provide yieldcurve or 'yield' with lenght same as number of contracts in the Portfolio!")
       }
       for(i in 1:length(cts)) pv <- 
-        pv + presentValue(cts[[i]], yield[i], by, isPercentage, isPrice)
+        pv + presentValue(cts[[i]], yield[i], by, isPercentage, isPrice, 
+                          method=method, period=period, convention=convention)
       return(pv)
     } else {
       for(i in 1:length(cts)) pv <- 
-          pv + presentValue(cts[[i]], yield, by, isPercentage, isPrice)
+          pv + presentValue(cts[[i]], yield, by, isPercentage, isPrice,
+                            method=method, period=period, convention=convention)
       return(pv)
     }
   }
@@ -81,14 +85,17 @@ presentValue <- function(x, yield, by=NULL,
     if(is.null(by)) {
       by <- as.character(rownames(x)[1])
     }
+    if (is(yield, "YieldCurve") || is(yield, "DynamicYieldCurve")){
+      convention <- yield$DayCountConvention
+    }
     #colnames(x) <- rep("Value", ncol(x))
     cf <- x
     if (!("Time" %in% colnames(cf))) {
-      t <- timeSeries(data=yearFraction(rownames(cf)[1], rownames(cf)),
+      t <- timeSeries(data=yearFraction(rownames(cf)[1], rownames(cf), convenction=convention),
                       charvec=rownames(cf),
                       units = "Time")
       cf <- cbind(cf, t)
-      cf$Time <- yearFraction(rownames(cf)[1], rownames(cf))
+      cf$Time <- yearFraction(rownames(cf)[1], rownames(cf), convenction=convention)
     }
     colnames(cf)[1:ncol(cf)-1] <- rep("Value", ncol(cf)-1)
     if (isPrice && by == rownames(cf)[1]) {
@@ -131,6 +138,7 @@ presentValue <- function(x, yield, by=NULL,
       by <- as.character(FEMS:::get(x,"InitialExchangeDate"))
     }
     if (isPrice && by == as.character(FEMS:::get(x,"InitialExchangeDate"))) {
+      # Why do we add a day here if this is the same as InitialExchangeDate?
       by <- as.character(ymd(by) %m+% days(1))
     }
     cf <- cashFlows(x, from=by)
@@ -138,13 +146,26 @@ presentValue <- function(x, yield, by=NULL,
   
   # compute discount factors for cash flow dates
   if(!is.numeric(yield)) {
-    df <- discountFactors(yield, to=as.character(time(cf)))
+    df <- discountFactors(yield, to=as.character(time(cf)), method = method, period = period)
   } else {
     scale <- 1
     if(isPercentage) {
       scale <- 1/100
+      rates <- yield*scale
     }
-    df <- (1+yield*scale)^(-cf$Time)
+    dts <- yearFraction(by, rownames(cf), convention = convention)
+    if (method == "linear") {
+      df <- (1 + rates*abs(dts))^sign(-dts)
+    } else if (method == "compound") {
+      num_period <- convert.rate.period(period)
+      df <- (1 + rates/num_period)^(-dts*num_period)
+    } else if (method == "continuous") {
+      df <- exp(-dts * rates)
+    } else {
+      stop(paste("ErrorIn::presentValue:: Method ", method, 
+                 " not supported !!!"))
+    }
+    # df <- (1+yield*scale)^(-cf$Time)
   }
   
   # compute and return present value

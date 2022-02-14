@@ -29,15 +29,15 @@ cashFlows(bnd2)
 cashFlows(bnd3)
 cashFlows(ptf)
 
-presentValue(bnd1, yield=9)
-presentValue(bnd2, yield=9)
-presentValue(bnd3, yield=9)
-presentValue(ptf, yield=c(9,9,9))
+presentValue(bnd1, yield=9) # -308.21
+presentValue(bnd2, yield=9) # 128.35
+presentValue(bnd3, yield=9) # 0
+presentValue(ptf, yield=c(9,9,9)) # -179.86
 
-presentValue(bnd1, yield=9, isPrice=TRUE)
-presentValue(bnd2, yield=9, isPrice=TRUE)
-presentValue(bnd3, yield=9, isPrice=TRUE)
-presentValue(ptf, yield=c(9,9,9), isPrice=TRUE)
+presentValue(bnd1, yield=9, isPrice=TRUE) # 691.79
+presentValue(bnd2, yield=9, isPrice=TRUE) # 1128.35
+presentValue(bnd3, yield=9, isPrice=TRUE) # 1000
+presentValue(ptf, yield=c(9,9,9), isPrice=TRUE) # 2820.14
 
 
 t <- "2015-01-01"
@@ -52,7 +52,7 @@ set(yc, what = list(
   Tenors = tenors,
   Rates = rates))
 
-presentValue(ptf, yield=yc, isPrice=TRUE)
+presentValue(ptf, yield=yc, isPrice=TRUE) # 5180.6
 
 duration(bnd1, type="macaulay", yield=9)
 duration(bnd2, type="macaulay", yield=9)
