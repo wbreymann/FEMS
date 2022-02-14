@@ -53,6 +53,7 @@
 #' @export 
 immunize <- function(x, target, yield, isPercentage=TRUE, period=NULL, type="macaulay", ...) {
 
+  
   target.val <- presentValue(target, yield=yield, isPercentage=isPercentage, 
                              isPrice=TRUE, digits=6, ...)
   target.dur <- duration(target, type=type, yield=yield, isPercentage=isPercentage, digits=6, ...)
@@ -61,7 +62,7 @@ immunize <- function(x, target, yield, isPercentage=TRUE, period=NULL, type="mac
   
   durations <- numeric(length(cts))
   for(i in 1:length(cts)) {
-    durations[i] <- duration(cts[[i]], type=type, yield=yield, yieldCurve=NULL, 
+    durations[i] <- duration(cts[[i]], type=type, yield=yield, 
                           price=NULL, isPercentage=isPercentage, digits=6)
   }
   
@@ -71,7 +72,8 @@ immunize <- function(x, target, yield, isPercentage=TRUE, period=NULL, type="mac
   
   price <- numeric(length(cts))
   for(i in 1:length(cts)) {
-    price[i] <- presentValue(cts[[i]], yield, yieldCurve=NULL, isPercentage, isPrice=TRUE, digits=6, ...)
+    price[i] <- presentValue(cts[[i]], yield, by=NULL, isPercentage=isPercentage, 
+                             isPrice=TRUE, digits=6, ...)
   }
   
   d.low <- which(durations<target.dur, arr.ind=TRUE)

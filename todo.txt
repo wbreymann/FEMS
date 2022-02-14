@@ -1,13 +1,14 @@
 
 - Function presentValue:
-  * Interface should be streamlined and in better accordance with the value function
-  * arg from -> by
-  * yield should also accomodate yieldCurve objects and arg yieldCurve should be deprecated
+  * Interface should be streamlined and in better accordance with the value function (DONE)
+  * arg from -> by (DONE)
+  * yield should also accomodate yieldCurve objects and arg yieldCurve should be deprecated (DONE)
+  Q: Sollten from -> by dann auch in "duration" und "yieldToMaturity" angepasst werden?
   
 - presentValue/value: 
   * check treatment of IPCI events. 
     Should be taken into account in present value computation.
-    Sollte schon (weitgehend?) erledigt.
+    (DONE)
     
 - streamline compounding methods for present value computation:
   * Provide yearly, intra-yearly and continuous compounding for functions

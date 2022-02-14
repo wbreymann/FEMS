@@ -15,10 +15,9 @@
 #' @param type a \code{character} defining the type of duration; possible types are 
 #'             'fisher-weil', 'macaulay' (default) and 'dollar'. 
 #'
-#' @param yield a \code{numeric}, indicating the yield used to calculate the duration.
-#' 
-#' @param yieldCurve Object of class \code{YieldCurve} or 
-#'                    \code{DynamicYieldCurve} that describes the spot rate term structure.
+#' @param yield a \code{numeric}, an Object of class \code{YieldCurve} or 
+#'                    \code{DynamicYieldCurve} that describes the spot rate term structure
+#'                    or indicates the yield used to calculate the duration.
 #'  
 #' @param price a \code{numeric}, indicating the price used for calculating the yield to maturity
 #'              of each contract.
@@ -31,7 +30,7 @@
 #' 
 #' @return a \code{numeic} containing the calculated duration.  
 #' 
-#' @usage duration(x, type="macaulay", yield, yieldCurve, price, isPercentage=TRUE, from)
+#' @usage duration(x, type="macaulay", yield, price, isPercentage=TRUE, from)
 #' 
 #' @details 
 #' For the Macaulay duration, if \code{yield} is not provided, \code{price} should
@@ -47,10 +46,14 @@
 #' 
 #' @include cashFlows.R presentValue.R yieldToMaturity.R util.R DynamicYieldCurve.R YieldCurve.R
 #' @export 
-duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL, 
-                     isPercentage=TRUE, from=NULL, digits=2) {
+duration <- function(x, type="macaulay", yield=NULL, price=NULL, 
+                     isPercentage=TRUE, from=NULL, digits=2, yieldCurve=NULL) {
 
-  if(type=="fisher-weil" && is.null(yieldCurve)) {
+  if (!is.null(yieldCurve)){
+    stop("Argument 'yieldCurve' deprecated, please use 'yield' instead!")
+  }
+  
+  if(type=="fisher-weil" && !is(yield, "YieldCurve")) {
     stop("for the general duration type, please provide a yield curve!")  
   } else {
     if(is.null(price)&&is.null(yield)) {
@@ -63,7 +66,7 @@ duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL
   
   if(class(x)=="Portfolio") {
     cts <- FEMS:::get(x, "contracts")
-    if(!is.null(yield) && length(yield)!=length(cts)) {
+    if(is.numeric(yield) && length(yield)!=length(cts)) {
       stop("please set 'yield=NULL' or provide 'yield' with length same as number of contracts in the Portfolio!")
     }
     if(is.null(yield)) {
@@ -73,14 +76,27 @@ duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL
       price <- rep(NULL, length(cts))
     }
     d <- numeric(length(cts))
-    for(i in 1:length(cts)) {
-      d[i] <- duration(cts[[i]], type, yield[i], yieldCurve, price[i], isPercentage, from)
-    }
-    if(is.null(price[1])) {
-      price <- numeric(length(cts))
+    if (!is(yield, "YieldCurve")){
       for(i in 1:length(cts)) {
-        price[i] <- presentValue(cts[[i]], yield[i], yieldCurve, by, isPercentage, 
-                                 isPrice=TRUE, digits=digits+2)
+        d[i] <- duration(cts[[i]], type, yield[i], price[i], isPercentage, from)
+      }
+      if(is.null(price[1])) {
+        price <- numeric(length(cts))
+        for(i in 1:length(cts)) {
+          price[i] <- presentValue(cts[[i]], yield[i], from, isPercentage, 
+                                   isPrice=TRUE, digits=digits+2)
+        }
+      }
+    } else {
+      for(i in 1:length(cts)) {
+        d[i] <- duration(cts[[i]], type, yield, price[i], isPercentage, from)
+      }
+      if(is.null(price[1])) {
+        price <- numeric(length(cts))
+        for(i in 1:length(cts)) {
+          price[i] <- presentValue(cts[[i]], yield, from, isPercentage, 
+                                   isPrice=TRUE, digits=digits+2)
+        }
       }
     }
     return(round(as.numeric(t(price/sum(price))%*%d),digits))
@@ -109,7 +125,7 @@ duration <- function(x, type="macaulay", yield=NULL, yieldCurve=NULL, price=NULL
     # extract times (in years) from cash flows
     t <- cf$Time
     if(type=="fisher-weil") {
-      df <- discountFactors(yieldCurve, to=as.character(time(cf)))
+      df <- discountFactors(yield, to=as.character(time(cf)))
       d <- sum(t*df*cf$Value)/t(cf$Value)%*%df
     } else {
       # get number of coupon periods per year

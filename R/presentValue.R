@@ -15,11 +15,9 @@
 #' @param x a contract type, for which to calculate the NPV. This can also be 
 #'          a timeSeries, EventSeries or Portfolio object.
 #' 
-#' @param yield a numeric, indicating the percentage yield used to discount.
-#' 
-#' @param yieldCurve an object of type \code{\link{YieldCurve}} or 
+#' @param yield a numeric, an object of type \code{\link{YieldCurve}} or 
 #'                    \code{\link{DynamicYieldcurve}} to calculate discount 
-#'                    factors from.
+#'                    factors from, indicating the percentage yield used to discount.
 #'
 #' @param by a character indicating the date as for which the NPV is calculated.
 #'  
@@ -34,7 +32,7 @@
 #' 
 #' @return a numeric, representing the Net Present Value (NPV) of the contract. 
 #' 
-#' @usage presentValue(x, yield, yieldCurve, by, isPercentage, isPrice, digits)
+#' @usage presentValue(x, yield, by, isPercentage, isPrice, digits)
 #' 
 #' @details 
 #' TO BE ADDED
@@ -54,25 +52,28 @@
 #' @include cashFlows.R DynamicYieldCurve.R YieldCurve.R
 #' @export 
 
-presentValue <- function(x, yield=NULL, yieldCurve=NULL, by=NULL, 
-                         isPercentage=TRUE, isPrice=FALSE, digits=2) {
+presentValue <- function(x, yield, by=NULL, 
+                         isPercentage=TRUE, isPrice=FALSE, digits=2, yieldCurve=NULL) {
 
-  if(is.null(yield) && is.null(yieldCurve)) {
-    stop("please provide either yield or yieldCurve to compute the present value!")
+  if (!is.null(yieldCurve)){
+    stop("Argument 'yieldCurve' deprecated, please use 'yield' instead!")
   }
   
   if(class(x)=="Portfolio") {
     cts <- FEMS:::get(x, "contracts")
-    if(!is.null(yield) && length(yield)!=length(cts)) {
-      stop("please set 'yield=NULL' or provide 'yield' with lenght same as number of contracts in the Portfolio!")
-    }
-    if(is.null(yield)) {
-      yield <- rep(NULL, length(cts))
-    }
     pv <- 0
-    for(i in 1:length(cts)) pv <- 
-      pv + presentValue(cts[[i]], yield[i], yieldCurve, by, isPercentage, isPrice)
-    return(pv)
+    if (is.numeric(yield)){
+      if(length(yield)!=length(cts)) {
+        stop("Provide yieldcurve or 'yield' with lenght same as number of contracts in the Portfolio!")
+      }
+      for(i in 1:length(cts)) pv <- 
+        pv + presentValue(cts[[i]], yield[i], by, isPercentage, isPrice)
+      return(pv)
+    } else {
+      for(i in 1:length(cts)) pv <- 
+          pv + presentValue(cts[[i]], yield, by, isPercentage, isPrice)
+      return(pv)
+    }
   }
   
   # compute cash flows of instrument
@@ -94,10 +95,10 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, by=NULL,
       cf <- cf[2:nrow(cf),]
     }
   } else if (class(x)=="EventSeries") {
+    evs <- as.data.frame(x)[,c("Date","Value","Type","Time")]
     if(is.null(by)) {
       by <- as.character(evs$evs$Date[1])
     }
-    evs <- as.data.frame(x)[,c("Date","Value","Type","Time")]
     if (isPrice && evs[evs$Date==by,"Type"]=="IED") {
       evs <- evs[evs$Date>by,]
     } else {
@@ -136,8 +137,8 @@ presentValue <- function(x, yield=NULL, yieldCurve=NULL, by=NULL,
   }
   
   # compute discount factors for cash flow dates
-  if(is.null(yield)) {
-    df <- discountFactors(yieldCurve, to=as.character(time(cf)))
+  if(!is.numeric(yield)) {
+    df <- discountFactors(yield, to=as.character(time(cf)))
   } else {
     scale <- 1
     if(isPercentage) {

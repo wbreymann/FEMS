@@ -52,7 +52,7 @@ set(yc, what = list(
   Tenors = tenors,
   Rates = rates))
 
-presentValue(ptf, yieldCurve=yc, isPrice=TRUE)
+presentValue(ptf, yield=yc, isPrice=TRUE)
 
 duration(bnd1, type="macaulay", yield=9)
 duration(bnd2, type="macaulay", yield=9)
@@ -65,7 +65,7 @@ duration(ptf, type="macaulay", yield=c(9,9,9),digits=1)
 # immunize a future payment obligation, here the 'target'
 target=bond(start="2015-01-01", maturity="10 years", nominal=1000000, coupon=0,
             couponFreq="10 year", role="long", variable=FALSE)
-res=immunize(ptf, target, yield=9, from=NULL)
+res=immunize(ptf, target, yield=9)
 res
 
 # check for the two resulting portfolios
