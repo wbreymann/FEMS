@@ -1,4 +1,5 @@
 
+
 - Function presentValue: 
   * Interface should be streamlined and in better accordance with the value function (DONE)
   * arg from -> by (DONE)
