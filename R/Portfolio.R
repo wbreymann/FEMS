@@ -124,6 +124,10 @@ setGeneric(name = "generateEvents",
 
 
 # @export
+#' 
+#' Sends contracts to server
+#' (command POST from package httr)
+#' 
 setMethod("generateEvents", signature = c("Portfolio"),
           definition = function(object, ...){
             # send contract and risk factors to the Server
@@ -208,6 +212,7 @@ setMethod("generateEvents", signature = c("Portfolio"),
                 riskFactors[[i]] <- temp_list
               }
             }
+            # contains both, contracts and risk factor scenarios
             fin_list <- list(contracts = contracts, 
                              riskFactors = riskFactors)
 
