@@ -125,7 +125,7 @@ setGeneric(name = "generateEvents",
 
 # @export
 #' 
-#' Sends contracts to server
+#' Sends contracts and risk factors in JSON format to server
 #' (command POST from package httr)
 #' 
 setMethod("generateEvents", signature = c("Portfolio"),

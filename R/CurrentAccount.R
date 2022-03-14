@@ -297,6 +297,7 @@ currentaccount.evs <- function(object, model, end_date, method, period){
   nominal_rate <- 0
   ev_tbl <- data.frame()
   rate_count <- 1
+  # main loop
   for (i in 1:length(all_dates)) {
     next_ev <- data.frame()
     if (i==1){
