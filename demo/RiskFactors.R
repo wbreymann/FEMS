@@ -17,11 +17,13 @@ yc <- YieldCurve()
 tenors <- c("1W", "1M", "6M", "1Y", "2Y", "5Y")
 rates <- c(0.001, 0.0015, 0.002, 0.01, 0.02, 0.03)
 set(yc, what = list(
-  MarketObjectCode = "YC_Prim",
-  Nodes = list(ReferenceDate = "2015-01-01", Tenors = tenors, Rates = rates)))
+  label = "YC_Prim",
+  ReferenceDate = "2015-01-01", 
+  Tenors = tenors, 
+  Rates = rates))
 
 # retrieve yield curve parameters ERROR: Does no longer work!!!
-get(yc, "MarketObjectCode")
+get(yc, "label")
 get(yc, "ReferenceDate")
 get(yc, "Tenors")
 get(yc, "Rates")
@@ -40,56 +42,34 @@ plot(yc)
 #-------------------------------------------------------------------
 # create a Reference Index risk factor object
 #-------------------------------------------------------------------
-ind <- Index()
-times <- c("2015-01-01", "2016-01-01", "2017-01-01", "2018-01-01",
-           "2019-01-01")
-values <- c(100, 110, 120, 130, 140)
-set(ind, what=list(
-  MarketObjectCode = "CHF_SMI",
-  Data=list(Dates=times,Values=values)))
+
+times <- timeSequence(from="2014-01-01", by="3 months", 
+                      length.out=9)
+values <- cumsum(c(1,rnorm(8,0.02,0.1)))
+idx <- Index(label = "PriceIndex", 
+             data = values, 
+             charvec = times)
 
 # retrieve reference index parameters
-get(ind, "MarketObjectCode")
-get(ind, "Data")
+get(idx, "label")
+get(idx, "Data")
 
 # access reference index functions
-valueAt(ind, "2016-01-01")
-valueAt(ind, c("2016-01-01", "2016-07-01", "2017-01-01"))
+valueAt(idx, "2016-01-01")
+valueAt(idx, c("2016-01-01", "2016-07-01", "2017-01-01"))
 
 # plot index
-plot(ind)
+plot(idx)
 
-#-------------------------------------------------------------------
-# create a Foreign Exchange Rate risk factor object
-#-------------------------------------------------------------------
-fx <- FxRate()
-times <- c("2015-01-01", "2016-01-01", "2017-01-01", 
-           "2018-01-01", "2019-01-01")
-values <- c(1.04, 1.05, 1.2, 1.0, 0.9)
-set(fx, what=list(
-  MarketObjectCode = "CHF/USD",
-  Data=list(Dates=times,Values=values)))
-
-# retrieve reference index parameters
-get(fx, "MarketObjectCode")
-get(fx, "Data")
-
-# access reference index functions
-valueAt(fx, "2016-01-01")
-valueAt(fx, c("2016-01-01", "2018-07-01", "2018-07-01"))
-
-# plot fx-series
-plot(fx)
 
 #-------------------------------------------------------------------
 # create a connector instance linking contracts and risk factors
 #-------------------------------------------------------------------
 rf <- RFConn()
-add(rf,list(yc,ind,fx))
+add(rf,list(yc,idx))
 get(rf,"keys")
 containsID(rf, c("YC_Prim", "CHF_SMI", "YC_2"))
 remove(rf, "YC_Prim")
 containsID(rf, c("YC_Prim", "CHF_SMI", "YC_2"))
-add(rf,list(yc,ind,fx))
-remove(rf, c("YC_Prim", "CHF_SMI"))
+add(rf,list(yc))
 containsID(rf, c("YC_Prim", "CHF_SMI", "YC_2"))
