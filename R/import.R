@@ -216,7 +216,10 @@ loadFromText <- function(source, pars) {
     valuation <- pars[["valuationEngines"]]
   }
   
-  portfolio_df=read.csv(source,header=TRUE,sep = seperator)
+  portfolio_df=read.csv(source,header=TRUE,sep = seperator,
+                        colClasses=c(DayCountConvention="character"))
+  # colClasses=c(DayCountConvention="character") should be set 
+  # because otherwise the value that is interpreted as an integer and set to Inf
   # #replace NULL with NA
   # # data_cleaned <- apply(csv_sample,2,function(x) sub("NULL",NA, x))
   # # data_cleaned[1,!is.na(data_cleaned[1,])]
