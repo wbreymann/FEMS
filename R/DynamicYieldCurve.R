@@ -358,7 +358,8 @@ setMethod(
     if (is.null(refdate)){
       refdate <- min(c(from, to))
     }
-            
+    # print(refdate)
+    # print(object$ReferenceDate[1])
     # check if any of the dates are before first reference date of yield curve
     if ((refdate < object$ReferenceDate[1]) | 
         (min(c(from, to)) < object$ReferenceDate[1])) {

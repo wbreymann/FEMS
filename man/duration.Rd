@@ -4,7 +4,7 @@
 \alias{duration}
 \title{\code{duration}}
 \usage{
-duration(x, type="macaulay", yield, yieldCurve, price, isPercentage=TRUE, from)
+duration(x, type="macaulay", yield, price, isPercentage=TRUE, from)
 }
 \arguments{
 \item{x}{the contract or portfolio of contracts for which to calculate 
@@ -13,10 +13,9 @@ the duration.}
 \item{type}{a \code{character} defining the type of duration; possible types are 
 'fisher-weil', 'macaulay' (default) and 'dollar'.}
 
-\item{yield}{a \code{numeric}, indicating the yield used to calculate the duration.}
-
-\item{yieldCurve}{Object of class \code{YieldCurve} or 
-\code{DynamicYieldCurve} that describes the spot rate term structure.}
+\item{yield}{a \code{numeric}, an Object of class \code{YieldCurve} or 
+\code{DynamicYieldCurve} that describes the spot rate term structure
+or indicates the yield used to calculate the duration.}
 
 \item{price}{a \code{numeric}, indicating the price used for calculating the yield to maturity
 of each contract.}

@@ -263,6 +263,7 @@ get.data.rate.reset <-  function(yc, anchor_dt, cycle, end_dt, ISO = TRUE){
   if (end_dt < anchor_dt) {
     return(NULL)
   }
+  # print(convert.Duration(cycle, ISO))
   times <- as.character(timeSequence(
     from = anchor_dt,  
     to = timeSequence(end_dt, by = convert.Duration(cycle, ISO), length.out = 2)[2],

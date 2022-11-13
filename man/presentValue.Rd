@@ -4,17 +4,15 @@
 \alias{presentValue}
 \title{\code{presentValue}}
 \usage{
-presentValue(x, yield, yieldCurve, by, isPercentage, isPrice, digits)
+presentValue(x, yield, by, isPercentage, isPrice, digits)
 }
 \arguments{
 \item{x}{a contract type, for which to calculate the NPV. This can also be 
 a timeSeries, EventSeries or Portfolio object.}
 
-\item{yield}{a numeric, indicating the percentage yield used to discount.}
-
-\item{yieldCurve}{an object of type \code{\link{YieldCurve}} or 
+\item{yield}{a numeric, an object of type \code{\link{YieldCurve}} or 
 \code{\link{DynamicYieldcurve}} to calculate discount 
-factors from.}
+factors from, indicating the percentage yield used to discount.}
 
 \item{by}{a character indicating the date as for which the NPV is calculated.}
 

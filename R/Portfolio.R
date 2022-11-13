@@ -609,7 +609,7 @@ setMethod(f = "show", signature = c("Portfolio"),
             # print(table(unlist(types)))
             # 
             # invisible(NULL)
-            print(CTterms(object, pretty))
+            print(CTterms(object, pretty=TRUE))
           })
 
 ## @include
