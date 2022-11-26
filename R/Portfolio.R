@@ -22,7 +22,7 @@
 #' ptf
 #' 
 ## @include
-#' @export 
+#' @export
 ## @docType
 #' @rdname ptf-classes
 setRefClass("Portfolio",
@@ -31,6 +31,7 @@ setRefClass("Portfolio",
               rf_connector = "RiskFactorConnector",
               ct_events = "data.frame"
               ))
+
 
 ##############################################################
 #' Portfolio-class constructor

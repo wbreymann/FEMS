@@ -1,7 +1,7 @@
 Package: FEMS  
 License: GPL ( >=2)
-Version: 0.2.22
-Date: 2022-11-13
+Version: 0.2.23
+Date: 2022-11-26
 Author: Christoph Auth <christoph.auth@zhaw.ch>,
     Wolfgang Breymann <wolfgang.breymann@zhaw.ch>,
     Nils Bund <nils.bundi@gmail.com>
@@ -42,7 +42,7 @@ Imports:
     timeSeries (>= 3012.99),
 SystemRequirements: R (>= 3.5.0) 
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Collate: 
     'ContractModel.R'
     'RiskFactor.R'

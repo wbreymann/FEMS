@@ -86,9 +86,12 @@ setMethod(f = "newbiz",
             # nodes <- nodes[!(Get(nodes,"name") %in% c("Equity","Operations","Current"))]
             #nodes <- Traverse(object, traversal = "pre-order") # or rather this???
             # The whole path should be taken into account
+            tmp <- unlist(lapply(nodes, function(x) x$name))
+            # print ("tmp:")
+            # print(tmp)
             nodes <- nodes[
               !sapply(tmp, 
-                      FUN=function(x) sum(is.element(x, c("Equity","Operations","Current"))) )
+                      FUN=function(x) sum(is.element(x, c("Equity","Revenues","Expenses", "Current"))) )
             ]
             
             # test inputs
