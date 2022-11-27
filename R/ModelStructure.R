@@ -100,10 +100,10 @@ setMethod(f = "showContracts", signature = c("Node"),
             res <- object$summary.ct
 
             # set row names
-            nodes.path <- Get(Traverse(bank),"pathString")
-            rn <- capture.output(bank)[-1]
+            nodes.path <- Get(Traverse(object),"pathString")
+            rn <- capture.output(object)[-1]
             rn <- substring(rn,4,max(nchar(rn)))
-            res <- bank$summary.ct
+            res <- object$summary.ct
             rnams <- character(nrow(res))
             for (i in 1:nrow(res)) {
               rnams[i] <- paste(format(i,width=2),rn[nodes.path==res[i,1]])
