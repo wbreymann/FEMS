@@ -140,7 +140,7 @@ setMethod(f = "newbiz",
               #current=abs(unlist(lapply(nodes,function(x) value(events,by=as.character(by),type="nominal",filter=list(x)))))
               
               # compute new volume
-              fillAmounts <- targets[,i-1] - current
+              fillAmounts <- floor(targets[,i-1] - current)
               fillAmounts[is.na(fillAmounts)] <- 0
               
               # compute new business (of template type) by leaf
