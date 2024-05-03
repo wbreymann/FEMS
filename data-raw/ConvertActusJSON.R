@@ -84,7 +84,8 @@ rflActus_allowed_vals <- lapply(rflActus_allowed_vals, function(x) {
 actusDictionary <- list(rflActus_required = rflActus_required,
                         rflActus_attributes = rflActus_attributes,
                         rflActus_allowed_vals = rflActus_allowed_vals)
-actusURL <- "http://ractus.ch:8080/"
+# actusURL <- "http://ractus.ch:8080/"
+actusURL <- "https://dadfir3-app.zhaw.ch/"
 usethis::use_data(actusDictionary, actusURL, 
                   internal = TRUE)
 

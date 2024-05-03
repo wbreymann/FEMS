@@ -11,6 +11,8 @@
     ## ommit conversion of strings in data.frame to factor variables
     options(stringsAsFactors = FALSE)
     options("getSymbols.warning4.0"=FALSE)
+
+    actusURL <- "https://dadfir3-app.zhaw.ch/"
     
 }
 

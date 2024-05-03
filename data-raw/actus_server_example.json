@@ -121,7 +121,7 @@
 		{
 			"id": "dd5e4d2a-4120-491b-9f22-8ba1d3a02447",
 			"key": "HOST_REMOTE",
-			"value": "http://ractus.ch:8080",
+			"value": "https://dadfir3-app.zhaw.ch/",
 			"type": "string"
 		}
 	],

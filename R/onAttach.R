@@ -4,4 +4,5 @@
 #*************************************************************
 
 .onAttach <- function(libname, pkgname){
-}
+  actusURL <- "https://dadfir3-app.zhaw.ch/"
+  }
